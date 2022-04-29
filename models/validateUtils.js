@@ -1,4 +1,5 @@
 const validator = require('validator');
+const bcrypt = require('bcrypt'); //TODO: Document that you've added bcrypt module.
 const genreTypes = [
     "alternative",
     "blues",
@@ -23,9 +24,9 @@ const genreTypes = [
 
 /**
  * Validates the mandatory fields of a song.
- * @param {string} title Cannot be null. Must be of type string.
- * @param {string} artist Cannot be null. Must be of type string.
- * @param {string} genre Must be one of the types in the valid genres.
+ * @param {string} title Title of song. Cannot be null. Must be of type string.
+ * @param {string} artist Artist of song. Cannot be null. Must be of type string.
+ * @param {string} genre Genre of song. Must be one of the types in the valid genres.
  * @returns True if the song's fields are valid, false otherwise
  */
 function validateSong(title, artist, genre) {
@@ -38,17 +39,36 @@ function validateSong(title, artist, genre) {
 }
 
 /**
- * Validates the fields of a user
- * @param {*} username Must not already exist in the database.
- * @param {*} password Cannot be null.
+ * Checks if the user exists in the database.
+ * @param {*} username Username of user. Cannot be null.
+ * @param {*} password Password of user. Cannot be null. Must be at least 7 characters long.
+ * @returns True if the user's fields are valid, false otherwise.
+ */
+function authenticateUser(username, password){
+    // TODO: Implement once getConnection has been implemented
+}
+
+/**
+ * Verifies that username doesn't exist in database and that password is minimum 7 characters long.
+ * @param {string} username Username of user. Must not already exist in the database.
+ * @param {string} password Password of user. Must be at least 7 characters long.
+ * @returns True if the username doesn't exist in the database. false otherwise.
  */
 function validateUser(username, password){
+    const minLength = 7;
+
     // TODO: Implement once getConnection has been implemented
-    // Username must not already exist in db
-    // Password min 7 characters (already done in view?)
+    //create sql query to check db if username already exists in database
+    const sqlquery;
+
+    //execute query
+    const rows;
+
+    return password.length >= minLength && rows.length === 0;
 }
 
 module.exports = {
     validateSong,
+    authenticateUser,
     validateUser
 }
