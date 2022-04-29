@@ -55,7 +55,36 @@ async function getAllSongs(){
     }
 }
 
-async function getOneSong(){}
+async function getOneSong(userId, title, artist, genre, album){
+    // TO-DO: Validate passed userId
+
+    // TO-DO: Validate passed title, artist, & genre.
+
+    let query = "SELECT * FROM songs " +
+    'WHERE title = \'' + title + '\' ' +
+    'AND artist = \'' + artist + '\' ' +
+    'AND genre = \'' + genre + '\' ';
+    
+    if(album){
+        query += 'AND album = \'' + album + '\' ';
+    }
+
+    query += 'AND userId = ' + userId;
+
+    const results = await connection.query(query)
+    .catch((err) =>{
+        // Log the error.
+        logger.error(err);
+        throw err;
+    })
+
+    // Query will return an array of two arrays. The first array contains the actual songs, while the second holds metadata.
+    const songs =results[0];
+    // Log the query results.
+    logger.debug("Query retrieved following record(s) from the \'songs\' table:");
+    logger.debug(songs);
+
+}
 //#endregion
 
 //#region UPDATE Regions
