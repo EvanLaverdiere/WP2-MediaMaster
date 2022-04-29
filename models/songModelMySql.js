@@ -15,7 +15,6 @@ async function initialize(db, reset) {
             .then(logger.info("Songs table created/exists"))
             .catch((error) => { logger.error("Songs table was not created: "+error.message); });
 
-        await addSong("Amazing","Aerosmith", "Rock");
     } catch (error) {
         throw error;
     }
