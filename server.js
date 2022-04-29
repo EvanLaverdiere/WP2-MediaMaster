@@ -7,7 +7,7 @@ if (!dbName) {
     dbName = 'mediamaster_db';
 } 
 
-model.initialize(dbName, true)
+model.initialize(dbName, false)
     .then(
         app.listen(port) // Run the server
     );
