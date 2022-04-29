@@ -1,6 +1,6 @@
 const app = require('./app.js');
 const port = 1339;
-const model = require('./models/songModelMySql');
+const model = require('./models/songModelMySql.js');
 
 let dbName = process.argv[2];
 if (!dbName) {
