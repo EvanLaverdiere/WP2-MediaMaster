@@ -88,7 +88,7 @@ async function getOneSong(userId, title, artist, genre, album){
     if(songs.length == 0){
         let error = "User's collection does not contain the song \'" + title + "\' by " + artist + ".";
         logger.error(error);
-        //To-Do: throw appropriate error.
+        //To-Do: throw appropriate error. 
     }
 
 }
