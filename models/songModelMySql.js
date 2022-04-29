@@ -9,7 +9,7 @@ async function initialize(db, reset) {
         if (reset)
             await dropTable();
 
-        const sqlQuery = 'create table if not exists Songs(id int AUTO_INCREMENT, title VARCHAR(50) not null, artist VARCHAR(50) not null, genre VARCHAR(50) not null, album VARCHAR(50), PRIMARY KEY(id))';
+        const sqlQuery = 'create table if not exists Songs(id int AUTO_INCREMENT, title VARCHAR(50) not null, artist VARCHAR(50) not null, genre VARCHAR(50) not null, album VARCHAR(50), userId int not null, PRIMARY KEY(id), FOREIGN KEY (userId) REFERENCES users(id))';
 
         await connection.execute(sqlQuery)
             .then(logger.info("Songs table created/exists"))
@@ -20,6 +20,8 @@ async function initialize(db, reset) {
     }
 }
 
+
+//#region CREATE Operations
 async function addSong(title, artist, genre, album){
     try {
         // Validation
@@ -36,7 +38,9 @@ async function addSong(title, artist, genre, album){
     }
     // The return could be a boolean true
 }
+//#endregion
 
+//#region READ Operations
 async function getAllSongs(){
     try {
         let query = "select title, artist, genre, album from Songs;";
@@ -50,6 +54,17 @@ async function getAllSongs(){
         // Handle it
     }
 }
+
+async function getOneSong(){}
+//#endregion
+
+//#region UPDATE Regions
+async function updateSong(){}
+//#endregion
+
+//#region DELETE Regions
+async function deleteSong(){}
+//#endregion
 
 async function dropTable() {
     const clearAll = "drop table if exists Songs;";
