@@ -1,5 +1,5 @@
 const validator = require('validator');
-const bcrypt = require('bcrypt'); //TODO: Document that you've added bcrypt module.
+const model = require('./userModelMySql');
 const genreTypes = [
     "alternative",
     "blues",
@@ -21,6 +21,7 @@ const genreTypes = [
     "soundtrack",
     "world"
 ]
+var connection;
 
 /**
  * Validates the mandatory fields of a song.
@@ -32,10 +33,10 @@ const genreTypes = [
 function validateSong(title, artist, genre) {
     title = title.replaceAll(' ', '');
 
-    return (genreTypes.includes(genre.toLowerCase()) 
-    && typeof title === 'string' && title != null
-    && typeof artist === 'string' && artist != null
-    && validator.isAlpha(title));
+    return (genreTypes.includes(genre.toLowerCase())
+        && typeof title === 'string' && title != null
+        && typeof artist === 'string' && artist != null
+        && validator.isAlpha(title));
 }
 
 /**
@@ -44,7 +45,7 @@ function validateSong(title, artist, genre) {
  * @param {*} password Password of user. Cannot be null. Must be at least 7 characters long.
  * @returns True if the user's fields are valid, false otherwise.
  */
-function authenticateUser(username, password){
+function authenticateUser(username, password) {
     // TODO: Implement once getConnection has been implemented
 }
 
@@ -54,17 +55,17 @@ function authenticateUser(username, password){
  * @param {string} password Password of user. Must be at least 7 characters long.
  * @returns True if the username doesn't exist in the database. false otherwise.
  */
-function validateUser(username, password){
+async function validateUser(username, password) {
     const minLength = 7;
+    // connection = model.getConnection();
 
-    // TODO: Implement once getConnection has been implemented
-    //create sql query to check db if username already exists in database
-    const sqlquery;
+    // //create sql query to check db if username already exists in database
+    // const sqlQuery = 'SELECT username FROM users WHERE username = ' + connection.escape(username);
 
-    //execute query
-    const rows;
+    // //execute query
+    // const [rows, fields] = await connection.execute(sqlQuery);
 
-    return password.length >= minLength && rows.length === 0;
+    return password.length >= minLength;
 }
 
 module.exports = {
