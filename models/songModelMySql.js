@@ -15,7 +15,7 @@ async function initialize(db, reset) {
 
         await connection.execute(sqlQuery)
             .then(logger.info("Songs table created/exists"))
-            .catch((error) => { logger.error("Songs table was not created: "+error.message); });
+            .catch((error) => { logger.error("Songs table was not created: " + error.message); });
 
     } catch (error) {
         throw error;
@@ -24,22 +24,22 @@ async function initialize(db, reset) {
 
 
 //#region CREATE Operations
-async function addSong(title, artist, genre, album){
+async function addSong(title, artist, genre, album) {
     try {
         let successfullyAdded;
-        if(!(validator.validateSong(title, artist, genre))){
+        if (!(validator.validateSong(title, artist, genre))) {
             let query = "insert into Songs(title, artist, genre, album) values(?, ?, ?, ?)";
 
-            if(typeof(album)=='undefined')album = "";
+            if (typeof (album) == 'undefined') album = "";
 
             let [rows, fields] = await connection.execute(query, [title, artist, genre, album])
-                .then(()=>{
+                .then(() => {
                     logger.info(`Song [${title}] was added successfully`)
-                    successfullyAdded=true;
+                    successfullyAdded = true;
                 })
                 .catch((error) => { logger.error(error.message); });
         }
-        
+
     } catch (error) {
         //Handle error
     }
@@ -48,13 +48,13 @@ async function addSong(title, artist, genre, album){
 //#endregion
 
 //#region READ Operations
-async function getAllSongs(){
+async function getAllSongs() {
     try {
         let query = "select title, artist, genre, album from Songs;";
-        
+
         let songs = await connection.execute(query)
             .then(logger.info(`Songs retrieved successfully`))
-            .catch((error) => {logger.error(error.message)})
+            .catch((error) => { logger.error(error.message) })
 
         return songs[0];
     } catch (error) {
@@ -62,37 +62,38 @@ async function getAllSongs(){
     }
 }
 
-async function getOneSong(userId, title, artist, genre, album){
+async function getOneSong(userId, title, artist, genre, album) {
     // TO-DO: Validate passed userId
 
     // TO-DO: Validate passed title, artist, & genre.
 
     let query = "SELECT * FROM songs " +
-    'WHERE title = \'' + title + '\' ' +
-    'AND artist = \'' + artist + '\' ' +
-    'AND genre = \'' + genre + '\' ';
-    
-    if(album){
+        'WHERE title = \'' + title + '\' ' +
+        'AND artist = \'' + artist + '\' ' +
+        'AND genre = \'' + genre + '\' ';
+
+    if (album) {
         query += 'AND album = \'' + album + '\' ';
     }
 
-    query += 'AND userId = ' + userId;
+    query += 'AND userId = ' + userId + ' ' +
+        'LIMIT 1';
 
     const results = await connection.query(query)
-    .catch((err) =>{
-        // Log the error.
-        logger.error(err);
-        throw err;
-    })
+        .catch((err) => {
+            // Log the error.
+            logger.error(err);
+            throw err;
+        })
 
     // Query will return an array of two arrays. The first array contains the actual songs, while the second holds metadata.
-    const songs =results[0];
+    const songs = results[0];
     // Log the query results.
     logger.debug("Query retrieved following record(s) from the \'songs\' table:");
     logger.debug(songs);
 
     // If the passed song was not found, the songs array will be empty.
-    if(songs.length == 0){
+    if (songs.length == 0) {
         let error = "User's collection does not contain the song \'" + title + "\' by " + artist + ".";
         logger.error(error);
         //To-Do: throw appropriate error. 
@@ -102,11 +103,11 @@ async function getOneSong(userId, title, artist, genre, album){
 //#endregion
 
 //#region UPDATE Regions
-async function updateSong(){}
+async function updateSong() { }
 //#endregion
 
 //#region DELETE Regions
-async function deleteSong(){}
+async function deleteSong() { }
 //#endregion
 
 async function dropTable() {
@@ -125,13 +126,13 @@ async function setConnection(db) {
         password: 'pass',
         database: db
     }).then(logger.info("Connection established"))
-        .catch((error) => { logger.error("Connection was not established: "+error.message) });
+        .catch((error) => { logger.error("Connection was not established: " + error.message) });
 
 }
 
-function closeConnection(){
-    if (typeof connection != 'undefined'){
+function closeConnection() {
+    if (typeof connection != 'undefined') {
         connection.close();
-   }
+    }
 }
-module.exports = { initialize, addSong, getAllSongs, closeConnection}
+module.exports = { initialize, addSong, getAllSongs, getOneSong, closeConnection }
