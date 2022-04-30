@@ -107,7 +107,42 @@ async function updateSong() { }
 //#endregion
 
 //#region DELETE Regions
-async function deleteSong() { }
+async function deleteSong(userId, title, artist, genre, album) {
+    // To-Do: Validate passed userId.
+
+    // To-Do: Verify that the song to be deleted actually exists in the database. Throw an exception if it doesn't.
+    const song = await getOneSong(userId, title, artist, genre, album)
+        .catch((err) => { throw err });
+
+    // if the movie exists, try to delete it from the database.
+
+    const sql = "DELETE FROM songs WHERE title = \'" + title + "\' " +
+        "AND artist = \'" + artist + "\' " +
+        "AND genre = \'" + genre + "\' ";
+
+    if (album) {
+        sql += "AND album = \'" + album + "\' ";
+    }
+
+    sql += "AND userId = " + userId + " " +
+        "LIMIT 1";
+
+    let results = await connection.query(sql)
+    .catch((err) => {
+        logger.error(err);
+        // To-Do: Throw appropriate error.
+    });
+
+    let affectedRows = results[0].affectedRows;
+    if(affectedRows <= 0){
+        let errorMessage = "No records were deleted.";
+        logger.error(errorMessage);
+        // To-Do: Throw appropriate error.
+    }
+
+    logger.info("Deletion successful.");
+    return {song};
+}
 //#endregion
 
 async function dropTable() {
