@@ -1,0 +1,24 @@
+body {
+    border-style: solid;
+    border-color: rgba(127, 229, 255, 0.205);
+    background-color: #000000ec;
+    color: rgb(255, 255, 255);
+    text-align: center;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.noDecoration{
+    color: #ad67aa !important;
+    text-decoration: none;
+    margin: 1rem;
+}
+
+#title{
+    margin: 1rem;
+}
+
+#titleWrap{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
