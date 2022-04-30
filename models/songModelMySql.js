@@ -1,5 +1,7 @@
 const mysql = require('mysql2/promise');
 const logger = require('../logger');
+const validator = require('./validateUtils.js');
+
 var connection;
 
 async function initialize(db, reset) {
@@ -24,19 +26,24 @@ async function initialize(db, reset) {
 //#region CREATE Operations
 async function addSong(title, artist, genre, album){
     try {
-        // Validation
-        let query = "insert into Songs(title, artist, genre, album) values(?, ?, ?, ?)";
-        if(typeof(album))
-            album = "";
-        let [rows, fields] = await connection.execute(query, [title, artist, genre, album])
-            .then(()=>{
-                logger.info(`Song [${title}] was added successfully`)
-            })
-            .catch((error) => { logger.error(error.message); });
+        let successfullyAdded;
+        if(!(validator.validateSong(title, artist, genre))){
+            let query = "insert into Songs(title, artist, genre, album) values(?, ?, ?, ?)";
+
+            if(typeof(album)=='undefined')album = "";
+
+            let [rows, fields] = await connection.execute(query, [title, artist, genre, album])
+                .then(()=>{
+                    logger.info(`Song [${title}] was added successfully`)
+                    successfullyAdded=true;
+                })
+                .catch((error) => { logger.error(error.message); });
+        }
+        
     } catch (error) {
         //Handle error
     }
-    // The return could be a boolean true
+    return successfullyAdded;
 }
 //#endregion
 

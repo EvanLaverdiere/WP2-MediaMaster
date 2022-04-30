@@ -13,11 +13,10 @@ logger.info("Creating app");
 const expressListRoutes = require('express-list-routes');
 
 // Hbs
-/*
 app.engine('hbs', engine({ extname: '.hbs' }));
 app.set('view engine', 'hbs');
 app.set('views', './views'); 
-*/
+
 
 /*
 
@@ -47,8 +46,8 @@ const httpLogger = pinohttp({
 
 app.use(httpLogger);
 
-/*
-const controllers = ['homeController','songsController','errorController'] 
+
+const controllers = ['homeController','songController','errorController'] 
 
 // Register routes from all controllers 
 //  (Assumes a flat directory structure and common 'routeRoot' / 'router' export)
@@ -61,5 +60,5 @@ controllers.forEach((controllerName) => {
     }    
 })
 expressListRoutes(app, { prefix: '/' });
-*/
+
 module.exports = app

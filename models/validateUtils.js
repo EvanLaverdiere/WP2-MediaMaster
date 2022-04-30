@@ -33,7 +33,7 @@ function validateSong(title, artist, genre) {
     title = title.replaceAll(' ', '');
 
     return (genreTypes.includes(genre.toLowerCase()) 
-    && typeof title === 'string' && title != null
+    && typeof title === 'string' && title != null && validator.isAlphanumeric(title)
     && typeof artist === 'string' && artist != null
     && validator.isAlpha(title));
 }
@@ -59,10 +59,10 @@ function validateUser(username, password){
 
     // TODO: Implement once getConnection has been implemented
     //create sql query to check db if username already exists in database
-    const sqlquery;
+    let sqlquery;
 
     //execute query
-    const rows;
+    let rows;
 
     return password.length >= minLength && rows.length === 0;
 }
