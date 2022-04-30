@@ -103,7 +103,37 @@ async function getOneSong(userId, title, artist, genre, album) {
 //#endregion
 
 //#region UPDATE Regions
-async function updateSong() { }
+async function updateSong(userId, oldTitle, oldArtist, newTitle, newArtist, newGenre, newAlbum) {
+    const oldSong = await getOneSong(userId, oldTitle, oldArtist, genre, album)
+        .catch((err) => { throw err });
+
+    let oldId = oldSong.id;
+
+    const sql = "UPDATE songs SET" +
+        "title = \'" + newTitle + "\', " +
+        "artist = \'" + newArtist + "\', " +
+        "genre = \'" + newGenre + "\', ";
+
+    if (newAlbum) {
+        sql += "album = \'" + newAlbum + "\' ";
+    }
+
+    sql += "WHERE id = " + oldId + " " +
+        "LIMIT 1";
+
+    const results = await connection.query(sql)
+        .catch((err) => {
+            logger.error(err);
+            // To-Do: throw an appropriate error.
+        })
+
+    let changedRows = results[0].changedRows;
+    if(changedRows <= 0){
+        let errorMessage = "No songs were changed.";
+        logger.error(errorMessage);
+        // To-Do: throw an appropriate error.
+    }
+}
 //#endregion
 
 //#region DELETE Regions
@@ -128,20 +158,20 @@ async function deleteSong(userId, title, artist, genre, album) {
         "LIMIT 1";
 
     let results = await connection.query(sql)
-    .catch((err) => {
-        logger.error(err);
-        // To-Do: Throw appropriate error.
-    });
+        .catch((err) => {
+            logger.error(err);
+            // To-Do: Throw appropriate error.
+        });
 
     let affectedRows = results[0].affectedRows;
-    if(affectedRows <= 0){
+    if (affectedRows <= 0) {
         let errorMessage = "No records were deleted.";
         logger.error(errorMessage);
         // To-Do: Throw appropriate error.
     }
 
     logger.info("Deletion successful.");
-    return {song};
+    return { song };
 }
 //#endregion
 
