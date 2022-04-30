@@ -134,8 +134,8 @@ async function updateSong(userId, oldTitle, oldArtist, newTitle, newArtist, newG
         // To-Do: throw an appropriate error.
     }
 
-    logger.info("Update successful.");
-    return changedRows;
+    logger.info("Update successful."); 
+    return changedRows; 
 }
 //#endregion
 
