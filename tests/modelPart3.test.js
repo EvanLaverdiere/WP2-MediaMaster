@@ -1,9 +1,8 @@
 const model = require('../models/userModelMySql.js');
-const dbName = "mediamaster_db_test";
 const bcrypt = require('bcrypt'); //TODO: Document that you've added bcrypt module.
-//TODO: Add logger
 
 const saltRounds = 10;
+const dbName = "mediamaster_db_test";
 var connection;
 
 /* Data to be used to generate random users for testing */
@@ -29,7 +28,7 @@ beforeEach(async () => {
 
 test('[MODEL PART 3] Adding a user: Success case', async () => {
     const { username, password } = generateUserData();
-    await model.createUser(username, password);
+    await model.addUser(username, password);
 
     const sqlQuery = "SELECT username, password FROM users WHERE username = "
     + connection.escape(username) + " AND password = "
@@ -46,7 +45,7 @@ test('[MODEL PART 3] Adding a user: Failure case (InvalidInputError)', async () 
     const password = "";
 
     try {
-        await model.createUser(username, password);
+        await model.addUser(username, password);
     }
     catch (err) {
         expect(err).toBeInstanceOf(model.InvalidInputError);
@@ -55,7 +54,7 @@ test('[MODEL PART 3] Adding a user: Failure case (InvalidInputError)', async () 
 
 test('[MODEL PART 3] Getting a user: Success case', async () => {
     const { username, password } = generateUserData();
-    await model.createUser(username, password);
+    await model.addUser(username, password);
 
     const result = await model.getUser(username, password);
 
