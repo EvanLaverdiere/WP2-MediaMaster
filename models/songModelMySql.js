@@ -78,7 +78,7 @@ async function getOneSong(userId, title, artist) {
 
     // TO-DO: Validate passed title, artist, & genre.
 
-    let query = "SELECT * FROM songs " +
+    let query = "SELECT * FROM Songs " +
         'WHERE title = \'' + title + '\' ' +
         'AND artist = \'' + artist + '\' ' +
         'AND userId = ' + userId + ' ' +
@@ -115,7 +115,7 @@ async function updateSong(userId, oldTitle, oldArtist, newTitle, newArtist, newG
 
     let oldId = oldSong.id;
 
-    const sql = "UPDATE songs SET" +
+    const sql = "UPDATE Songs SET" +
         "title = \'" + newTitle + "\', " +
         "artist = \'" + newArtist + "\', " +
         "genre = \'" + newGenre + "\', ";
@@ -167,7 +167,7 @@ async function deleteSong(userId, title, artist) {
     // sql += "AND userId = " + userId + " " +
     //     "LIMIT 1";
 
-    const sql = "DELETE FROM songs WHERE id = " + doomedId +
+    const sql = "DELETE FROM Songs WHERE id = " + doomedId +
         "LIMIT 1";
 
     let results = await connection.query(sql)
