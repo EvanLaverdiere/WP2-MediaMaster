@@ -111,7 +111,7 @@ async function getOneSong(userId, title, artist) {
 
 //#region UPDATE Regions
 async function updateSong(userId, oldTitle, oldArtist, newTitle, newArtist, newGenre, newAlbum) {
-    const oldSong = await getOneSong(userId, oldTitle, oldArtist, genre, album)
+    const oldSong = await getOneSong(userId, oldTitle, oldArtist)
         .catch((err) => { throw err });
 
     let oldId = oldSong.id;
@@ -147,30 +147,35 @@ async function updateSong(userId, oldTitle, oldArtist, newTitle, newArtist, newG
 //#endregion
 
 //#region DELETE Regions
-async function deleteSong(userId, title, artist, genre, album) {
+async function deleteSong(userId, title, artist) {
     // To-Do: Validate passed userId.
 
     // To-Do: Verify that the song to be deleted actually exists in the database. Throw an exception if it doesn't.
-    const song = await getOneSong(userId, title, artist, genre, album)
+    const song = await getOneSong(userId, title, artist)
         .catch((err) => { throw err });
 
-    // if the movie exists, try to delete it from the database.
+    // if the song exists, try to delete it from the database.
+    let doomedId = song.id;
 
-    const sql = "DELETE FROM songs WHERE title = \'" + title + "\' " +
-        "AND artist = \'" + artist + "\' " +
-        "AND genre = \'" + genre + "\' ";
+    // const sql = "DELETE FROM songs WHERE id = \'" + title + "\' " +
+    //     "AND artist = \'" + artist + "\' " +
+    //     "AND genre = \'" + genre + "\' ";
 
-    if (album) {
-        sql += "AND album = \'" + album + "\' ";
-    }
+    // if (album) {
+    //     sql += "AND album = \'" + album + "\' ";
+    // }
 
-    sql += "AND userId = " + userId + " " +
+    // sql += "AND userId = " + userId + " " +
+    //     "LIMIT 1";
+
+    const sql = "DELETE FROM songs WHERE id = " + doomedId +
         "LIMIT 1";
 
     let results = await connection.query(sql)
         .catch((err) => {
             logger.error(err);
             // To-Do: Throw appropriate error.
+            throw new DBConnectionError(err);
         });
 
     let affectedRows = results[0].affectedRows;
@@ -181,7 +186,7 @@ async function deleteSong(userId, title, artist, genre, album) {
     }
 
     logger.info("Deletion successful.");
-    return { song };
+    return song;
 }
 //#endregion
 
