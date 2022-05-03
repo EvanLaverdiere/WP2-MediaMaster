@@ -89,7 +89,7 @@ async function getOneSong(userId, title, artist, genre, album) {
         .catch((err) => {
             // Log the error.
             logger.error(err);
-            throw err;
+            throw new DBConnectionError(err);
         })
 
     // Query will return an array of two arrays. The first array contains the actual songs, while the second holds metadata.
@@ -103,6 +103,7 @@ async function getOneSong(userId, title, artist, genre, album) {
         let error = "User's collection does not contain the song \'" + title + "\' by " + artist + ".";
         logger.error(error);
         //To-Do: throw appropriate error. 
+        throw new InvalidInputError(error);
     }
 
 }
@@ -209,4 +210,8 @@ function closeConnection() {
         connection.close();
     }
 }
-module.exports = { initialize, addSong, getAllSongs, getOneSong, closeConnection }
+
+function getConnection(){
+    return connection;
+}
+module.exports = { initialize, addSong, getAllSongs, getOneSong, closeConnection, getConnection }
