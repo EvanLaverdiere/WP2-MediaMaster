@@ -68,7 +68,13 @@ async function getAllSongs() {
     }
 }
 
-async function getOneSong(userId, title, artist, genre, album) {
+/**
+ * Retrieve a song belonging to the specified user, based on passed title and artist.
+ * @param {*} userId The user's ID. 
+ * @param {*} title The title of the desired song.
+ * @param {*} artist The artist who wrote the song.
+ */
+async function getOneSong(userId, title, artist) {
     // TO-DO: Validate passed userId
 
     // TO-DO: Validate passed title, artist, & genre.
@@ -76,13 +82,7 @@ async function getOneSong(userId, title, artist, genre, album) {
     let query = "SELECT * FROM songs " +
         'WHERE title = \'' + title + '\' ' +
         'AND artist = \'' + artist + '\' ' +
-        'AND genre = \'' + genre + '\' ';
-
-    if (album) {
-        query += 'AND album = \'' + album + '\' ';
-    }
-
-    query += 'AND userId = ' + userId + ' ' +
+        'AND userId = ' + userId + ' ' +
         'LIMIT 1';
 
     const results = await connection.query(query)
@@ -135,14 +135,14 @@ async function updateSong(userId, oldTitle, oldArtist, newTitle, newArtist, newG
         })
 
     let changedRows = results[0].changedRows;
-    if(changedRows <= 0){
+    if (changedRows <= 0) {
         let errorMessage = "No songs were changed.";
         logger.error(errorMessage);
         // To-Do: throw an appropriate error.
     }
 
-    logger.info("Update successful."); 
-    return changedRows; 
+    logger.info("Update successful.");
+    return changedRows;
 }
 //#endregion
 
@@ -211,7 +211,7 @@ function closeConnection() {
     }
 }
 
-function getConnection(){
+function getConnection() {
     return connection;
 }
 module.exports = { initialize, addSong, getAllSongs, getOneSong, closeConnection, getConnection }
