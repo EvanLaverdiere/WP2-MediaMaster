@@ -114,8 +114,5 @@ module.exports = {
     getConnection,
     initialize,
     addUser,
-    getUser,
-    InvalidInputError,
-    AuthenticationError,
-    DBConnectionError
+    getUser
 }
