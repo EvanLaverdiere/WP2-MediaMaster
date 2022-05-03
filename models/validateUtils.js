@@ -1,5 +1,5 @@
 const validator = require('validator');
-const bcrypt = require('bcrypt'); //TODO: Document that you've added bcrypt module.
+const model = require('./userModelMySql.js');
 const genreTypes = [
     "alternative",
     "blues",
@@ -32,10 +32,10 @@ const genreTypes = [
 function validateSong(title, artist, genre) {
     title = title.replaceAll(' ', '');
 
-    return (genreTypes.includes(genre.toLowerCase()) 
-    && typeof title === 'string' && title != null
-    && typeof artist === 'string' && artist != null
-    && validator.isAlphanumeric(title));
+    return (genreTypes.includes(genre.toLowerCase())
+        && typeof title === 'string' && title != null
+        && typeof artist === 'string' && artist != null
+        && validator.isAlpha(title));
 }
 
 /**
@@ -44,8 +44,20 @@ function validateSong(title, artist, genre) {
  * @param {*} password Password of user. Cannot be null. Must be at least 7 characters long.
  * @returns True if the user's fields are valid, false otherwise.
  */
-function authenticateUser(username, password){
-    // TODO: Implement once getConnection has been implemented
+async function authenticateUser(username, password, connection) {
+
+    //create sql query to check db if username already exists in database
+    let sqlQuery = "SELECT username, password FROM users WHERE username = "
+        + connection.escape(username) + " AND password = "
+        + connection.escape(password);
+
+    //execute query
+    const [rows, fields] = await connection.execute(sqlQuery);
+
+    if(rows.length == 0)
+        return true;
+
+    return rows[0].username == username && rows[0].password == password;
 }
 
 /**
@@ -54,17 +66,18 @@ function authenticateUser(username, password){
  * @param {string} password Password of user. Must be at least 7 characters long.
  * @returns True if the username doesn't exist in the database. false otherwise.
  */
-function validateUser(username, password){
+async function validateUser(username, password, connection) {
     const minLength = 7;
 
-    // TODO: Implement once getConnection has been implemented
     //create sql query to check db if username already exists in database
-    let sqlquery;
+    let sqlQuery = "SELECT username, password FROM users WHERE username = "
+        + connection.escape(username) + " AND password = "
+        + connection.escape(password);
 
     //execute query
-    let rows;
+    const [rows, fields] = await connection.execute(sqlQuery);
 
-    return password.length >= minLength && rows.length === 0;
+    return password.length >= minLength && rows.length == 0;
 }
 
 module.exports = {
