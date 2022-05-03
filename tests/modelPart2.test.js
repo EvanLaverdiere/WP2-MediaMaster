@@ -1,4 +1,6 @@
 const app = require('../app');
+const supertest = require('supertest');
+const testRequest = supertest(app);
 
 // Initialise the test database before each test.
 const dbName = "mediamaster_db_test";
@@ -34,5 +36,33 @@ const songData = [
     {title: "The Girl is Mine", artist: "Michael Jackson", genre: "Pop", album: "Thriller"},
     {title: "Thriller", artist:"Michael Jackson", genre: "Pop", album: "Thriller"},
     {title: "Fly Like an Eagle", artist: "Seal", genre: "rhythm", album: "Space Jam"},
-    {title: "My Girl", artist: "The Temptations", genre: "soul", album: "The Best of the Temptations"}
+    {title: "My Girl", artist: "The Temptations", genre: "soul"},
+    {title: "The Way You Do the Things You Do", artist: "The Temptations", genre: "soul"}
 ]
+
+const generateUserData = () => {
+    const index = Math.floor(Math.random() * userData.length);
+    return userData.slice(index, index + 1)[0];
+}
+
+const generateSongData = () => {
+    const index = Math.floor(Math.random() * songData.length);
+    return songData.slice(index, index + 1)[0];
+}
+
+//#region Model GET tests
+test("songsModel.getOneSong() can retrieve a valid song belonging to a valid user", async () =>{
+    logger.info("RUNNING TEST: \'songsModel.getOneSong() can retrieve a valid song belonging to a valid user\'.");
+
+    // Generate a valid user and add them to the database.
+    const {userId, username, password} = generateUserData();
+    await usersModel.createUser(username, password);
+
+    // Generate a valid song and add them to the database.
+    const {title, artist, genre, album} = generateSongData();
+    const addResult = await songsModel.addSong(title, artist, genre, album);
+
+    // Try to retrieve that song's record from the database.
+    
+})
+//#endregion
