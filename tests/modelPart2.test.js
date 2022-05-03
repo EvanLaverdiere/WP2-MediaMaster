@@ -56,13 +56,13 @@ test("songsModel.getOneSong() can retrieve a valid song belonging to a valid use
 
     // Generate a valid user and add them to the database.
     const {userId, username, password} = generateUserData();
-    await usersModel.createUser(username, password);
+    await usersModel.addUser(username, password);
 
     // Generate a valid song and add them to the database.
     const {title, artist, genre, album} = generateSongData();
     const addResult = await songsModel.addSong(title, artist, genre, album);
 
     // Try to retrieve that song's record from the database.
-    
+
 })
 //#endregion
