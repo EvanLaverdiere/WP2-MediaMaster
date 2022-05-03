@@ -1,5 +1,5 @@
 const validator = require('validator');
-const model = require('./userModelMySql');
+const model = require('./userModelMySql.js');
 const genreTypes = [
     "alternative",
     "blues",
@@ -21,7 +21,6 @@ const genreTypes = [
     "soundtrack",
     "world"
 ]
-var connection;
 
 /**
  * Validates the mandatory fields of a song.
@@ -45,8 +44,20 @@ function validateSong(title, artist, genre) {
  * @param {*} password Password of user. Cannot be null. Must be at least 7 characters long.
  * @returns True if the user's fields are valid, false otherwise.
  */
-function authenticateUser(username, password) {
-    // TODO: Implement once getConnection has been implemented
+async function authenticateUser(username, password, connection) {
+
+    //create sql query to check db if username already exists in database
+    let sqlQuery = "SELECT username, password FROM users WHERE username = "
+        + connection.escape(username) + " AND password = "
+        + connection.escape(password);
+
+    //execute query
+    const [rows, fields] = await connection.execute(sqlQuery);
+
+    if(rows.length == 0)
+        return true;
+
+    return rows[0].username == username && rows[0].password == password;
 }
 
 /**
@@ -55,18 +66,18 @@ function authenticateUser(username, password) {
  * @param {string} password Password of user. Must be at least 7 characters long.
  * @returns True if the username doesn't exist in the database. false otherwise.
  */
-async function validateUser(username, password) {
+async function validateUser(username, password, connection) {
     const minLength = 7;
-    // connection = model.getConnection();
 
-    // TODO: Implement once getConnection has been implemented
     //create sql query to check db if username already exists in database
-    let sqlquery;
+    let sqlQuery = "SELECT username, password FROM users WHERE username = "
+        + connection.escape(username) + " AND password = "
+        + connection.escape(password);
 
     //execute query
-    let rows;
+    const [rows, fields] = await connection.execute(sqlQuery);
 
-    return password.length >= minLength;
+    return password.length >= minLength && rows.length == 0;
 }
 
 module.exports = {

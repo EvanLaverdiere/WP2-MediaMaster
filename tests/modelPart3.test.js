@@ -35,11 +35,44 @@ test('[MODEL PART 3] Adding a user: Success case', async () => {
     + connection.escape(username) + " AND password = "
     + connection.escape(password) + "";
     const [rows, fields] = await connection.execute(sqlQuery);
-    console.log(rows);
 
     expect(Array.isArray(rows)).toBe(true);
     expect(rows[rows.length - 1].username.toLowerCase() == username.toLowerCase()).toBe(true);
     expect(rows[rows.length - 1].password.toLowerCase() == password.toLowerCase()).toBe(true);
+})
+
+test('[MODEL PART 3] Adding a user: Failure case (InvalidInputError)', async () => {
+    const username = "";
+    const password = "";
+
+    try {
+        await model.createUser(username, password);
+    }
+    catch (err) {
+        expect(err).toBeInstanceOf(model.InvalidInputError);
+    }
+})
+
+test('[MODEL PART 3] Getting a user: Success case', async () => {
+    const { username, password } = generateUserData();
+    await model.createUser(username, password);
+
+    const result = await model.getUser(username, password);
+
+    expect(result.username.toLowerCase() == username.toLowerCase()).toBe(true);
+    expect(result.password.toLowerCase() == password.toLowerCase()).toBe(true);
+})
+
+test('[MODEL PART 3] Getting a user: Failure case (AuthenticationError)', async () => {
+    const username = "";
+    const password = "";
+
+    try {
+        await model.getUser(username, password);
+    }
+    catch (err) {
+        expect(err).toBeInstanceOf(model.AuthenticationError);
+    }
 })
 
 afterEach(async () => {

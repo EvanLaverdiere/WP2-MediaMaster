@@ -19,7 +19,7 @@ class DBConnectionError extends Error { }
  * Connects to a database provided by the user.
  * @returns The connection to the database.
  */
- function getConnection() {
+function getConnection() {
     return connection;
 }
 
@@ -70,7 +70,7 @@ async function initialize(dbname, reset) {
  */
 async function createUser(username, password) {
     //make sure username doesn't exist in database
-    if (!validate.validateUser(username, password))
+    if (!validate.validateUser(username, password, connection))
         throw new InvalidInputError();
 
     //create insert command
@@ -95,18 +95,34 @@ async function createUser(username, password) {
  * @param {*} username Username of user. Must exist in the database.
  * @param {*} password Password of user. Must match with the user's password in the database.
  */
-async function getUser(username, password){
-    //hash the password first (with salting)
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-
+async function getUser(username, password) {
     //check if username and password match in db
-    if (!validate.authenticateUser(username, hashedPassword))
+    if (!validate.authenticateUser(username, password, connection))
         throw new AuthenticationError();
+
+    //create sql query to check db if username already exists in database
+    let sqlQuery = "SELECT username, password FROM users WHERE username = "
+        + connection.escape(username) + " AND password = "
+        + connection.escape(password);
+
+    try {
+        const [rows, fields] = await connection.execute(sqlQuery);
+        //logger.info("User " + username + " successfully found!");
+        return { "username": rows[0].username, "password": rows[0].password };
+    }
+    catch (error) {
+        //logger.error(error);
+        console.log(error);
+        throw new DBConnectionError();
+    }
 }
 
 module.exports = {
     getConnection,
     initialize,
     createUser,
-    getUser
+    getUser,
+    InvalidInputError,
+    AuthenticationError,
+    DBConnectionError
 }
