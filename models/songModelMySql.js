@@ -2,25 +2,25 @@ const mysql = require('mysql2/promise');
 const logger = require('../logger');
 const validator = require('./validateUtils.js');
 const errorTypes = require('./errorModel.js');
-
+const userModel = require('./userModelMySql.js');
 var connection;
 
 async function initialize(db, reset) {
     try {
+        await userModel.initialize(db,false);
         await setConnection(db);
 
         if (reset)
             await dropTable();
 
         
-        const sqlQuery = 'create table if not exists Songs(id int AUTO_INCREMENT, title VARCHAR(50) not null, artist VARCHAR(50) not null, genre VARCHAR(50) not null, album VARCHAR(50), userId int not null, PRIMARY KEY(id), FOREIGN KEY (userId) REFERENCES users(id))';
+        const sqlQuery = 'create table if not exists Songs(id int AUTO_INCREMENT, title VARCHAR(50) not null, artist VARCHAR(50) not null, genre VARCHAR(50) not null, album VARCHAR(50), userId int not null, PRIMARY KEY(id), FOREIGN KEY (userId) REFERENCES users(userId));';
 
         await connection.execute(sqlQuery)
             .then(logger.info("Songs table created/exists"))
             .catch((error) => { logger.error("Songs table was not created: " + error.message); });
 
-            //delete
-            addSong("Hello","world","lol")
+            
     } catch (error) {
         throw error;
     }
