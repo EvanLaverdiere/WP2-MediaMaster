@@ -105,6 +105,9 @@ async function getOneSong(userId, title, artist) {
         throw new InvalidInputError(error);
     }
 
+    // If the songs array is not empty, we've found our song.
+    logger.info("Successfully retrieved \'" + title + "\', by " + artist + " from user's collection.");
+    return songs[0];
 }
 //#endregion
 
