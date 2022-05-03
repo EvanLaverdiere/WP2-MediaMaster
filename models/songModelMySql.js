@@ -4,6 +4,12 @@ const validator = require('./validateUtils.js');
 
 var connection;
 
+/**  Error for 400-level issues */
+class InvalidInputError extends Error { }
+
+/** Error for 500-level issues */
+class DBConnectionError extends Error { }
+
 async function initialize(db, reset) {
     try {
         await setConnection(db);
