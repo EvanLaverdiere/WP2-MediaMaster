@@ -33,20 +33,19 @@ async function initialize(db, reset) {
 async function addSong(title, artist, genre, album) {
     try {
         let successfullyAdded;
-        if (!(validator.validateSong(title, artist, genre))) {
-            let query = "insert into Songs(title, artist, genre, album) values(?, ?, ?, ?)";
+        validator.validateSong(title, artist, genre); //Throws specific error messages if invalid
 
-            if (typeof (album) == 'undefined') album = "";
+        let query = "insert into Songs(title, artist, genre, album) values(?, ?, ?, ?)";
 
-            let [rows, fields] = await connection.execute(query, [title, artist, genre, album])
-                .then(() => {
-                    logger.info(`Song [${title}] was added successfully`)
-                    successfullyAdded = true;
-                })
-        }else{
-            throw InvalidInputError
-        }
+        if (typeof (album) == 'undefined') album = "";
 
+        let [rows, fields] = await connection.execute(query, [title, artist, genre, album])
+            .then(() => {
+                logger.info(`Song [${title}] was successfully added `)
+                successfullyAdded = true;
+            })
+            .catch((error) => { logger.error(error.message); throw new errorsHandle.DatabaseError(error); });
+                
     } catch (error) {
         //Handle error
     }
