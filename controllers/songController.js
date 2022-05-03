@@ -40,6 +40,24 @@ async function allSongs(req, res) {
 }
 router.get('/songs', allSongs)
 
+async function getSong(req, res){
+    let targetTitle = req.query.title;
+    let targetArtist = req.query.artist;
+    let userId = 1;
+
+    // try{
+    //     let {title, artist, genre, album} = await model.getOneSong(userId, targetTitle, targetArtist);
+    try {
+        let {title, artist, genre, album} = await model.getOneSong(userId, targetTitle, targetArtist);
+        res.render()
+    } catch (error) {
+        
+    }
+    
+}
+
+router.get('/song', getSong);
+
 module.exports = {
     router,
     routeRoot
