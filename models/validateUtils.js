@@ -35,7 +35,7 @@ function validateSong(title, artist, genre) {
     return (genreTypes.includes(genre.toLowerCase())
         && typeof title === 'string' && title != null
         && typeof artist === 'string' && artist != null
-        && validator.isAlpha(title));
+        && validator.isAlphanumeric(title));
 }
 
 /**

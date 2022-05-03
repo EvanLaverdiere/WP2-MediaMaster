@@ -43,7 +43,8 @@ async function addSong(title, artist, genre, album) {
                     logger.info(`Song [${title}] was added successfully`)
                     successfullyAdded = true;
                 })
-                .catch((error) => { logger.error(error.message); });
+        }else{
+            throw InvalidInputError
         }
 
     } catch (error) {
