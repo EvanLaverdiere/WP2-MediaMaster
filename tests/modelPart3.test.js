@@ -1,4 +1,5 @@
 const model = require('../models/userModelMySql.js');
+const errorTypes = require('../models/errorModel.js');
 const bcrypt = require('bcrypt'); //TODO: Document that you've added bcrypt module.
 
 const saltRounds = 10;
@@ -41,14 +42,26 @@ test('[MODEL PART 3] Adding a user: Success case', async () => {
 })
 
 test('[MODEL PART 3] Adding a user: Failure case (InvalidInputError)', async () => {
-    const username = "";
-    const password = "";
+    const username = "Hello";
+    const password = "Hi";
 
     try {
         await model.addUser(username, password);
     }
     catch (err) {
-        expect(err).toBeInstanceOf(model.InvalidInputError);
+        expect(err).toBeInstanceOf(errorTypes.InvalidInputError);
+    }
+});
+
+test('[MODEL PART 3] Adding a user: Failure case (UserAlreadyExistsError)', async () => {
+    const { username, password } = generateUserData();
+    await model.addUser(username, password);
+
+    try {
+        await model.addUser(username, password);
+    }
+    catch (err) {
+        expect(err).toBeInstanceOf(errorTypes.UserAlreadyExistsError);
     }
 })
 
@@ -63,14 +76,14 @@ test('[MODEL PART 3] Getting a user: Success case', async () => {
 })
 
 test('[MODEL PART 3] Getting a user: Failure case (AuthenticationError)', async () => {
-    const username = "";
-    const password = "";
+    const { username, password } = generateUserData();
+    await model.addUser(username, password);
 
     try {
-        await model.getUser(username, password);
+        await model.getUser("username", "password");
     }
     catch (err) {
-        expect(err).toBeInstanceOf(model.AuthenticationError);
+        expect(err).toBeInstanceOf(errorTypes.AuthenticationError);
     }
 })
 

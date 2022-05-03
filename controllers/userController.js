@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const routeRoot = '/';
 const model = require('../models/userModelMySql');
+const errorTypes = require('../models/errorTypes');
 
 //#region ENDPOINTS
 
@@ -13,19 +14,28 @@ async function addUser(request, response) {
         const { username, password } = await model.addUser(usernameInput, passwordInput);
 
         response.status(200);
+        response.render('home.hbs');
         //TODO: response.render
     }
     catch (err) {
-        if (err instanceof model.InvalidInputError) {
+        if (err instanceof errorTypes.InvalidInputError) {
             response.status(400);
+            response.render('error.hbs');
             //TODO: response.render
         }
-        else if (err instanceof model.DBConnectionError) {
+        else if (err instanceof errorTypes.UserAlreadyExistsError) {
+            response.status(400);
+            response.render('error.hbs');
+            //TODO: response.render
+        }
+        else if (err instanceof errorTypes.DBConnectionError) {
             response.status(500);
+            response.render('error.hbs');
             //TODO: response.render
         }
         else {
             response.status(500);
+            response.render('error.hbs');
             //TODO: response.render
         }
     }
@@ -43,11 +53,11 @@ async function getUser(request, response){
         //TODO: response.render
     }
     catch(err){
-        if (err instanceof model.AuthenticationError) {
+        if (err instanceof errorTypes.AuthenticationError) {
             response.status(400);
             //TODO: response.render
         }
-        else if (err instanceof model.DBConnectionError) {
+        else if (err instanceof errorTypes.DBConnectionError) {
             response.status(500);
             //TODO: response.render
         }

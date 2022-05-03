@@ -37,6 +37,46 @@ test('[CONTROLLER] Adding a user: Success case', async () => {
     expect(testResponse.status).toBe(200);
 });
 
+test('[CONTROLLER] Adding a user: Failure case (InvalidInputError)', async () => {
+    const username = 'hello';
+    const password = 'hey';
+
+    const testResponse = await testRequest.post("/users").send({
+        username: username,
+        password: password
+    });
+
+    expect(testResponse.status).toBe(400);
+});
+
+test('[CONTROLLER] Adding a user: Failure case (UserAlreadyExistsError)', async () => {
+    const { username, password } = generateUserData();
+    await testRequest.post("/users").send({
+        username: username,
+        password: password
+    });
+    const testResponse = await testRequest.post("/users").send({
+        username: username,
+        password: password
+    });
+
+    expect(testResponse.status).toBe(400);
+});
+
+// test('[CONTROLLER] Adding a user: Failure case (DatabaseError)', async () => {
+//     const { username, password } = generateUserData();
+
+//     connection = model.getConnection();
+//     await connection.close();
+
+//     const testResponse = await testRequest.post("/users").send({
+//         username: username,
+//         password: password
+//     });
+
+//     expect(testResponse.status).toBe(500);
+// });
+
 afterEach(async () => {
     connection = model.getConnection();
     if (connection) {
