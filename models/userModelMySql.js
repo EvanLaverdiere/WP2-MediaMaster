@@ -8,13 +8,6 @@ const bcrypt = require('bcrypt'); //TODO: Document that you've added bcrypt modu
 var connection;
 const saltRounds = 10;
 
-/**  Error for 400-level issues */
-class InvalidInputError extends Error { }
-class AuthenticationError extends Error { }
-
-/** Error for 500-level issues */
-class DBConnectionError extends Error { }
-
 /**
  * Connects to a database provided by the user.
  * @returns The connection to the database.
@@ -68,7 +61,7 @@ async function initialize(dbname, reset) {
  * @returns The username and the hashed password.
  * @throws InvalidInputError, DBConnectionError
  */
-async function createUser(username, password) {
+async function addUser(username, password) {
     //make sure username doesn't exist in database
     if (!validate.validateUser(username, password, connection))
         throw new InvalidInputError();
@@ -120,7 +113,7 @@ async function getUser(username, password) {
 module.exports = {
     getConnection,
     initialize,
-    createUser,
+    addUser,
     getUser,
     InvalidInputError,
     AuthenticationError,

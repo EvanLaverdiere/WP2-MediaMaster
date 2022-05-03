@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "jest --verbose /tests",
+    "test": "jest --verbose ./tests --runInBand",
     "start": "node server.js"
   },
   "repository": {

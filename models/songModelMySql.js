@@ -1,14 +1,9 @@
 const mysql = require('mysql2/promise');
 const logger = require('../logger');
 const validator = require('./validateUtils.js');
+const error = require('./errorModel.js');
 
 var connection;
-
-/**  Error for 400-level issues */
-class InvalidInputError extends Error { }
-
-/** Error for 500-level issues */
-class DBConnectionError extends Error { }
 
 async function initialize(db, reset) {
     try {
