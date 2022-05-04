@@ -102,7 +102,7 @@ async function getOneSong(userId, title, artist) {
         let errorMessage = "User's collection does not contain the song \'" + title + "\' by " + artist + ".";
         logger.error(errorMessage);
         //To-Do: throw appropriate error. 
-        throw new InvalidInputError(errorMessage);
+        throw new errorTypes.InvalidInputError(errorMessage);
     }
 
     // If the songs array is not empty, we've found our song.
