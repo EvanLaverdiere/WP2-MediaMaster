@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const routeRoot = '/';
-
+const model = require('../models/songModelMySql')
 
 function renderHome(req, res) {
     res.statusCode=200;
@@ -20,7 +20,8 @@ function addForm(req, res) {
         legend: "Enter details to add a song",
         formfields: [{ field: "title", pretty: "Title" },
         { field: "artist", pretty: "Artist" },
-        { field: "album", pretty: "Album", album:true }]
+        { field: "album", pretty: "Album", album:true }],
+        genres:
     }
     res.render('add.hbs', pageData);
 }

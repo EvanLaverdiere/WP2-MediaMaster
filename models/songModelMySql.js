@@ -218,4 +218,25 @@ async function checkDuplicate(title, artist, genre, album) {
     }
 
 }
-module.exports = { initialize, addSong, getAllSongs, getOneSong, closeConnection }
+let allGenres=()=>["alternative",
+"blues",
+"classical",
+"country",
+"electronic",
+"folkmusic",
+"hiphop",
+"holiday",
+"instrumental",
+"jazz",
+"karaoke",
+"metal",
+"newage",
+"pop",
+"reggae",
+"rock",
+"soul",
+"soundtrack",
+"world"
+];
+
+module.exports = { initialize, addSong, getAllSongs, getOneSong, closeConnection, allGenres }
