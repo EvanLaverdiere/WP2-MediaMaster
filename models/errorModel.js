@@ -19,4 +19,11 @@ class AuthenticationError extends Error {
     }
 }
 
-module.exports = { InvalidInputError, DatabaseError, AuthenticationError }
+class UserAlreadyExistsError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'UserAlreadyExistsError';
+    }
+}
+
+module.exports = { InvalidInputError, DatabaseError, AuthenticationError, UserAlreadyExistsError }

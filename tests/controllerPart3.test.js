@@ -1,4 +1,4 @@
-const model = require('../models/userModelMySql.js');
+const model = require('../models/userModelMySql');
 const app = require('../app');
 const supertest = require('supertest');
 const testRequest = supertest(app);
@@ -29,6 +29,63 @@ beforeEach(async () => {
 
 test('[CONTROLLER] Adding a user: Success case', async () => {
     const { username, password } = generateUserData();
+
+    const testResponse = await testRequest.post("/users").send({
+        username: username,
+        password: password
+    });
+
+    expect(testResponse.status).toBe(200);
+});
+
+test('[CONTROLLER] Adding a user: Failure case (InvalidInputError)', async () => {
+    const username = 'hello';
+    const password = 'hey';
+
+    const testResponse = await testRequest.post("/users").send({
+        username: username,
+        password: password
+    });
+
+    expect(testResponse.status).toBe(400);
+});
+
+test('[CONTROLLER] Adding a user: Failure case (UserAlreadyExistsError)', async () => {
+    const { username, password } = generateUserData();
+    await testRequest.post("/users").send({
+        username: username,
+        password: password
+    });
+    
+    const testResponse = await testRequest.post("/users").send({
+        username: username,
+        password: password
+    });
+
+    expect(testResponse.status).toBe(400);
+});
+
+test('[CONTROLLER] Adding a user: Failure case (DatabaseError)', async () => {
+    connection = model.getConnection();
+    await connection.close();
+
+    const { username, password } = generateUserData();
+    const testResponse = await testRequest.post("/users").send({
+        username: username,
+        password: password
+    });
+
+    expect(testResponse.status).toBe(500);
+});
+
+test('[CONTROLLER] Getting a user: Success case', async () => {
+    const { username, password } = generateUserData();
+    await testRequest.post("/users").send({
+        username: username,
+        password: password
+    });
+
+    //ASK TALIB HOW TO IMPLEMENT GETTING A USERNAME AND PASSWORD
     const testResponse = await testRequest.post("/users").send({
         username: username,
         password: password
