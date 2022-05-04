@@ -60,9 +60,16 @@ test("songsModel.getOneSong() can retrieve a valid song belonging to a valid use
 
     // Generate a valid song and add them to the database.
     const {title, artist, genre, album} = generateSongData();
-    const addResult = await songsModel.addSong(title, artist, genre, album);
+    const addResult = await songsModel.addSong(title, artist, genre, album, 1);
 
     // Try to retrieve that song's record from the database.
+    const getResult = await songsModel.getOneSong(1, title, artist);
 
+    // Verify that the retrieved record's values match those that were passed to addSong().
+    expect(getResult.title === title).toBe(true);
+    expect(getResult.artist === artist).toBe(true);
+    expect(getResult.userId === 1).toBe(true);
+
+    // Query the database directly to confirm.
 })
 //#endregion
