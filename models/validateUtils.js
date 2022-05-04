@@ -1,7 +1,10 @@
 const validator = require('validator');
 const model = require('./userModelMySql.js');
 const errorTypes = require('./errorModel.js');
+<<<<<<< HEAD
 
+=======
+>>>>>>> f027547 (halfway done testing user controller)
 const genreTypes = [
     "alternative",
     "blues",
@@ -57,42 +60,61 @@ function validateSong(title, artist, genre) {
  */
 async function authenticateUser(username, password, connection) {
 
-    //create sql query to check db if username already exists in database
-    let sqlQuery = "SELECT username, password FROM users WHERE username = "
-        + connection.escape(username) + " AND password = "
-        + connection.escape(password);
+    try {
+        //create sql query to check db if username already exists in database
+        const sqlQuery = "SELECT username, password FROM users WHERE username = "
+            + connection.escape(username) + " AND password = "
+            + connection.escape(password);
 
-    //execute query
-    const [rows, fields] = await connection.execute(sqlQuery);
+        //execute query
+        const rows = await connection.execute(sqlQuery);
+        return rows[0].length == 1;
+    }
+    catch(err){
+        console.log(err);
+        throw new errorTypes.DatabaseError("Something wrong happened in the database.");
+    }
 
-    if(rows.length == 0)
-        return true;
-
-    return rows[0].username == username && rows[0].password == password;
 }
 
 /**
- * Verifies that username doesn't exist in database and that password is minimum 7 characters long.
- * @param {string} username Username of user. Must not already exist in the database.
+ * Verifies that the password is minimum 7 characters long.
  * @param {string} password Password of user. Must be at least 7 characters long.
- * @returns True if the username doesn't exist in the database. false otherwise.
+ * @returns True if the password is more or equal to 7 characters, false otherwise.
  */
-async function validateUser(username, password, connection) {
+function validatePassword(password) {
     const minLength = 7;
 
-    //create sql query to check db if username already exists in database
-    let sqlQuery = "SELECT username, password FROM users WHERE username = "
-        + connection.escape(username) + " AND password = "
-        + connection.escape(password);
+    return password.length >= minLength;
+}
 
-    //execute query
-    const [rows, fields] = await connection.execute(sqlQuery);
+/**
+ * Verifies that the user doesn't already exist in the database
+ * @param {*} username Username of user. Must be unique.
+ * @param {*} connection Connection to database.
+ * @returns True if the username is unique, false otherwise.
+ */
+async function validateUniqueUser(username, connection) {
 
-    return password.length >= minLength && rows.length == 0;
+    try {
+        //create sql query to check db if username already exists in database
+        const sqlQuery = "SELECT username FROM users WHERE username = "
+            + connection.escape(username)
+
+        //execute query
+        const [rows, fields] = await connection.execute(sqlQuery);
+        return rows.length == 0;
+    }
+    catch (err) {
+        console.log(err);
+        throw new errorTypes.DatabaseError("Something wrong happened in the database.");
+    }
+
 }
 
 module.exports = {
     validateSong,
     authenticateUser,
-    validateUser
+    validatePassword,
+    validateUniqueUser
 }

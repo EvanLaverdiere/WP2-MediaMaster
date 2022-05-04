@@ -2,8 +2,8 @@ const mysql = require('mysql2/promise');
 const validate = require('./validateUtils');
 //TODO: Add the logger
 //const logger = require('../logger');
-const validator = require('validator'); //******** We might not want this
 const bcrypt = require('bcrypt'); //TODO: Document that you've added bcrypt module.
+const errorTypes = require('./errorModel.js');
 
 var connection;
 const saltRounds = 10;
@@ -50,7 +50,7 @@ async function initialize(dbname, reset) {
     }
     catch (error) {
         // logger.error(error);
-        throw new DBConnectionError();
+        throw new errorTypes.DatabaseError();
     }
 }
 
@@ -62,9 +62,13 @@ async function initialize(dbname, reset) {
  * @throws InvalidInputError, DBConnectionError
  */
 async function addUser(username, password) {
-    //make sure username doesn't exist in database
-    if (!validate.validateUser(username, password, connection))
-        throw new InvalidInputError();
+    let validatedPassword = validate.validatePassword(password);
+    if (!validatedPassword)
+        throw new errorTypes.InvalidInputError("Password must be at least 7 characters long.");
+
+    let validatedUsername = await validate.validateUniqueUser(username, connection);
+    if(!validatedUsername)
+        throw new errorTypes.UserAlreadyExistsError("User already exists.");
 
     //create insert command
     const sqlCommand = 'INSERT INTO users(username, password) VALUES ('
@@ -79,7 +83,7 @@ async function addUser(username, password) {
     catch (error) {
         //logger.error(error);
         console.log(error);
-        throw new DBConnectionError();
+        throw new errorTypes.DatabaseError("Something wrong happened in the database.");
     }
 }
 
@@ -89,9 +93,11 @@ async function addUser(username, password) {
  * @param {*} password Password of user. Must match with the user's password in the database.
  */
 async function getUser(username, password) {
+    let validated = await validate.authenticateUser(username, password, connection);
+
     //check if username and password match in db
-    if (!validate.authenticateUser(username, password, connection))
-        throw new AuthenticationError();
+    if (!validated)
+        throw new errorTypes.AuthenticationError("Authentication failed.");
 
     //create sql query to check db if username already exists in database
     let sqlQuery = "SELECT username, password FROM users WHERE username = "
@@ -106,7 +112,7 @@ async function getUser(username, password) {
     catch (error) {
         //logger.error(error);
         console.log(error);
-        throw new DBConnectionError();
+        throw new errorTypes.DatabaseError("Something wrong happened in the database.");
     }
 }
 
@@ -115,4 +121,5 @@ module.exports = {
     initialize,
     addUser,
     getUser
+
 }

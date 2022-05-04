@@ -15,7 +15,7 @@ const expressListRoutes = require('express-list-routes');
 // Hbs
 app.engine('hbs', engine({ extname: '.hbs' }));
 app.set('view engine', 'hbs');
-app.set('views', './views'); 
+app.set('views', './views');
 
 
 /*
@@ -41,23 +41,22 @@ app.use(express.static('public'))
 
 // Http request logs will go to same location as main logger
 const httpLogger = pinohttp({
-    logger: logger
+  logger: logger
 });
 
 app.use(httpLogger);
 
-
-const controllers = ['homeController','songController','errorController'] 
+const controllers = ['homeController', 'userController', 'songController', 'errorController']
 
 // Register routes from all controllers 
 //  (Assumes a flat directory structure and common 'routeRoot' / 'router' export)
 controllers.forEach((controllerName) => {
-    try {
-        const controllerRoutes = require('./controllers/' + controllerName);
-        app.use(controllerRoutes.routeRoot, controllerRoutes.router);
-    } catch (error) {
-      logger.error(error);
-    }    
+  try {
+    const controllerRoutes = require('./controllers/' + controllerName);
+    app.use(controllerRoutes.routeRoot, controllerRoutes.router);
+  } catch (error) {
+    logger.error(error);
+  }
 })
 expressListRoutes(app, { prefix: '/' });
 

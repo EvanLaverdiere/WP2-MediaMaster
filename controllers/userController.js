@@ -2,35 +2,45 @@ const express = require('express');
 const router = express.Router();
 const routeRoot = '/';
 const model = require('../models/userModelMySql');
+const errorTypes = require('../models/errorModel.js');
 
 //#region ENDPOINTS
 
 async function addUser(request, response) {
     try {
-        const usernameInput = request.body.username;
-        const passwordInput = request.body.password;
+        const username = request.body.username;
+        const password = request.body.password;
 
-        const { username, password } = await model.addUser(usernameInput, passwordInput);
+        await model.addUser(username, password);
 
         response.status(200);
+        response.render('userProfile.hbs', {});
         //TODO: response.render
     }
     catch (err) {
-        if (err instanceof model.InvalidInputError) {
+        if (err instanceof errorTypes.InvalidInputError) {
             response.status(400);
+            response.render('register.hbs', {});
             //TODO: response.render
         }
-        else if (err instanceof model.DBConnectionError) {
+        else if (err instanceof errorTypes.UserAlreadyExistsError) {
+            response.status(400);
+            response.render('register.hbs', {});
+            //TODO: response.render
+        }
+        else if (err instanceof errorTypes.DatabaseError) {
             response.status(500);
+            response.render('register.hbs', {});
             //TODO: response.render
         }
         else {
             response.status(500);
+            response.render('register.hbs', {});
             //TODO: response.render
         }
     }
 }
-router.post('/users/', addUser);
+router.post('/users', addUser);
 
 async function getUser(request, response){
     try{
@@ -40,19 +50,23 @@ async function getUser(request, response){
         const result = await model.getUser(username, password);
 
         response.status(200);
+        response.render('userProfile.hbs', {});
         //TODO: response.render
     }
     catch(err){
-        if (err instanceof model.AuthenticationError) {
+        if (err instanceof errorTypes.AuthenticationError) {
             response.status(400);
+            response.render('login.hbs', {});
             //TODO: response.render
         }
-        else if (err instanceof model.DBConnectionError) {
+        else if (err instanceof errorTypes.DatabaseError) {
             response.status(500);
+            response.render('login.hbs', {});
             //TODO: response.render
         }
         else {
             response.status(500);
+            response.render('login.hbs', {});
             //TODO: response.render
         }
     }
