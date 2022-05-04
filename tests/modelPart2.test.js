@@ -1,6 +1,7 @@
 const app = require('../app');
 const supertest = require('supertest');
 const testRequest = supertest(app);
+const errorTypes = require('../models/errorModel');
 
 // Initialise the test database before each test.
 const dbName = "mediamaster_db_test";
@@ -86,6 +87,7 @@ test("songsModel.getOneSong() can retrieve a valid song belonging to a valid use
     expect(records[0].artist === artist).toBe(true);
     expect(records[0].userId === 1).toBe(true);
 
+    logger.debug("TEST PASSED.");
 })
 
 test("songsModel.getOneSong() cannot retrieve a song which does not exist", async () => {
@@ -100,7 +102,12 @@ test("songsModel.getOneSong() cannot retrieve a song which does not exist", asyn
     const addResult = await songsModel.addSong(title, artist, genre, album, 1);
 
     // Try to retrieve a song which does not exist from the database.
+    // Should throw an InvalidInputError.
     const badTitle = "Ballad of Garply";
+    await expect(async () =>{
+        await songsModel.getOneSong(1, badTitle, artist);
+    }).rejects.toThrowError(errorTypes.InvalidInputError);
 
+    logger.debug("TEST PASSED.");
 })
 //#endregion
