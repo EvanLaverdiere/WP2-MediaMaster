@@ -1,20 +1,26 @@
 const mysql = require('mysql2/promise');
 const logger = require('../logger');
 const validator = require('./validateUtils.js');
+
 const errorTypes = require('./errorModel.js');
 const userModel = require('./userModelMySql.js');
+
 var connection;
 
 async function initialize(db, reset) {
     try {
-        await userModel.initialize(db, false);
+
+        await usersModel.initialize(db, reset);
+        
+
         await setConnection(db);
 
         if (reset)
             await dropTable();
 
 
-        const sqlQuery = 'create table if not exists Songs(id int AUTO_INCREMENT, title VARCHAR(50) not null, artist VARCHAR(50) not null, genre VARCHAR(50) not null, album VARCHAR(50), userId int not null, PRIMARY KEY(id), FOREIGN KEY (userId) REFERENCES users(userId));';
+        const sqlQuery = 'create table if not exists Songs(id int AUTO_INCREMENT, title VARCHAR(50) not null, artist VARCHAR(50) not null, genre VARCHAR(50) not null, album VARCHAR(50), userId int not null, PRIMARY KEY(id), CONSTRAINT fk_users FOREIGN KEY (userId) REFERENCES users(userId))';
+
 
         await connection.execute(sqlQuery)
             .then(logger.info("Songs table created/exists"))
@@ -61,28 +67,28 @@ async function getAllSongs(currentUserId) {
     }
 }
 
-async function getOneSong(userId, title, artist, genre, album) {
+/**
+ * Retrieve a song belonging to the specified user, based on passed title and artist.
+ * @param {*} userId The user's ID. 
+ * @param {*} title The title of the desired song.
+ * @param {*} artist The artist who wrote the song.
+ */
+async function getOneSong(userId, title, artist) {
     // TO-DO: Validate passed userId
 
     // TO-DO: Validate passed title, artist, & genre.
 
-    let query = "SELECT * FROM songs " +
+    let query = "SELECT * FROM Songs " +
         'WHERE title = \'' + title + '\' ' +
         'AND artist = \'' + artist + '\' ' +
-        'AND genre = \'' + genre + '\' ';
-
-    if (album) {
-        query += 'AND album = \'' + album + '\' ';
-    }
-
-    query += 'AND userId = ' + userId + ' ' +
+        'AND userId = ' + userId + ' ' +
         'LIMIT 1';
 
     const results = await connection.query(query)
         .catch((err) => {
             // Log the error.
             logger.error(err);
-            throw err;
+            throw new DBConnectionError(err);
         })
 
     // Query will return an array of two arrays. The first array contains the actual songs, while the second holds metadata.
@@ -96,19 +102,23 @@ async function getOneSong(userId, title, artist, genre, album) {
         let error = "User's collection does not contain the song \'" + title + "\' by " + artist + ".";
         logger.error(error);
         //To-Do: throw appropriate error. 
+        throw new InvalidInputError(error);
     }
 
+    // If the songs array is not empty, we've found our song.
+    logger.info("Successfully retrieved \'" + title + "\', by " + artist + " from user's collection.");
+    return songs[0];
 }
 //#endregion
 
 //#region UPDATE Regions
 async function updateSong(userId, oldTitle, oldArtist, newTitle, newArtist, newGenre, newAlbum) {
-    const oldSong = await getOneSong(userId, oldTitle, oldArtist, genre, album)
+    const oldSong = await getOneSong(userId, oldTitle, oldArtist)
         .catch((err) => { throw err });
 
     let oldId = oldSong.id;
 
-    const sql = "UPDATE songs SET" +
+    const sql = "UPDATE Songs SET" +
         "title = \'" + newTitle + "\', " +
         "artist = \'" + newArtist + "\', " +
         "genre = \'" + newGenre + "\', ";
@@ -139,30 +149,35 @@ async function updateSong(userId, oldTitle, oldArtist, newTitle, newArtist, newG
 //#endregion
 
 //#region DELETE Regions
-async function deleteSong(userId, title, artist, genre, album) {
+async function deleteSong(userId, title, artist) {
     // To-Do: Validate passed userId.
 
     // To-Do: Verify that the song to be deleted actually exists in the database. Throw an exception if it doesn't.
-    const song = await getOneSong(userId, title, artist, genre, album)
+    const song = await getOneSong(userId, title, artist)
         .catch((err) => { throw err });
 
-    // if the movie exists, try to delete it from the database.
+    // if the song exists, try to delete it from the database.
+    let doomedId = song.id;
 
-    const sql = "DELETE FROM songs WHERE title = \'" + title + "\' " +
-        "AND artist = \'" + artist + "\' " +
-        "AND genre = \'" + genre + "\' ";
+    // const sql = "DELETE FROM songs WHERE id = \'" + title + "\' " +
+    //     "AND artist = \'" + artist + "\' " +
+    //     "AND genre = \'" + genre + "\' ";
 
-    if (album) {
-        sql += "AND album = \'" + album + "\' ";
-    }
+    // if (album) {
+    //     sql += "AND album = \'" + album + "\' ";
+    // }
 
-    sql += "AND userId = " + userId + " " +
+    // sql += "AND userId = " + userId + " " +
+    //     "LIMIT 1";
+
+    const sql = "DELETE FROM Songs WHERE id = " + doomedId +
         "LIMIT 1";
 
     let results = await connection.query(sql)
         .catch((err) => {
             logger.error(err);
             // To-Do: Throw appropriate error.
+            throw new DBConnectionError(err);
         });
 
     let affectedRows = results[0].affectedRows;
@@ -173,7 +188,7 @@ async function deleteSong(userId, title, artist, genre, album) {
     }
 
     logger.info("Deletion successful.");
-    return { song };
+    return song;
 }
 //#endregion
 
@@ -206,6 +221,7 @@ function closeConnection() {
     }
 }
 
+
 async function checkDuplicate(title, artist, genre, album) {
     let query = "select * from Songs where title = ? and artist = ? and genre = ? and album =?;"
     let [rows, fields] = await connection.execute(query, [title, artist, genre, album])
@@ -219,3 +235,4 @@ async function checkDuplicate(title, artist, genre, album) {
 
 }
 module.exports = { initialize, addSong, getAllSongs, getOneSong, closeConnection }
+

@@ -115,4 +115,5 @@ module.exports = {
     initialize,
     addUser,
     getUser
+
 }
