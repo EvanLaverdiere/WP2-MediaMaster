@@ -20,7 +20,7 @@ async function initialize(db, reset) {
             .then(logger.info("Songs table created/exists"))
             .catch((error) => { logger.error("Songs table was not created: " + error.message); throw new errorTypes.DatabaseError(error.message) });
 
-        addSong("iuou", "artist", "rock")
+        let y = await getAllSongs(1);
     } catch (error) {
         throw error;
     }
@@ -30,18 +30,15 @@ async function initialize(db, reset) {
 //#region CREATE Operations
 async function addSong(title, artist, genre, album, currentUserId) {
 
-    let successfullyAdded;
-    validator.validateSong(title, artist, genre); //Throws specific error messages if invalid
+    validator.validateSong(title, artist, genre); //Throws specific error messages if invalid, it needs to get caught it controller
     if (typeof (album) == 'undefined') album = "";
 
     await checkDuplicate(title, artist, genre, album);  //Throws if the song is already added in the db
 
     try {
-
         let query = "insert into Songs(title, artist, genre, album, userId) values(?, ?, ?, ?, ?);";
-
         let results = await connection.execute(query, [title, artist, genre, album, 1]);
-        logger.info(`Song [${title}] was successfully added `)
+        logger.info(`Song [${title}] was successfully added `);
         return true;
     } catch (error) {
         logger.error(error.message);
@@ -51,20 +48,16 @@ async function addSong(title, artist, genre, album, currentUserId) {
 //#endregion
 
 //#region READ Operations
-async function getAllSongs() {
+async function getAllSongs(currentUserId) {
+    let query = "select title, artist, genre, album from Songs where userId="+connection.escape(currentUserId)+";";
+
     try {
-        let query = "select title, artist, genre, album from Songs;";
-
-        let songs = await connection.execute(query)
-            .then(logger.info(`Songs retrieved successfully`))
-            .catch((error) => {
-                logger.error(error.message);
-                throw new errorTypes.DatabaseError("The songs were not retrieved: " + error.message);
-            })
-
+        let songs = await connection.execute(query);
+        logger.info(`Songs retrieved successfully`);
         return songs[0];
     } catch (error) {
-        throw error;
+        logger.error(error.message);
+        throw new errorTypes.DatabaseError("The songs were not retrieved: " + error.message);
     }
 }
 
