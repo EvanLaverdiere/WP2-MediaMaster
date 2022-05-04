@@ -38,6 +38,7 @@ async function initialize(dbname, reset) {
         if (reset) {
             const dropSongs = "DROP TABLE IF EXISTS Songs;";
             await connection.execute(dropSongs);
+            
             const dropUsers = "DROP TABLE IF EXISTS users;";
             await connection.execute(dropUsers);
             // logger.info("Table song dropped");
