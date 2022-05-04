@@ -88,7 +88,7 @@ async function getOneSong(userId, title, artist) {
         .catch((err) => {
             // Log the error.
             logger.error(err);
-            throw new DBConnectionError(err);
+            throw new errorTypes.DatabaseError(err);
         })
 
     // Query will return an array of two arrays. The first array contains the actual songs, while the second holds metadata.

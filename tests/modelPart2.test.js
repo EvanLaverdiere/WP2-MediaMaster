@@ -104,10 +104,33 @@ test("songsModel.getOneSong() cannot retrieve a song which does not exist", asyn
     // Try to retrieve a song which does not exist from the database.
     // Should throw an InvalidInputError.
     const badTitle = "Ballad of Garply";
-    await expect(async () =>{
+    await expect(async () => {
         await songsModel.getOneSong(1, badTitle, artist);
     }).rejects.toThrowError(errorTypes.InvalidInputError);
 
-    logger.debug("TEST PASSED."); 
+    logger.debug("TEST PASSED.");
+})
+
+test("songsModel.getOneSong() doesn't crash if the database is inaccessible", async () => {
+    logger.debug("RUNNING TEST: \'songsModel.getOneSong() doesn't crash if the database is inaccessible\'.");
+    
+    // Generate a valid user and add them to the database.
+    const { userId, username, password } = generateUserData();
+    await usersModel.addUser(username, password);
+
+    // Generate a valid song and add it to the database for that user.
+    const { title, artist, genre, album } = generateSongData();
+    const addResult = await songsModel.addSong(title, artist, genre, album, 1);
+
+    // Close the database connection.
+    const connection = songsModel.getConnection();
+    await connection.close();
+
+    // Attempt to retrieve the song using getOneSong(). Should throw a DatabaseError.
+    await expect(async () =>{
+        await songsModel.getOneSong(1, title, artist);
+    }).rejects.toThrowError(errorTypes.DatabaseError);
+
+    logger.debug("TEST PASSED.");
 })
 //#endregion
