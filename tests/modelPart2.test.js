@@ -108,6 +108,6 @@ test("songsModel.getOneSong() cannot retrieve a song which does not exist", asyn
         await songsModel.getOneSong(1, badTitle, artist);
     }).rejects.toThrowError(errorTypes.InvalidInputError);
 
-    logger.debug("TEST PASSED.");
+    logger.debug("TEST PASSED."); 
 })
 //#endregion
