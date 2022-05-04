@@ -10,7 +10,7 @@ var connection;
 async function initialize(db, reset) {
     try {
 
-        await usersModel.initialize(db, reset);
+        await userModel.initialize(db, reset);
         
 
         await setConnection(db);
