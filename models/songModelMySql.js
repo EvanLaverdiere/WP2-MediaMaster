@@ -221,6 +221,10 @@ function closeConnection() {
     }
 }
 
+function getConnection(){
+    return connection;
+}
+
 
 async function checkDuplicate(title, artist, genre, album) {
     let query = "select * from Songs where title = ? and artist = ? and genre = ? and album =?;"
@@ -234,5 +238,5 @@ async function checkDuplicate(title, artist, genre, album) {
     }
 
 }
-module.exports = { initialize, addSong, getAllSongs, getOneSong, closeConnection }
+module.exports = { initialize, addSong, getAllSongs, getOneSong, closeConnection, getConnection }
 
