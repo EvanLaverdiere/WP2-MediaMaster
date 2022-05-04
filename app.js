@@ -46,7 +46,6 @@ const httpLogger = pinohttp({
 
 app.use(httpLogger);
 
-
 const controllers = ['homeController', 'userController', 'songController', 'errorController']
 
 // Register routes from all controllers 

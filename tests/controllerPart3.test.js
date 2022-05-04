@@ -29,6 +29,7 @@ beforeEach(async () => {
 
 test('[CONTROLLER] Adding a user: Success case', async () => {
     const { username, password } = generateUserData();
+
     const testResponse = await testRequest.post("/users").send({
         username: username,
         password: password
@@ -55,6 +56,7 @@ test('[CONTROLLER] Adding a user: Failure case (UserAlreadyExistsError)', async 
         username: username,
         password: password
     });
+    
     const testResponse = await testRequest.post("/users").send({
         username: username,
         password: password
