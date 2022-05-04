@@ -11,7 +11,7 @@ async function initialize(db, reset) {
     try {
 
         await userModel.initialize(db, reset);
-        
+
 
         await setConnection(db);
 
@@ -55,7 +55,7 @@ async function addSong(title, artist, genre, album, currentUserId) {
 
 //#region READ Operations
 async function getAllSongs(currentUserId) {
-    let query = "select title, artist, genre, album from Songs where userId="+connection.escape(currentUserId)+";";
+    let query = "select title, artist, genre, album from Songs where userId=" + connection.escape(currentUserId) + ";";
 
     try {
         let songs = await connection.execute(query);
@@ -113,9 +113,16 @@ async function getOneSong(userId, title, artist) {
 
 //#region UPDATE Regions
 async function updateSong(userId, oldTitle, oldArtist, newTitle, newArtist, newGenre, newAlbum) {
+    // Verify that the new values are acceptable. If they aren't, the validator will throw an InvalidInputError.
+    validator.validateSong(newTitle, newArtist, newGenre)
+        .catch((err) => { throw err });
+
+    // Then check the database to confirm that the original song is present in the user's collection.
+    // If it isn't, getOneSong() will throw an InvalidInputError.
     const oldSong = await getOneSong(userId, oldTitle, oldArtist)
         .catch((err) => { throw err });
 
+    // Extract the song's id from the retrieved record to simplify the upcoming SQL Update query.
     let oldId = oldSong.id;
 
     const sql = "UPDATE Songs SET" +
@@ -124,7 +131,7 @@ async function updateSong(userId, oldTitle, oldArtist, newTitle, newArtist, newG
         "genre = \'" + newGenre + "\', ";
 
     if (newAlbum) {
-        sql += "album = \'" + newAlbum + "\' ";
+        sql += "album = \'" + newAlbum + "\' "; // Update the album if the user specified a new value. Otherwise, leave it as-is.
     }
 
     sql += "WHERE id = " + oldId + " " +
@@ -133,16 +140,19 @@ async function updateSong(userId, oldTitle, oldArtist, newTitle, newArtist, newG
     const results = await connection.query(sql)
         .catch((err) => {
             logger.error(err);
-            // To-Do: throw an appropriate error.
+            throw new errorTypes.DatabaseError(err);
         })
 
+    // The query will return the number of rows that were changed in the database. If no rows were changed, something went wrong.
     let changedRows = results[0].changedRows;
     if (changedRows <= 0) {
         let errorMessage = "No songs were changed.";
         logger.error(errorMessage);
         // To-Do: throw an appropriate error.
+        throw new errorTypes.InvalidInputError(errorMessage);
     }
 
+    // If one row was changed, then the Update operation was carried out successfully.
     logger.info("Update successful.");
     return changedRows;
 }
@@ -221,7 +231,7 @@ function closeConnection() {
     }
 }
 
-function getConnection(){
+function getConnection() {
     return connection;
 }
 
