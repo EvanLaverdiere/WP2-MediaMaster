@@ -223,9 +223,15 @@ function closeConnection() {
 
 
 async function checkDuplicate(title, artist, genre, album, currentUserId) {
-    let query = "select * from Songs where title = ? and artist = ? and genre = ? and album =? where userId=?;"
-    let [rows, fields] = await connection.execute(query, [title, artist, genre, album,1])
-        .catch((error) => { logger.error(error.message); throw new errorTypes.DatabaseError(error.message); });
+    let query = "select * from Songs where title = ? and artist = ? and genre = ? and album =? and userId=?;"
+    let  [rows,fields]=[];
+    try {
+        [rows, fields] = await connection.execute(query, [title, artist, genre, album,1]);
+
+    } catch (error) {
+        logger.error(error.message);
+        throw new errorTypes.DatabaseError("The song was not added: " + error.message);
+    }
 
     var unique = rows.length === 0;
     if (!unique) {

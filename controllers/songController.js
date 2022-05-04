@@ -8,12 +8,8 @@ const { InvalidInputError, DatabaseError } = require('../models/errorModel.js');
 const router = express.Router();
 const routeRoot = '/';
 
-    // var bodyParser = require('body-parser');
-    // app.use(bodyParser.urlencoded({ extended: false }))
 
 async function add(req, res) {
-
-
     let title = req.body.title;
     let artist = req.body.artist;
     let genre = req.body.genres;
@@ -23,7 +19,7 @@ async function add(req, res) {
         var result = await model.addSong(title, artist, genre, album);
         if (result == true) {
 
-            res.render('home.hbs')
+            res.render('add.hbs');
         }
     }
     catch (error) {
