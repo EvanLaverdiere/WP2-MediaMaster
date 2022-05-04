@@ -14,7 +14,7 @@ async function addUser(request, response) {
         await model.addUser(username, password);
 
         response.status(200);
-        response.render('home.hbs', {});
+        response.render('userProfile.hbs', {});
         //TODO: response.render
     }
     catch (err) {
