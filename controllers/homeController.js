@@ -21,7 +21,7 @@ function addForm(req, res) {
         formfields: [{ field: "title", pretty: "Title" },
         { field: "artist", pretty: "Artist" },
         { field: "album", pretty: "Album", album:true }],
-        genres:
+        genres:model.allGenres()
     }
     res.render('add.hbs', pageData);
 }

@@ -10,7 +10,7 @@ var connection;
 async function initialize(db, reset) {
     try {
 
-        await usersModel.initialize(db, reset);
+        await userModel.initialize(db, reset);
         
 
         await setConnection(db);
@@ -222,9 +222,9 @@ function closeConnection() {
 }
 
 
-async function checkDuplicate(title, artist, genre, album) {
-    let query = "select * from Songs where title = ? and artist = ? and genre = ? and album =?;"
-    let [rows, fields] = await connection.execute(query, [title, artist, genre, album])
+async function checkDuplicate(title, artist, genre, album, currentUserId) {
+    let query = "select * from Songs where title = ? and artist = ? and genre = ? and album =? where userId=?;"
+    let [rows, fields] = await connection.execute(query, [title, artist, genre, album,1])
         .catch((error) => { logger.error(error.message); throw new errorTypes.DatabaseError(error.message); });
 
     var unique = rows.length === 0;
@@ -234,30 +234,26 @@ async function checkDuplicate(title, artist, genre, album) {
     }
 
 }
-<<<<<<< HEAD
-let allGenres=()=>["alternative",
-"blues",
-"classical",
-"country",
-"electronic",
-"folkmusic",
-"hiphop",
-"holiday",
-"instrumental",
-"jazz",
-"karaoke",
-"metal",
-"newage",
-"pop",
-"reggae",
-"rock",
-"soul",
-"soundtrack",
-"world"
+let allGenres=()=>["Alternative",
+"Blues",
+"Classical",
+"Country",
+"Electronic",
+"Folkmusic",
+"Hiphop",
+"Holiday",
+"Instrumental",
+"Jazz",
+"Karaoke",
+"Metal",
+"Newage",
+"Pop",
+"Reggae",
+"Rock",
+"Soul",
+"Soundtrack",
+"World"
 ];
 
 module.exports = { initialize, addSong, getAllSongs, getOneSong, closeConnection, allGenres }
-=======
-module.exports = { initialize, addSong, getAllSongs, getOneSong, closeConnection }
 
->>>>>>> ef22aa30b243ca7e09fc16a334a639df2b56c56c

@@ -26,16 +26,16 @@
             {{#if album}}
             <input type="text" name="{{field}}"><br>
             {{else}}
-            <input type="text" name="{{field}}" required><br>
+            <input type="text" id="{{field}}" name="{{field}}" required><br>
             {{/if}}
             {{/each}}
-            <label for="genre">Genres</label><br>
+            <label for="genre">Genres</label><br>           
             <select name="genres">
-                <option value="volvo">Volvo</option>
-                <option value="saab">Saab</option>
-                <option value="mercedes">Mercedes</option>
-                <option value="audi">Audi</option>
+                {{#each genres}}
+                <option value="{{this}}">{{this}}</option>
+                {{/each}}
             </select><br>
+
             <br>
             <br><button type="submit" id="marginTop" class="btn btn-outline-light">Submit</button>
         </form>
