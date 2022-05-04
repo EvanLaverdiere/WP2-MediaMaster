@@ -115,7 +115,5 @@ module.exports = {
     initialize,
     addUser,
     getUser
-    // InvalidInputError,
-    // AuthenticationError,
-    // DBConnectionError
+
 }

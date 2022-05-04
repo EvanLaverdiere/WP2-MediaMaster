@@ -9,7 +9,7 @@ const router = express.Router();
 const routeRoot = '/';
 
 async function add(req, res) {
-    res.statusCode = 200;
+
 
     let title = req.body.title;
     let artist = req.body.artist;
@@ -19,8 +19,10 @@ async function add(req, res) {
     try {
         var result = await model.addSong(title, artist, genre, album);
         if (result == true) {
-            res.render('add.hbs', {
-                message: 'Song successfully added'
+
+            res.render('add.hbs',{
+                message: `Song [${title}] was successfully added`
+
             })
         }
     }

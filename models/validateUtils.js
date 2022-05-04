@@ -1,5 +1,7 @@
 const validator = require('validator');
 const model = require('./userModelMySql.js');
+const errorTypes = require('./errorModel.js');
+
 const genreTypes = [
     "alternative",
     "blues",
@@ -31,11 +33,20 @@ const genreTypes = [
  */
 function validateSong(title, artist, genre) {
     title = title.replaceAll(' ', '');
+    let notAdded = "The song was not added: ";
+    
+    //Not checking if the genre matches since user is not actually typing in a genre, we provide them
+    //Not checking if is string type since whatever the user types in, is considered as string
+    //Not checking if is null since, user cannot send nulls
 
-    return (genreTypes.includes(genre.toLowerCase())
-        && typeof title === 'string' && title != null
-        && typeof artist === 'string' && artist != null
-        && validator.isAlphanumeric(title));
+    if(!(validator.isAlphanumeric(title)))
+        throw new errorTypes.InvalidInputError(notAdded+" the title can only contains letters and/or numbers")
+
+
+    // return (genreTypes.includes(genre.toLowerCase())
+    //     && typeof title === 'string' && title != null
+    //     && typeof artist === 'string' && artist != null
+    //     && validator.isAlphanumeric(title));
 }
 
 /**

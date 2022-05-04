@@ -22,3 +22,10 @@ body {
     justify-content: center;
     align-items: center;
 }
+
+#formWrapper{
+    display: flex;
+    height: 300px;
+    justify-content: center;
+    margin: 3rem;
+}

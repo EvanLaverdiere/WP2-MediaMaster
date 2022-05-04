@@ -1,26 +1,32 @@
 const mysql = require('mysql2/promise');
 const logger = require('../logger');
 const validator = require('./validateUtils.js');
-const error = require('./errorModel.js');
-const usersModel = require('./userModelMySql');
+
+const errorTypes = require('./errorModel.js');
+const userModel = require('./userModelMySql.js');
 
 var connection;
 
 async function initialize(db, reset) {
     try {
+
         await usersModel.initialize(db, reset);
         
+
         await setConnection(db);
 
         if (reset)
             await dropTable();
 
+
         const sqlQuery = 'create table if not exists Songs(id int AUTO_INCREMENT, title VARCHAR(50) not null, artist VARCHAR(50) not null, genre VARCHAR(50) not null, album VARCHAR(50), userId int not null, PRIMARY KEY(id), CONSTRAINT fk_users FOREIGN KEY (userId) REFERENCES users(userId))';
+
 
         await connection.execute(sqlQuery)
             .then(logger.info("Songs table created/exists"))
-            .catch((error) => { logger.error("Songs table was not created: " + error.message); });
+            .catch((error) => { logger.error("Songs table was not created: " + error.message); throw new errorTypes.DatabaseError(error.message) });
 
+        let y = await getAllSongs(1);
     } catch (error) {
         throw error;
     }
@@ -28,42 +34,36 @@ async function initialize(db, reset) {
 
 
 //#region CREATE Operations
-async function addSong(title, artist, genre, album) {
+async function addSong(title, artist, genre, album, currentUserId) {
+
+    validator.validateSong(title, artist, genre); //Throws specific error messages if invalid, it needs to get caught it controller
+    if (typeof (album) == 'undefined') album = "";
+
+    await checkDuplicate(title, artist, genre, album);  //Throws if the song is already added in the db
+
     try {
-        let successfullyAdded;
-        if (!(validator.validateSong(title, artist, genre))) {
-            let query = "insert into Songs(title, artist, genre, album) values(?, ?, ?, ?)";
-
-            if (typeof (album) == 'undefined') album = "";
-
-            let [rows, fields] = await connection.execute(query, [title, artist, genre, album])
-                .then(() => {
-                    logger.info(`Song [${title}] was added successfully`)
-                    successfullyAdded = true;
-                })
-        }else{
-            throw InvalidInputError
-        }
-
+        let query = "insert into Songs(title, artist, genre, album, userId) values(?, ?, ?, ?, ?);";
+        let results = await connection.execute(query, [title, artist, genre, album, 1]);
+        logger.info(`Song [${title}] was successfully added `);
+        return true;
     } catch (error) {
-        //Handle error
+        logger.error(error.message);
+        throw new errorTypes.DatabaseError("The song was not added: " + error.message);
     }
-    return successfullyAdded;
 }
 //#endregion
 
 //#region READ Operations
-async function getAllSongs() {
+async function getAllSongs(currentUserId) {
+    let query = "select title, artist, genre, album from Songs where userId="+connection.escape(currentUserId)+";";
+
     try {
-        let query = "select title, artist, genre, album from Songs;";
-
-        let songs = await connection.execute(query)
-            .then(logger.info(`Songs retrieved successfully`))
-            .catch((error) => { logger.error(error.message) })
-
+        let songs = await connection.execute(query);
+        logger.info(`Songs retrieved successfully`);
         return songs[0];
     } catch (error) {
-        // Handle it
+        logger.error(error.message);
+        throw new errorTypes.DatabaseError("The songs were not retrieved: " + error.message);
     }
 }
 
@@ -208,7 +208,10 @@ async function setConnection(db) {
         password: 'pass',
         database: db
     }).then(logger.info("Connection established"))
-        .catch((error) => { logger.error("Connection was not established: " + error.message) });
+        .catch((error) => {
+            logger.error("Connection was not established: " + error.message);
+            throw new errorTypes.DatabaseError(error.message);
+        });
 
 }
 
@@ -218,7 +221,18 @@ function closeConnection() {
     }
 }
 
-function getConnection() {
-    return connection;
+
+async function checkDuplicate(title, artist, genre, album) {
+    let query = "select * from Songs where title = ? and artist = ? and genre = ? and album =?;"
+    let [rows, fields] = await connection.execute(query, [title, artist, genre, album])
+        .catch((error) => { logger.error(error.message); throw new errorTypes.DatabaseError(error.message); });
+
+    var unique = rows.length === 0;
+    if (!unique) {
+        logger.error("Error: Song already in database");
+        throw new errorTypes.InvalidInputError("The Song was not added - A Song with the exact same details already exists in the database");
+    }
+
 }
-module.exports = { initialize, addSong, getAllSongs, getOneSong, closeConnection, getConnection }
+module.exports = { initialize, addSong, getAllSongs, getOneSong, closeConnection }
+
