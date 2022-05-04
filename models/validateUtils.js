@@ -1,7 +1,10 @@
 const validator = require('validator');
 const model = require('./userModelMySql.js');
 const errorTypes = require('./errorModel.js');
+<<<<<<< HEAD
 
+=======
+>>>>>>> f027547 (halfway done testing user controller)
 const genreTypes = [
     "alternative",
     "blues",
@@ -57,15 +60,21 @@ function validateSong(title, artist, genre) {
  */
 async function authenticateUser(username, password, connection) {
 
-    //create sql query to check db if username already exists in database
-    const sqlQuery = "SELECT username, password FROM users WHERE username = "
-        + connection.escape(username) + " AND password = "
-        + connection.escape(password);
+    try {
+        //create sql query to check db if username already exists in database
+        const sqlQuery = "SELECT username, password FROM users WHERE username = "
+            + connection.escape(username) + " AND password = "
+            + connection.escape(password);
 
-    //execute query
-    const rows = await connection.execute(sqlQuery);
+        //execute query
+        const rows = await connection.execute(sqlQuery);
+        return rows[0].length == 1;
+    }
+    catch(err){
+        console.log(err);
+        throw new errorTypes.DatabaseError("Something wrong happened in the database.");
+    }
 
-    return rows[0].length == 1;
 }
 
 /**
@@ -85,16 +94,22 @@ function validatePassword(password) {
  * @param {*} connection Connection to database.
  * @returns True if the username is unique, false otherwise.
  */
-async function validateUniqueUser(username, connection){
+async function validateUniqueUser(username, connection) {
 
-    //create sql query to check db if username already exists in database
-    const sqlQuery = "SELECT username FROM users WHERE username = "
-        + connection.escape(username)
+    try {
+        //create sql query to check db if username already exists in database
+        const sqlQuery = "SELECT username FROM users WHERE username = "
+            + connection.escape(username)
 
-    //execute query
-    const [rows, fields] = await connection.execute(sqlQuery);
+        //execute query
+        const [rows, fields] = await connection.execute(sqlQuery);
+        return rows.length == 0;
+    }
+    catch (err) {
+        console.log(err);
+        throw new errorTypes.DatabaseError("Something wrong happened in the database.");
+    }
 
-    return rows.length == 0;
 }
 
 module.exports = {

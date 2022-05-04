@@ -66,7 +66,7 @@ async function addUser(username, password) {
     if (!validatedPassword)
         throw new errorTypes.InvalidInputError("Password must be at least 7 characters long.");
 
-    let validatedUsername = validate.validateUniqueUser(username, connection);
+    let validatedUsername = await validate.validateUniqueUser(username, connection);
     if(!validatedUsername)
         throw new errorTypes.UserAlreadyExistsError("User already exists.");
 

@@ -1,4 +1,4 @@
-const model = require('../models/userModelMySql.js');
+const model = require('../models/userModelMySql');
 const app = require('../app');
 const supertest = require('supertest');
 const testRequest = supertest(app);
@@ -65,19 +65,34 @@ test('[CONTROLLER] Adding a user: Failure case (UserAlreadyExistsError)', async 
     expect(testResponse.status).toBe(400);
 });
 
-// test('[CONTROLLER] Adding a user: Failure case (DatabaseError)', async () => {
-//     const { username, password } = generateUserData();
+test('[CONTROLLER] Adding a user: Failure case (DatabaseError)', async () => {
+    connection = model.getConnection();
+    await connection.close();
 
-//     connection = model.getConnection();
-//     await connection.close();
+    const { username, password } = generateUserData();
+    const testResponse = await testRequest.post("/users").send({
+        username: username,
+        password: password
+    });
 
-//     const testResponse = await testRequest.post("/users").send({
-//         username: username,
-//         password: password
-//     });
+    expect(testResponse.status).toBe(500);
+});
 
-//     expect(testResponse.status).toBe(500);
-// });
+test('[CONTROLLER] Getting a user: Success case', async () => {
+    const { username, password } = generateUserData();
+    await testRequest.post("/users").send({
+        username: username,
+        password: password
+    });
+
+    //ASK TALIB HOW TO IMPLEMENT GETTING A USERNAME AND PASSWORD
+    const testResponse = await testRequest.post("/users").send({
+        username: username,
+        password: password
+    });
+
+    expect(testResponse.status).toBe(200);
+});
 
 afterEach(async () => {
     connection = model.getConnection();

@@ -28,7 +28,7 @@ async function addUser(request, response) {
             response.render('register.hbs', {});
             //TODO: response.render
         }
-        else if (err instanceof errorTypes.DBConnectionError) {
+        else if (err instanceof errorTypes.DatabaseError) {
             response.status(500);
             response.render('register.hbs', {});
             //TODO: response.render
@@ -59,7 +59,7 @@ async function getUser(request, response){
             response.render('login.hbs', {});
             //TODO: response.render
         }
-        else if (err instanceof errorTypes.DBConnectionError) {
+        else if (err instanceof errorTypes.DatabaseError) {
             response.status(500);
             response.render('login.hbs', {});
             //TODO: response.render
