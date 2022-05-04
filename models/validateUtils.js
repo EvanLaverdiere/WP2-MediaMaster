@@ -52,6 +52,7 @@ function validateSong(title, artist, genre) {
  * Checks if the user exists in the database.
  * @param {*} username Username of user. Cannot be null.
  * @param {*} password Password of user. Cannot be null. Must be at least 7 characters long.
+ * @param {*} connection Connection to the database.
  * @returns True if the user's fields are valid, false otherwise.
  */
 async function authenticateUser(username, password, connection) {

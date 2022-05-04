@@ -4,6 +4,30 @@ const routeRoot = '/';
 const model = require('../models/userModelMySql');
 const errorTypes = require('../models/errorModel.js');
 
+//#region SHOW FORMS
+
+ function showLoginForm(request, response) {
+    const pageData = {
+        message: false,
+        endpoint: "/users",
+        method: "get",
+    }
+    response.render('login.hbs', pageData);
+}
+router.get('/users/forms/login', showLoginForm);
+
+function showRegisterForm(request, response) {
+   const pageData = {
+       message: false,
+       endpoint: "/users",
+       method: "post",
+   }
+   response.render('register.hbs', pageData);
+}
+router.get('/users/forms/register', showRegisterForm);
+
+//#endregion
+
 //#region ENDPOINTS
 
 async function addUser(request, response) {
@@ -71,7 +95,7 @@ async function getUser(request, response){
         }
     }
 }
-router.get('/user', getUser);
+router.get('/users', getUser);
 
 //#endregion
 

@@ -1,7 +1,6 @@
 const mysql = require('mysql2/promise');
 const validate = require('./validateUtils');
-//TODO: Add the logger
-//const logger = require('../logger');
+const logger = require('../logger');
 const bcrypt = require('bcrypt'); //TODO: Document that you've added bcrypt module.
 const errorTypes = require('./errorModel.js');
 
@@ -37,8 +36,10 @@ async function initialize(dbname, reset) {
 
         // Drop table if reset is true
         if (reset) {
-            const dropQuery = "DROP TABLE IF EXISTS users;";
-            await connection.execute(dropQuery);
+            const dropSongs = "DROP TABLE IF EXISTS Songs;";
+            await connection.execute(dropSongs);
+            const dropUsers = "DROP TABLE IF EXISTS users;";
+            await connection.execute(dropUsers);
             // logger.info("Table song dropped");
         }
 
@@ -46,10 +47,10 @@ async function initialize(dbname, reset) {
         const sqlQuery = 'CREATE TABLE IF NOT EXISTS users(userId int AUTO_INCREMENT, username VARCHAR(50) NOT NULL, password VARCHAR(300) NOT NULL, PRIMARY KEY(userId));';
 
         await connection.execute(sqlQuery);
-        // logger.info("Table users created/exists");
+        logger.info("Table users created/exists");
     }
     catch (error) {
-        // logger.error(error);
+        logger.error(error);
         throw new errorTypes.DatabaseError();
     }
 }
@@ -77,12 +78,11 @@ async function addUser(username, password) {
     //execute command
     try {
         await connection.execute(sqlCommand);
-        //logger.info("User " + username + " successfully registered!");
+        logger.info("User " + username + " successfully registered!");
         return { "username": username, "password": password }
     }
     catch (error) {
-        //logger.error(error);
-        console.log(error);
+        logger.error(error);
         throw new errorTypes.DatabaseError("Something wrong happened in the database.");
     }
 }
@@ -106,12 +106,11 @@ async function getUser(username, password) {
 
     try {
         const [rows, fields] = await connection.execute(sqlQuery);
-        //logger.info("User " + username + " successfully found!");
+        logger.info("User " + username + " successfully found!");
         return { "username": rows[0].username, "password": rows[0].password };
     }
     catch (error) {
-        //logger.error(error);
-        console.log(error);
+        logger.error(error);
         throw new errorTypes.DatabaseError("Something wrong happened in the database.");
     }
 }
