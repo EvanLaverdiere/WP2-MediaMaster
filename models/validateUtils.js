@@ -1,10 +1,6 @@
 const validator = require('validator');
 const model = require('./userModelMySql.js');
 const errorTypes = require('./errorModel.js');
-<<<<<<< HEAD
-
-=======
->>>>>>> f027547 (halfway done testing user controller)
 const genreTypes = [
     "alternative",
     "blues",
