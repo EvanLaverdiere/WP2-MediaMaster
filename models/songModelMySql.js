@@ -114,8 +114,8 @@ async function getOneSong(userId, title, artist) {
 //#region UPDATE Regions
 async function updateSong(userId, oldTitle, oldArtist, newTitle, newArtist, newGenre, newAlbum) {
     // Verify that the new values are acceptable. If they aren't, the validator will throw an InvalidInputError.
-    validator.validateSong(newTitle, newArtist, newGenre)
-        .catch((err) => { throw err });
+    validator.validateSong(newTitle, newArtist, newGenre);
+        // .catch((err) => { throw err });
 
     // Then check the database to confirm that the original song is present in the user's collection.
     // If it isn't, getOneSong() will throw an InvalidInputError.
@@ -125,17 +125,17 @@ async function updateSong(userId, oldTitle, oldArtist, newTitle, newArtist, newG
     // Extract the song's id from the retrieved record to simplify the upcoming SQL Update query.
     let oldId = oldSong.id;
 
-    const sql = "UPDATE Songs SET" +
+    let sql = "UPDATE Songs SET " +
         "title = \'" + newTitle + "\', " +
         "artist = \'" + newArtist + "\', " +
-        "genre = \'" + newGenre + "\', ";
+        "genre = \'" + newGenre + "\' ";
 
     if (newAlbum) {
-        sql += "album = \'" + newAlbum + "\' "; // Update the album if the user specified a new value. Otherwise, leave it as-is.
+        sql += ", album = \'" + newAlbum + "\' "; // Update the album if the user specified a new value. Otherwise, leave it as-is.
     }
 
-    sql += "WHERE id = " + oldId + " " +
-        "LIMIT 1";
+    sql += "WHERE id = " + oldId ;
+        // "LIMIT 1";
 
     const results = await connection.query(sql)
         .catch((err) => {
