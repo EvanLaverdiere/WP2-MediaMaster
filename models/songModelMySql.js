@@ -248,5 +248,5 @@ async function checkDuplicate(title, artist, genre, album) {
     }
 
 }
-module.exports = { initialize, addSong, getAllSongs, getOneSong, closeConnection, getConnection }
+module.exports = { initialize, addSong, getAllSongs, getOneSong, updateSong, closeConnection, getConnection }
 
