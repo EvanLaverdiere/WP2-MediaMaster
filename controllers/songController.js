@@ -75,8 +75,12 @@ function addFormDetails(message,error,success) {
 
 async function allSongs(req, res) {
     try {
-        var rows = await model.getAllSongs();
+        var song = await model.getAllSongs(1);
+        res.render('all.hbs',{song});
     } catch (error) {
+        let message = "Error 500, The tasks were not retrieved:"+ error.message;
+        let obj={showError:true, message:message}
+        res.render('home.hbs',obj);
     }
 }
 router.get('/songs', allSongs)
