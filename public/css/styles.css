@@ -49,3 +49,14 @@ body {
     width: 100%;
     height: 2.5rem;            
   }
+
+#aboutUsDiv{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 5rem;
+}
+#aboutUsText{
+    width: 50%;
+    text-align: justify;
+}

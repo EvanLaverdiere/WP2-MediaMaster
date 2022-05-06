@@ -20,20 +20,17 @@ const routeRoot = '/';
  */
 async function add(req, res) {
     let title = req.body.title; let artist = req.body.artist; let genre = req.body.genres; let album = req.body.album;
-
     try {
         var result = await model.addSong(title, artist, genre, album);
         if (result == true) {
-
             let message=`Song [${title}] was successfully added`;
             res.render('add.hbs',addFormDetails(message,undefined,true)); //TODO: send success message
-
         }
     }
     catch (error) {
         let errorMessage;
-        if(error instanceof InvalidInputError){errorMessage="Error 400";}
-        if(error instanceof DatabaseError){errorMessage="Error 500 ";}else{errorMessage=""}
+        if(error instanceof InvalidInputError){res.status(400); errorMessage="Error 400";}
+        if(error instanceof DatabaseError){res.status(500); errorMessage="Error 500 "; }else{errorMessage=""}
         res.render('add.hbs', addFormDetails(errorMessage+error.message, true))
     }
 }
@@ -73,8 +70,15 @@ function addFormDetails(message,error,success) {
 
 //#endregion
 
-
-
+//#region allSongs
+/**
+ * This function is called, after the endpoint /songs is reached.
+ * This function renders the all hbs view, sending in all the songs
+ * So the view can display it as a table.
+ * If an error occurs, it renders home page with an error message
+ * @param {*} req 
+ * @param {*} res 
+ */
 async function allSongs(req, res) {
     try {
         var song = await model.getAllSongs(1);
@@ -86,6 +90,7 @@ async function allSongs(req, res) {
     }
 }
 router.get('/songs', allSongs)
+//#endregion
 
 
 
