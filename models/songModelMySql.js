@@ -7,6 +7,13 @@ const userModel = require('./userModelMySql.js');
 
 var connection;
 
+/**
+ * Initializes the database connection and creates if it does not exist the Songs table.
+ * It also first initializes the user model connection.
+ * Throws if there any errors while trying to execute the queries.
+ * @param {Name of database} db 
+ * @param {Mandatory boolean indicating if to do a reset of the table} reset 
+ */
 async function initialize(db, reset) {
     try {
 
@@ -26,7 +33,6 @@ async function initialize(db, reset) {
             .then(logger.info("Songs table created/exists"))
             .catch((error) => { logger.error("Songs table was not created: " + error.message); throw new errorTypes.DatabaseError(error.message) });
 
-        let y = await getAllSongs(1);
     } catch (error) {
         throw error;
     }
@@ -34,6 +40,20 @@ async function initialize(db, reset) {
 
 
 //#region CREATE Operations
+/**
+ * Adds a song to the Songs table. 
+ * It only gets added if a song with the exact same datails does not already exists.
+ * And, if the title is alphanumeric.
+ * The song corresponds (is tied with a userId) with a user from the users table.
+ * Throws if the title is not alphanumeric, if the song already exists.
+ * And, if there are any issues with the database/connection trying to execute the insert query.
+ * @param {Mandatory} title 
+ * @param {Mandatory} artist 
+ * @param {Mandatory} genre 
+ * @param {Optional} album 
+ * @param {Mandatory} currentUserId 
+ * @returns A boolean indicating if the operation was successful
+ */
 async function addSong(title, artist, genre, album, currentUserId) {
 
     validator.validateSong(title, artist, genre); //Throws specific error messages if invalid, it needs to get caught it controller
@@ -54,6 +74,12 @@ async function addSong(title, artist, genre, album, currentUserId) {
 //#endregion
 
 //#region READ Operations
+/**
+ * Retrieves all songs for certain user.
+ * Throws if there are any errors (db/connection) when trying to retrieve the songs.
+ * @param {Mandatory} currentUserId 
+ * @returns 
+ */
 async function getAllSongs(currentUserId) {
     let query = "select title, artist, genre, album from Songs where userId="+connection.escape(currentUserId)+";";
 
