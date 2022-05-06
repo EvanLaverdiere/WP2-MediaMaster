@@ -127,6 +127,12 @@ async function getSong(req, res) {
 
 router.get('/song', getSong);
 
+function getOneForm(req, res){
+    res.render('getOne.hbs', getFormDetails());
+}
+
+router.get('/getOne', getOneForm)
+
 function getFormDetails(message, error, success) {
     if (typeof message === 'undefined') message = false;
     if (typeof error === 'undefined') error = false;
