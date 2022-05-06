@@ -119,9 +119,7 @@ async function getSong(req, res) {
             res.status(404);
             // RENDER NOT FINALIZED YET.
 
-            res.render('home.hbs', {
-
-            });
+            res.render('getOne.hbs', getFormDetails("404 Error: " + error.message, true, false));
         }
         else if (error instanceof DatabaseError) {
             // RENDER NOT FINALIZED YET.
