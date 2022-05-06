@@ -157,7 +157,7 @@ async function updateSong(userId, oldTitle, oldArtist, newTitle, newArtist, newG
         "genre = \'" + newGenre + "\' ";
 
     if (newAlbum) {
-        sql += ", album = \'" + newAlbum + "\' "; // Update the album if the user specified a new value. Otherwise, leave it as-is.
+        sql += ", album = \'" + connection.escape(newAlbum) + "\' "; // Update the album if the user specified a new value. Otherwise, leave it as-is.
     }
 
     sql += "WHERE id = " + oldId ;

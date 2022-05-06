@@ -23,15 +23,15 @@ async function add(req, res) {
     try {
         var result = await model.addSong(title, artist, genre, album);
         if (result == true) {
-            let message=`Song [${title}] was successfully added`;
-            res.render('add.hbs',addFormDetails(message,undefined,true)); //TODO: send success message
+            let message = `Song [${title}] was successfully added`;
+            res.render('add.hbs', addFormDetails(message, undefined, true)); //TODO: send success message
         }
     }
     catch (error) {
         let errorMessage;
-        if(error instanceof InvalidInputError){res.status(400); errorMessage="Error 400";}
-        if(error instanceof DatabaseError){res.status(500); errorMessage="Error 500 "; }else{errorMessage=""}
-        res.render('add.hbs', addFormDetails(errorMessage+error.message, true))
+        if (error instanceof InvalidInputError) { res.status(400); errorMessage = "Error 400"; }
+        if (error instanceof DatabaseError) { res.status(500); errorMessage = "Error 500 "; } else { errorMessage = "" }
+        res.render('add.hbs', addFormDetails(errorMessage + error.message, true))
     }
 }
 router.post('/song', add)
@@ -82,11 +82,11 @@ function addFormDetails(message, error, success) {
 async function allSongs(req, res) {
     try {
         var song = await model.getAllSongs(1);
-        res.render('all.hbs',{song});
+        res.render('all.hbs', { song });
     } catch (error) {
-        let message = "Error 500, The tasks were not retrieved:"+ error.message;
-        let obj={showError:true, message:message}
-        res.render('home.hbs',obj);
+        let message = "Error 500, The tasks were not retrieved:" + error.message;
+        let obj = { showError: true, message: message }
+        res.render('home.hbs', obj);
     }
 }
 router.get('/songs', allSongs)
@@ -133,7 +133,7 @@ async function getSong(req, res) {
 
 router.get('/song', getSong);
 
-function getOneForm(req, res){
+function getOneForm(req, res) {
     res.render('getOne.hbs', getFormDetails());
 }
 
@@ -170,6 +170,7 @@ async function editSong(req, res) {
 
     try {
         let changedRows = await model.updateSong(1, oldTitle, oldArtist, newTitle, newArtist, newGenre, newAlbum);
+        let message = `Successfully replaced ${oldTitle} by ${oldArtist} with ${newTitle} by ${newArtist}`;
         res.render('home.hbs', {});
     } catch (error) {
         if (error instanceof InvalidInputError) {
@@ -188,6 +189,37 @@ async function editSong(req, res) {
         }
 
     }
+}
+
+function editForm(req, res) {
+    res.render('edit.hbs', editFormDetails());
+}
+
+router.get('/edit', editForm);
+
+function editFormDetails(message, error, success, song) {
+    if (typeof message === 'undefined') message = false;
+    if (typeof error === 'undefined') error = false;
+    if (typeof success != true) successMessage = false;
+
+    return pageData = {
+        message: message,
+        success: success,
+        error: error,
+        song: song,
+        endpoint: "/song",
+        method: "post",
+        legend: "Edit or replace an existing song",
+        formfields: [
+            { field: "oldTitle", pretty: "Old Title" },
+            { field: "oldArtist", pretty: "Old Artist" },
+            { field: "newTitle", pretty: "New Title" },
+            { field: "newArtist", pretty: "New Artist" },
+            { field: "newGenre", pretty: "New Genre" },
+            { field: "newAlbum", pretty: "New Album" }
+        ]
+    }
+
 }
 
 router.put('/song', editSong);
