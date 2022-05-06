@@ -25,16 +25,16 @@ async function add(req, res) {
         var result = await model.addSong(title, artist, genre, album);
         if (result == true) {
 
-            let message=`Song [${title}] was successfully added`;
-            res.render('add.hbs',addFormDetails(message,undefined,true)); //TODO: send success message
+            let message = `Song [${title}] was successfully added`;
+            res.render('add.hbs', addFormDetails(message, undefined, true)); //TODO: send success message
 
         }
     }
     catch (error) {
         let errorMessage;
-        if(error instanceof InvalidInputError){errorMessage="Error 400";}
-        if(error instanceof DatabaseError){errorMessage="Error 500 ";}else{errorMessage=""}
-        res.render('add.hbs', addFormDetails(errorMessage+error.message, true))
+        if (error instanceof InvalidInputError) { errorMessage = "Error 400"; }
+        if (error instanceof DatabaseError) { errorMessage = "Error 500 "; } else { errorMessage = "" }
+        res.render('add.hbs', addFormDetails(errorMessage + error.message, true))
     }
 }
 router.post('/song', add)
@@ -53,10 +53,10 @@ function addForm(req, res) {
 router.get('/addForm', addForm)
 
 
-function addFormDetails(message,error,success) {
-    if(typeof message === 'undefined')message =false;
-    if(typeof error === 'undefined')error = false;
-    if(typeof success != true)successMessage = false;
+function addFormDetails(message, error, success) {
+    if (typeof message === 'undefined') message = false;
+    if (typeof error === 'undefined') error = false;
+    if (typeof success != true) successMessage = false;
     return pageData = {
         message: message,
         success: success,
@@ -66,8 +66,8 @@ function addFormDetails(message,error,success) {
         legend: "Enter details to add a song",
         formfields: [{ field: "title", pretty: "Title" },
         { field: "artist", pretty: "Artist" },
-        { field: "album", pretty: "Album", album:true }],
-        genres:model.allGenres()
+        { field: "album", pretty: "Album", album: true }],
+        genres: model.allGenres()
     }
 }
 
@@ -126,6 +126,25 @@ async function getSong(req, res) {
 }
 
 router.get('/song', getSong);
+
+function getFormDetails(message, error, success) {
+    if (typeof message === 'undefined') message = false;
+    if (typeof error === 'undefined') error = false;
+    if (typeof success != true) successMessage = false;
+
+    return pageData = {
+        message: message,
+        success: success,
+        error: error,
+        endpoint: "/song",
+        method: "get",
+        legend: "Search for a specific song by title and artist",
+        formfields: [
+            { field: "title", pretty: "Title" },
+            { field: "artist", pretty: "Artist" }
+        ]
+    }
+}
 
 async function editSong(req, res) {
     let oldTitle = req.body.oldTitle;
