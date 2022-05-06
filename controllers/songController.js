@@ -211,13 +211,15 @@ function editFormDetails(message, error, success, song) {
         method: "post",
         legend: "Edit or replace an existing song",
         formfields: [
-            { field: "oldTitle", pretty: "Old Title" },
+            { field: "oldTitle", pretty: "Old Title", title: true },
             { field: "oldArtist", pretty: "Old Artist" },
             { field: "newTitle", pretty: "New Title" },
             { field: "newArtist", pretty: "New Artist" },
-            { field: "newGenre", pretty: "New Genre" },
+            { field: "newGenre", pretty: "New Genre", genre: true },
             { field: "newAlbum", pretty: "New Album" }
-        ]
+        ],
+        titles: model.getAllTitles(1),
+        genres: model.allGenres()
     }
 
 }

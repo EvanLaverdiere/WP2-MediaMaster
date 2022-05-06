@@ -141,7 +141,7 @@ async function getOneSong(userId, title, artist) {
 async function updateSong(userId, oldTitle, oldArtist, newTitle, newArtist, newGenre, newAlbum) {
     // Verify that the new values are acceptable. If they aren't, the validator will throw an InvalidInputError.
     validator.validateSong(newTitle, newArtist, newGenre);
-        // .catch((err) => { throw err });
+    // .catch((err) => { throw err });
 
     // Then check the database to confirm that the original song is present in the user's collection.
     // If it isn't, getOneSong() will throw an InvalidInputError.
@@ -151,19 +151,23 @@ async function updateSong(userId, oldTitle, oldArtist, newTitle, newArtist, newG
     // Extract the song's id from the retrieved record to simplify the upcoming SQL Update query.
     let oldId = oldSong.id;
 
-    let sql = "UPDATE Songs SET " +
-        "title = \'" + newTitle + "\', " +
-        "artist = \'" + newArtist + "\', " +
-        "genre = \'" + newGenre + "\' ";
+    // let sql = "UPDATE Songs SET title = ?, artist = ?, genre = ?";
+    let sql;
 
     if (newAlbum) {
-        sql += ", album = \'" + connection.escape(newAlbum) + "\' "; // Update the album if the user specified a new value. Otherwise, leave it as-is.
+        // sql += ", album = \'" + connection.escape(newAlbum) + "\' "; // Update the album if the user specified a new value. Otherwise, leave it as-is.
+        sql = "UPDATE Songs SET title = ?, artist = ?, genre = ?, album = ? WHERE id = ?";
+    }
+    else{
+        sql = "UPDATE Songs SET title = ?, artist = ?, genre = ? WHERE id = ?";
     }
 
-    sql += "WHERE id = " + oldId ;
-        // "LIMIT 1";
+    // sql += "WHERE id = " + oldId;
+    // "LIMIT 1";
 
-    const results = await connection.query(sql)
+    // let sql = "UPDATE Songs SET title = ?, artist = ?, genre = ?"
+
+    const results = await connection.query(sql, [newTitle, newArtist, newGenre, newAlbum, oldId])
         .catch((err) => {
             logger.error(err);
             throw new errorTypes.DatabaseError(err);
@@ -264,9 +268,9 @@ function getConnection() {
 
 async function checkDuplicate(title, artist, genre, album, currentUserId) {
     let query = "select * from Songs where title = ? and artist = ? and genre = ? and album =? and userId=?;"
-    let  [rows,fields]=[];
+    let [rows, fields] = [];
     try {
-        [rows, fields] = await connection.execute(query, [title, artist, genre, album,1]);
+        [rows, fields] = await connection.execute(query, [title, artist, genre, album, 1]);
 
     } catch (error) {
         logger.error(error.message);
@@ -281,27 +285,37 @@ async function checkDuplicate(title, artist, genre, album, currentUserId) {
 
 }
 
-let allGenres=()=>["Alternative",
-"Blues",
-"Classical",
-"Country",
-"Electronic",
-"Folkmusic",
-"Hiphop",
-"Holiday",
-"Instrumental",
-"Jazz",
-"Karaoke",
-"Metal",
-"Newage",
-"Pop",
-"Reggae",
-"Rock",
-"Soul",
-"Soundtrack",
-"World"
+let allGenres = () => ["Alternative",
+    "Blues",
+    "Classical",
+    "Country",
+    "Electronic",
+    "Folkmusic",
+    "Hiphop",
+    "Holiday",
+    "Instrumental",
+    "Jazz",
+    "Karaoke",
+    "Metal",
+    "Newage",
+    "Pop",
+    "Reggae",
+    "Rock",
+    "Soul",
+    "Soundtrack",
+    "World"
 ];
 
-module.exports = { initialize, addSong, getAllSongs, getOneSong, updateSong, closeConnection, getConnection, allGenres }
+async function getAllTitles(userId) {
+    try {
+        let sql = "SELECT title FROM Songs WHERE userId = " + userId;
+        let results = await connection.query(sql);
+        return results[0];
+    } catch (error) {
+        // Fail gracefully.
+    }
+}
+
+module.exports = { initialize, addSong, getAllSongs, getOneSong, updateSong, closeConnection, getConnection, allGenres, getAllTitles }
 
 
