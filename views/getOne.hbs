@@ -18,13 +18,17 @@
                     <th>Title</th>
                     <th>Artist</th>
                     <th>Genre</th>
+                    {{#if song.album}}
                     <th>Album</th>
+                    {{/if}}
                 </tr>
                 <tr>
                     <td>{{song.title}}</td>
                     <td>{{song.artist}}</td>
                     <td>{{song.genre}}</td>
+                    {{#if song.album}}
                     <td>{{song.album}}</td>
+                    {{/if}}
                 </tr>
             </table>
         </div>
