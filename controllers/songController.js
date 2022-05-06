@@ -97,15 +97,14 @@ async function getSong(req, res) {
     try {
         let { title, artist, genre, album } = await model.getOneSong(userId, targetTitle, targetArtist);
         // RENDER NOT FINALIZED YET.
-        res.render('home.hbs', {
-            message: "Succesfully retrieved the song from your collection.",
-            song: {
-                title: title,
-                artist: artist,
-                genre: genre,
-                album: album
-            }
-        })
+        let message = "Succesfully retrieved the song from your collection.";
+        let song = {
+            title: title,
+            artist: artist,
+            genre: genre,
+            album: album
+        };
+        res.render('getOne.hbs', getFormDetails(message, false, true, song));
     } catch (error) {
         if (error instanceof InvalidInputError) {
             res.status(404);
@@ -133,7 +132,7 @@ function getOneForm(req, res){
 
 router.get('/getOne', getOneForm)
 
-function getFormDetails(message, error, success) {
+function getFormDetails(message, error, success, song) {
     if (typeof message === 'undefined') message = false;
     if (typeof error === 'undefined') error = false;
     if (typeof success != true) successMessage = false;
@@ -142,6 +141,7 @@ function getFormDetails(message, error, success) {
         message: message,
         success: success,
         error: error,
+        song: song,
         endpoint: "/song",
         method: "get",
         legend: "Search for a specific song by title and artist",
