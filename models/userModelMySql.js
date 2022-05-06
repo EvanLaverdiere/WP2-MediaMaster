@@ -1,5 +1,5 @@
 const mysql = require('mysql2/promise');
-const validate = require('./validateUtils');
+const validate = require('./validateUtils.js');
 const logger = require('../logger');
 const bcrypt = require('bcrypt'); //TODO: Document that you've added bcrypt module.
 const errorTypes = require('./errorModel.js');
@@ -38,6 +38,7 @@ async function initialize(dbname, reset) {
         if (reset) {
             const dropSongs = "DROP TABLE IF EXISTS Songs;";
             await connection.execute(dropSongs);
+            
             const dropUsers = "DROP TABLE IF EXISTS users;";
             await connection.execute(dropUsers);
             // logger.info("Table song dropped");
@@ -63,23 +64,28 @@ async function initialize(dbname, reset) {
  * @throws InvalidInputError, DBConnectionError
  */
 async function addUser(username, password) {
+    //validate the password: make sure its 7 characters or longer
     let validatedPassword = validate.validatePassword(password);
     if (!validatedPassword)
         throw new errorTypes.InvalidInputError("Password must be at least 7 characters long.");
 
+    //validate the username: make sure its unique (doesn't already exist)
     let validatedUsername = await validate.validateUniqueUser(username, connection);
     if(!validatedUsername)
         throw new errorTypes.UserAlreadyExistsError("User already exists.");
 
+    //hash the password
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
     //create insert command
     const sqlCommand = 'INSERT INTO users(username, password) VALUES ('
-        + connection.escape(username) + ', ' + connection.escape(password) + ')';
+        + connection.escape(username) + ', ' + connection.escape(hashedPassword) + ')';
 
     //execute command
     try {
         await connection.execute(sqlCommand);
         logger.info("User " + username + " successfully registered!");
-        return { "username": username, "password": password }
+        return { "username": username, "password": hashedPassword }
     }
     catch (error) {
         logger.error(error);
@@ -99,10 +105,8 @@ async function getUser(username, password) {
     if (!validated)
         throw new errorTypes.AuthenticationError("Authentication failed.");
 
-    //create sql query to check db if username already exists in database
     let sqlQuery = "SELECT username, password FROM users WHERE username = "
-        + connection.escape(username) + " AND password = "
-        + connection.escape(password);
+        + connection.escape(username);
 
     try {
         const [rows, fields] = await connection.execute(sqlQuery);
@@ -120,5 +124,4 @@ module.exports = {
     initialize,
     addUser,
     getUser
-
 }

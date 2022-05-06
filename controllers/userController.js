@@ -38,29 +38,47 @@ async function addUser(request, response) {
         await model.addUser(username, password);
 
         response.status(200);
-        response.render('userProfile.hbs', {});
-        //TODO: response.render
+        response.render('userProfile.hbs', {
+            successMessage: true,
+            message: "Successfully registered user!"
+        });
     }
     catch (err) {
         if (err instanceof errorTypes.InvalidInputError) {
             response.status(400);
-            response.render('register.hbs', {});
-            //TODO: response.render
+            response.render('register.hbs', {
+                failureMessage: true,
+                message: "Failed to register: invalid input.",
+                endpoint: "/users",
+                method: "post"
+            });
         }
         else if (err instanceof errorTypes.UserAlreadyExistsError) {
             response.status(400);
-            response.render('register.hbs', {});
-            //TODO: response.render
+            response.render('register.hbs', {
+                failureMessage: true,
+                message: "Failed to register: user already exists.",
+                endpoint: "/users",
+                method: "post"
+            });
         }
         else if (err instanceof errorTypes.DatabaseError) {
             response.status(500);
-            response.render('register.hbs', {});
-            //TODO: response.render
+            response.render('register.hbs', {
+                failureMessage: true,
+                message: "Failed to register: something wrong happened in the database.",
+                endpoint: "/users",
+                method: "post"
+            });
         }
         else {
             response.status(500);
-            response.render('register.hbs', {});
-            //TODO: response.render
+            response.render('register.hbs', {
+                failureMessage: true,
+                message: "Failed to register: unknown cause.",
+                endpoint: "/users",
+                method: "post"
+            });
         }
     }
 }
