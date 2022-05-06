@@ -24,8 +24,10 @@ async function add(req, res) {
     try {
         var result = await model.addSong(title, artist, genre, album);
         if (result == true) {
+
             let message=`Song [${title}] was successfully added`;
             res.render('add.hbs',addFormDetails(message,undefined,true)); //TODO: send success message
+
         }
     }
     catch (error) {
@@ -124,6 +126,39 @@ async function getSong(req, res) {
 }
 
 router.get('/song', getSong);
+
+async function editSong(req, res) {
+    let oldTitle = req.body.oldTitle;
+    let oldArtist = req.body.oldArtist;
+    let newTitle = req.body.newTitle;
+    let newArtist = req.body.newArtist;
+    let newGenre = req.body.newGenre;
+    let newAlbum = req.body.newAlbum;
+    let userId = 1;
+
+    try {
+        let changedRows = await model.updateSong(1, oldTitle, oldArtist, newTitle, newArtist, newGenre, newAlbum);
+        res.render('home.hbs', {});
+    } catch (error) {
+        if (error instanceof InvalidInputError) {
+            res.status(404);
+            // RENDER NOT FINALIZED YET.
+
+            res.render('home.hbs', {
+
+            });
+        }
+        else if (error instanceof DatabaseError) {
+            // RENDER NOT FINALIZED YET.
+
+            res.status(500);
+            res.render('home.hbs', {});
+        }
+
+    }
+}
+
+router.put('/song', editSong);
 
 module.exports = {
     router,

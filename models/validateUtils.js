@@ -31,7 +31,7 @@ const genreTypes = [
  * @returns True if the song's fields are valid, false otherwise
  */
 function validateSong(title, artist, genre) {
-    title = title.replaceAll(' ', '');
+    title = title.replace(/ /g, '');
     let notAdded = "The song was not added: ";
     
     //Not checking if the genre matches since user is not actually typing in a genre, we provide them

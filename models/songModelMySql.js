@@ -18,7 +18,7 @@ async function initialize(db, reset) {
     try {
 
         await userModel.initialize(db, reset);
-        
+
 
         await setConnection(db);
 
@@ -81,7 +81,7 @@ async function addSong(title, artist, genre, album, currentUserId) {
  * @returns 
  */
 async function getAllSongs(currentUserId) {
-    let query = "select title, artist, genre, album from Songs where userId="+connection.escape(currentUserId)+";";
+    let query = "select title, artist, genre, album from Songs where userId=" + connection.escape(currentUserId) + ";";
 
     try {
         let songs = await connection.execute(query);
@@ -114,7 +114,7 @@ async function getOneSong(userId, title, artist) {
         .catch((err) => {
             // Log the error.
             logger.error(err);
-            throw new DBConnectionError(err);
+            throw new errorTypes.DatabaseError(err);
         })
 
     // Query will return an array of two arrays. The first array contains the actual songs, while the second holds metadata.
@@ -125,10 +125,10 @@ async function getOneSong(userId, title, artist) {
 
     // If the passed song was not found, the songs array will be empty.
     if (songs.length == 0) {
-        let error = "User's collection does not contain the song \'" + title + "\' by " + artist + ".";
-        logger.error(error);
+        let errorMessage = "User's collection does not contain the song \'" + title + "\' by " + artist + ".";
+        logger.error(errorMessage);
         //To-Do: throw appropriate error. 
-        throw new InvalidInputError(error);
+        throw new errorTypes.InvalidInputError(errorMessage);
     }
 
     // If the songs array is not empty, we've found our song.
@@ -139,36 +139,46 @@ async function getOneSong(userId, title, artist) {
 
 //#region UPDATE Regions
 async function updateSong(userId, oldTitle, oldArtist, newTitle, newArtist, newGenre, newAlbum) {
+    // Verify that the new values are acceptable. If they aren't, the validator will throw an InvalidInputError.
+    validator.validateSong(newTitle, newArtist, newGenre);
+        // .catch((err) => { throw err });
+
+    // Then check the database to confirm that the original song is present in the user's collection.
+    // If it isn't, getOneSong() will throw an InvalidInputError.
     const oldSong = await getOneSong(userId, oldTitle, oldArtist)
         .catch((err) => { throw err });
 
+    // Extract the song's id from the retrieved record to simplify the upcoming SQL Update query.
     let oldId = oldSong.id;
 
-    const sql = "UPDATE Songs SET" +
+    let sql = "UPDATE Songs SET " +
         "title = \'" + newTitle + "\', " +
         "artist = \'" + newArtist + "\', " +
-        "genre = \'" + newGenre + "\', ";
+        "genre = \'" + newGenre + "\' ";
 
     if (newAlbum) {
-        sql += "album = \'" + newAlbum + "\' ";
+        sql += ", album = \'" + newAlbum + "\' "; // Update the album if the user specified a new value. Otherwise, leave it as-is.
     }
 
-    sql += "WHERE id = " + oldId + " " +
-        "LIMIT 1";
+    sql += "WHERE id = " + oldId ;
+        // "LIMIT 1";
 
     const results = await connection.query(sql)
         .catch((err) => {
             logger.error(err);
-            // To-Do: throw an appropriate error.
+            throw new errorTypes.DatabaseError(err);
         })
 
+    // The query will return the number of rows that were changed in the database. If no rows were changed, something went wrong.
     let changedRows = results[0].changedRows;
     if (changedRows <= 0) {
         let errorMessage = "No songs were changed.";
         logger.error(errorMessage);
         // To-Do: throw an appropriate error.
+        throw new errorTypes.InvalidInputError(errorMessage);
     }
 
+    // If one row was changed, then the Update operation was carried out successfully.
     logger.info("Update successful.");
     return changedRows;
 }
@@ -247,6 +257,10 @@ function closeConnection() {
     }
 }
 
+function getConnection() {
+    return connection;
+}
+
 
 async function checkDuplicate(title, artist, genre, album, currentUserId) {
     let query = "select * from Songs where title = ? and artist = ? and genre = ? and album =? and userId=?;"
@@ -266,6 +280,7 @@ async function checkDuplicate(title, artist, genre, album, currentUserId) {
     }
 
 }
+
 let allGenres=()=>["Alternative",
 "Blues",
 "Classical",
@@ -287,5 +302,6 @@ let allGenres=()=>["Alternative",
 "World"
 ];
 
-module.exports = { initialize, addSong, getAllSongs, getOneSong, closeConnection, allGenres }
+module.exports = { initialize, addSong, getAllSongs, getOneSong, updateSong, closeConnection, getConnection, allGenres }
+
 
