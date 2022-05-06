@@ -16,7 +16,10 @@ body {
 #title{
     margin: 1rem;
 }
-
+#noDeco{
+    color:inherit !important;
+    text-decoration: none;
+}
 #titleWrap{
     display: flex;
     justify-content: center;
