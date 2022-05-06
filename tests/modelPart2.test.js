@@ -113,7 +113,7 @@ test("songsModel.getOneSong() cannot retrieve a song which does not exist", asyn
 
 test("songsModel.getOneSong() doesn't crash if the database is inaccessible", async () => {
     logger.debug("RUNNING TEST: \'songsModel.getOneSong() doesn't crash if the database is inaccessible\'.");
-    
+
     // Generate a valid user and add them to the database.
     const { userId, username, password } = generateUserData();
     await usersModel.addUser(username, password);
@@ -127,7 +127,7 @@ test("songsModel.getOneSong() doesn't crash if the database is inaccessible", as
     await connection.close();
 
     // Attempt to retrieve the song using getOneSong(). Should throw a DatabaseError.
-    await expect(async () =>{
+    await expect(async () => {
         await songsModel.getOneSong(1, title, artist);
     }).rejects.toThrowError(errorTypes.DatabaseError);
 

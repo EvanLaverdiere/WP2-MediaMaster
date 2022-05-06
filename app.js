@@ -17,20 +17,15 @@ app.engine('hbs', engine({ extname: '.hbs' }));
 app.set('view engine', 'hbs');
 app.set('views', './views');
 
-<<<<<<< HEAD
-=======
 
 
 
 const methodOverride = require('method-override');
 
 
->>>>>>> 4ab9dc8 (Register page fully functional)
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
-<<<<<<< HEAD
-=======
 app.use(methodOverride(function (req, res) {
   if (req.body && typeof req.body === 'object' && '_method' in req.body) {
     //look in urlencoded POST bodies and delete it
@@ -39,7 +34,6 @@ app.use(methodOverride(function (req, res) {
     return method;
   }
 }));
->>>>>>> 4ab9dc8 (Register page fully functional)
 
 
 app.use(express.json());

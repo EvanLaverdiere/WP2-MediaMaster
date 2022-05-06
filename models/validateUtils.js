@@ -1,6 +1,8 @@
 const validator = require('validator');
 const model = require('./userModelMySql.js');
 const errorTypes = require('./errorModel.js');
+const bcrypt = require('bcrypt'); //TODO: Document that you've added bcrypt module.
+const logger = require('../logger.js');
 const genreTypes = [
     "alternative",
     "blues",
@@ -58,17 +60,34 @@ function validateSong(title, artist, genre) {
 async function authenticateUser(username, password, connection) {
 
     try {
+        const sqlQuery = "SELECT username FROM users WHERE username = "
+        + connection.escape(username);
+
+        const result = await connection.execute(sqlQuery);
+        
+        if(result[0].length == 0)
+            throw new errorTypes.AuthenticationError("User not found in database");
+
         //create sql query to check db if username already exists in database
-        const sqlQuery = "SELECT username, password FROM users WHERE username = "
-            + connection.escape(username) + " AND password = "
-            + connection.escape(password);
+        const sqlQuery2 = "SELECT password FROM users WHERE username = "
+            + connection.escape(username);
 
         //execute query
-        const rows = await connection.execute(sqlQuery);
-        return rows[0].length == 1;
+        const result2 = await connection.execute(sqlQuery2);
+
+        if(await bcrypt.compare(password, result2[0][0].password)){
+            return true;
+        }
+
+        return false;
     }
     catch(err){
+        if(err instanceof errorTypes.AuthenticationError)
+            throw err;
+
+        logger.error(err);
         console.log(err);
+        
         throw new errorTypes.DatabaseError("Something wrong happened in the database.");
     }
 
@@ -92,7 +111,6 @@ function validatePassword(password) {
  * @returns True if the username is unique, false otherwise.
  */
 async function validateUniqueUser(username, connection) {
-
     try {
         //create sql query to check db if username already exists in database
         const sqlQuery = "SELECT username FROM users WHERE username = "
