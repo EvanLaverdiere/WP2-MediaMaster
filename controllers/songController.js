@@ -125,7 +125,7 @@ async function getSong(req, res) {
             // RENDER NOT FINALIZED YET.
 
             res.status(500);
-            res.render('home.hbs', {});
+            res.render('getOne.hbs', getFormDetails("500 Error: " + error.message, true, false));
         }
     }
 
