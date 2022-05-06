@@ -50,10 +50,10 @@ function addForm(req, res) {
 router.get('/addForm', addForm)
 
 
-function addFormDetails(message,error,success) {
-    if(typeof message === 'undefined')message =false;
-    if(typeof error === 'undefined')error = false;
-    if(typeof success != true)successMessage = false;
+function addFormDetails(message, error, success) {
+    if (typeof message === 'undefined') message = false;
+    if (typeof error === 'undefined') error = false;
+    if (typeof success != true) successMessage = false;
     return pageData = {
         message: message,
         success: success,
@@ -63,8 +63,8 @@ function addFormDetails(message,error,success) {
         legend: "Enter details to add a song",
         formfields: [{ field: "title", pretty: "Title" },
         { field: "artist", pretty: "Artist" },
-        { field: "album", pretty: "Album", album:true }],
-        genres:model.allGenres()
+        { field: "album", pretty: "Album", album: true }],
+        genres: model.allGenres()
     }
 }
 
@@ -106,15 +106,14 @@ async function getSong(req, res) {
     try {
         let { title, artist, genre, album } = await model.getOneSong(userId, targetTitle, targetArtist);
         // RENDER NOT FINALIZED YET.
-        res.render('home.hbs', {
-            message: "Succesfully retrieved the song from your collection.",
-            song: {
-                title: title,
-                artist: artist,
-                genre: genre,
-                album: album
-            }
-        })
+        let message = "Succesfully retrieved the song from your collection.";
+        let song = {
+            title: title,
+            artist: artist,
+            genre: genre,
+            album: album
+        };
+        res.render('getOne.hbs', getFormDetails(message, false, true, song));
     } catch (error) {
         if (error instanceof InvalidInputError) {
             res.status(404);
@@ -135,6 +134,32 @@ async function getSong(req, res) {
 }
 
 router.get('/song', getSong);
+
+function getOneForm(req, res){
+    res.render('getOne.hbs', getFormDetails());
+}
+
+router.get('/getOne', getOneForm)
+
+function getFormDetails(message, error, success, song) {
+    if (typeof message === 'undefined') message = false;
+    if (typeof error === 'undefined') error = false;
+    if (typeof success != true) successMessage = false;
+
+    return pageData = {
+        message: message,
+        success: success,
+        error: error,
+        song: song,
+        endpoint: "/song",
+        method: "get",
+        legend: "Search for a specific song by title and artist",
+        formfields: [
+            { field: "title", pretty: "Title" },
+            { field: "artist", pretty: "Artist" }
+        ]
+    }
+}
 
 async function editSong(req, res) {
     let oldTitle = req.body.oldTitle;
