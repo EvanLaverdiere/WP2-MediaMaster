@@ -181,7 +181,7 @@ async function editSong(req, res) {
         if (error instanceof InvalidInputError) {
             res.status(404);
             // RENDER NOT FINALIZED YET.
-            let message = `Could not update ${oldTitle} by ${oldArtist}: ` + error.message;
+            let message = `404 Error: Could not update ${oldTitle} by ${oldArtist}: ` + error.message;
 
             res.render('edit.hbs', editFormDetails(message, true));
         }
@@ -189,7 +189,8 @@ async function editSong(req, res) {
             // RENDER NOT FINALIZED YET.
 
             res.status(500);
-            res.render('home.hbs', {});
+            let message = "500 Error: Problem accessing database: " + error.message;
+            res.render('edit.hbs', editFormDetails(message, true));
         }
 
     }
@@ -222,7 +223,7 @@ function editFormDetails(message, error, success, song) {
             // { field: "newGenre", pretty: "New Genre", genre: true },
             { field: "newAlbum", pretty: "New Album" }
         ],
-        titles: model.getAllTitles(1),
+        // titles: model.getAllTitles(1),
         newGenre: model.allGenres()
     }
 
