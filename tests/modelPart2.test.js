@@ -12,6 +12,8 @@ const logger = require('../logger');
 beforeEach(async () => {
     try {
         await songsModel.initialize(dbName, true);
+        // await usersModel.initialize(dbName, true);
+        // await usersModel.addUser("MusicLover95", "I_luv_songs");
     }
     catch (error) {
         // Fail gracefully.
@@ -57,7 +59,11 @@ test("songsModel.getOneSong() can retrieve a valid song belonging to a valid use
 
     // Generate a valid user and add them to the database.
     const { userId, username, password } = generateUserData();
-    await usersModel.addUser(username, password);
+    // await usersModel.addUser(username, password);
+
+    const connection = songsModel.getConnection();
+    const userQuery = `INSERT INTO users (username, password) VALUES (?, ?)`;
+    await connection.query(userQuery, [username, password]);
 
     // Generate a valid song and add them to the database.
     const { title, artist, genre, album } = generateSongData();
@@ -72,7 +78,7 @@ test("songsModel.getOneSong() can retrieve a valid song belonging to a valid use
     expect(getResult.userId === 1).toBe(true);
 
     // Query the database directly to confirm.
-    const connection = songsModel.getConnection();
+    // const connection = songsModel.getConnection();
     const query = "SELECT * FROM Songs WHERE userId = 1";
     const [records, metadata] = await connection.query(query);
 
