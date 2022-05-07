@@ -101,7 +101,11 @@ test("songsModel.getOneSong() cannot retrieve a song which does not exist", asyn
 
     // Generate a valid user and add them to the database.
     const { userId, username, password } = generateUserData();
-    await usersModel.addUser(username, password);
+    // await usersModel.addUser(username, password);
+
+    const connection = songsModel.getConnection();
+    const userQuery = `INSERT INTO users (username, password) VALUES (?, ?)`;
+    await connection.query(userQuery, [username, password]);
 
     // Generate a valid song and add it to the database for that user.
     const { title, artist, genre, album } = generateSongData();
