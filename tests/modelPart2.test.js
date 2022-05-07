@@ -126,14 +126,18 @@ test("songsModel.getOneSong() doesn't crash if the database is inaccessible", as
 
     // Generate a valid user and add them to the database.
     const { userId, username, password } = generateUserData();
-    await usersModel.addUser(username, password);
+    // await usersModel.addUser(username, password);
+
+    const connection = songsModel.getConnection();
+    const userQuery = `INSERT INTO users (username, password) VALUES (?, ?)`;
+    await connection.query(userQuery, [username, password]);
 
     // Generate a valid song and add it to the database for that user.
     const { title, artist, genre, album } = generateSongData();
     const addResult = await songsModel.addSong(title, artist, genre, album, 1);
 
     // Close the database connection.
-    const connection = songsModel.getConnection();
+    // const connection = songsModel.getConnection();
     await connection.close();
 
     // Attempt to retrieve the song using getOneSong(). Should throw a DatabaseError.
