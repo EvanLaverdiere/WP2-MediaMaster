@@ -238,7 +238,7 @@ async function deleteOneSong(req, res){
 
     try {
         const deletedSong = await model.deleteSong(userId, title, artist);
-
+        res.render('delete.hbs', deleteFormDetails(`Successfully removed ${title} by ${artist} from your collection.`, true, false, deletedSong));
     } catch (error) {
         
     }
