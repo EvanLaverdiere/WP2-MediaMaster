@@ -238,9 +238,23 @@ async function deleteOneSong(req, res){
 
     try {
         const deletedSong = await model.deleteSong(userId, title, artist);
-        res.render('delete.hbs', deleteFormDetails(`Successfully removed ${title} by ${artist} from your collection.`, true, false, deletedSong));
+        res.render('delete.hbs', deleteFormDetails(`Successfully removed ${title} by ${artist} from your collection.`, false, true, deletedSong));
     } catch (error) {
-        
+        if (error instanceof InvalidInputError) {
+            res.status(404);
+            // RENDER NOT FINALIZED YET.
+            let message = `404 Error: Could not delete ${title} by ${artist}: ` + error.message;
+
+            res.render('delete.hbs', deleteFormDetails(message, true));
+        }
+        else if (error instanceof DatabaseError) {
+            // RENDER NOT FINALIZED YET.
+
+            res.status(500);
+            let message = "500 Error: Problem accessing database: " + error.message;
+            res.render('delete.hbs', deleteFormDetails(message, true));
+        }
+
     }
 }
 
@@ -252,7 +266,7 @@ function deleteForm(req, res){
 
 router.get('/delete', deleteForm);
 
-function deleteFormDetails(message, success, failure, song){
+function deleteFormDetails(message, error, success, song){
     if (typeof message === 'undefined') message = false;
     if (typeof error === 'undefined') error = false;
     if (typeof success != true) successMessage = false;
