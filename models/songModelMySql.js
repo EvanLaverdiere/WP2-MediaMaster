@@ -1,6 +1,6 @@
 const mysql = require('mysql2/promise');
 const logger = require('../logger');
-const validator = require('./validateUtils.js');
+const validator = require('../validation/validateUtils');
 
 const errorTypes = require('./errorModel.js');
 const userModel = require('./userModelMySql.js');
@@ -98,6 +98,7 @@ async function getAllSongs(currentUserId) {
  * @param {*} userId The user's ID. 
  * @param {*} title The title of the desired song.
  * @param {*} artist The artist who wrote the song.
+ * @returns An object representing the retrieved song.
  */
 async function getOneSong(userId, title, artist) {
     // TO-DO: Validate passed userId
@@ -138,6 +139,17 @@ async function getOneSong(userId, title, artist) {
 //#endregion
 
 //#region UPDATE Regions
+/**
+ * Update an existing song with new values.
+ * @param {*} userId The ID of the song's owner.
+ * @param {*} oldTitle The song's original title.
+ * @param {*} oldArtist The song's original artist.
+ * @param {*} newTitle The replacement title.
+ * @param {*} newArtist The replacement artist.
+ * @param {*} newGenre The replacement genre.
+ * @param {*} newAlbum The replacement album.
+ * @returns 
+ */
 async function updateSong(userId, oldTitle, oldArtist, newTitle, newArtist, newGenre, newAlbum) {
     // Verify that the new values are acceptable. If they aren't, the validator will throw an InvalidInputError.
     validator.validateSong(newTitle, newArtist, newGenre);
