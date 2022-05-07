@@ -171,7 +171,12 @@ async function editSong(req, res) {
     try {
         let changedRows = await model.updateSong(1, oldTitle, oldArtist, newTitle, newArtist, newGenre, newAlbum);
         let message = `Successfully replaced ${oldTitle} by ${oldArtist} with ${newTitle} by ${newArtist}`;
-        res.render('edit.hbs', {});
+        res.render('edit.hbs', editFormDetails(message, false, true, {
+            title: newTitle,
+            artist: newArtist,
+            genre: newGenre,
+            album: newAlbum
+        }));
     } catch (error) {
         if (error instanceof InvalidInputError) {
             res.status(404);
