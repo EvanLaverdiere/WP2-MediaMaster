@@ -171,7 +171,7 @@ async function editSong(req, res) {
     try {
         let changedRows = await model.updateSong(1, oldTitle, oldArtist, newTitle, newArtist, newGenre, newAlbum);
         let message = `Successfully replaced ${oldTitle} by ${oldArtist} with ${newTitle} by ${newArtist}`;
-        res.render('home.hbs', {});
+        res.render('edit.hbs', {});
     } catch (error) {
         if (error instanceof InvalidInputError) {
             res.status(404);
@@ -215,11 +215,11 @@ function editFormDetails(message, error, success, song) {
             { field: "oldArtist", pretty: "Old Artist" },
             { field: "newTitle", pretty: "New Title" },
             { field: "newArtist", pretty: "New Artist" },
-            { field: "newGenre", pretty: "New Genre", genre: true },
+            // { field: "newGenre", pretty: "New Genre", genre: true },
             { field: "newAlbum", pretty: "New Album" }
         ],
         titles: model.getAllTitles(1),
-        genres: model.allGenres()
+        newGenre: model.allGenres()
     }
 
 }

@@ -1,28 +1,42 @@
 <body>
     {{!-- Success Message --}}
+    {{#if success}}
+
+    {{/if}}
 
     {{!-- Failure Message --}}
+    {{#if error}}
+
+    {{/if}}
+    
     <div id="formWrapper">
         <form action="{{endpoint}}" method="{{method}}" class="forms" role="form" name="myForm"
             enctype="application/x-www-form-urlencoded">
             <legend>{{legend}}</legend>
+            <input type="hidden" name="_method" value="PUT">
             {{#each formfields}}
             <label for="{{field}}">{{pretty}}</label><br>
             {{!-- {{#if album}}
             <input type="text" name="{{field}}"><br> --}}
-            {{#if title}}
+            {{!-- {{#if title}}
             <select name="oldTitle">
                 {{#each titles}}
                 <option value="{{this}}">{{this}}</option>
                 {{/each}}
-            </select>
-            {{else}}
+            </select><br>
+            {{else if genre}}
+            <select name="newGenre">
+                {{#each genres}}
+                <option value="{{this}}">{{this}}</option>
+                {{/each}}
+            </select><br>
+            {{else}} --}}
             <input type="text" id="{{field}}" name="{{field}}" required><br>
-            {{/if}}
+            {{!-- {{/if}} --}}
             {{/each}}
             <label for="genre">Genres</label><br>
-            <select name="genres">
-                {{#each genres}}
+            <select name="newGenre">
+                {{#each newGenre}}
                 <option value="{{this}}">{{this}}</option>
                 {{/each}}
             </select><br>
