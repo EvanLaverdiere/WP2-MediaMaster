@@ -181,10 +181,9 @@ async function editSong(req, res) {
         if (error instanceof InvalidInputError) {
             res.status(404);
             // RENDER NOT FINALIZED YET.
+            let message = `Could not update ${oldTitle} by ${oldArtist}: ` + error.message;
 
-            res.render('home.hbs', {
-
-            });
+            res.render('edit.hbs', editFormDetails(message, true));
         }
         else if (error instanceof DatabaseError) {
             // RENDER NOT FINALIZED YET.
