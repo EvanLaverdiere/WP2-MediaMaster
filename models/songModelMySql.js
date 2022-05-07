@@ -211,25 +211,13 @@ async function deleteSong(userId, title, artist) {
     // if the song exists, try to delete it from the database.
     let doomedId = song.id;
 
-    // const sql = "DELETE FROM songs WHERE id = \'" + title + "\' " +
-    //     "AND artist = \'" + artist + "\' " +
-    //     "AND genre = \'" + genre + "\' ";
-
-    // if (album) {
-    //     sql += "AND album = \'" + album + "\' ";
-    // }
-
-    // sql += "AND userId = " + userId + " " +
-    //     "LIMIT 1";
-
     const sql = "DELETE FROM Songs WHERE id = " + doomedId +
-        "LIMIT 1";
+        " LIMIT 1";
 
     let results = await connection.query(sql)
         .catch((err) => {
             logger.error(err);
-            // To-Do: Throw appropriate error.
-            throw new DBConnectionError(err);
+            throw new errorTypes.DatabaseError(err);
         });
 
     let affectedRows = results[0].affectedRows;
@@ -328,6 +316,6 @@ async function getAllTitles(userId) {
     }
 }
 
-module.exports = { initialize, addSong, getAllSongs, getOneSong, updateSong, closeConnection, getConnection, allGenres, getAllTitles }
+module.exports = { initialize, addSong, getAllSongs, getOneSong, updateSong, deleteSong, closeConnection, getConnection, allGenres, getAllTitles }
 
 

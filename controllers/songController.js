@@ -231,6 +231,48 @@ function editFormDetails(message, error, success, song) {
 
 router.put('/song', editSong);
 
+async function deleteOneSong(req, res){
+    let title = req.body.title;
+    let artist = req.body.artist;
+    let userId = 1;
+
+    try {
+        const deletedSong = await model.deleteSong(userId, title, artist);
+
+    } catch (error) {
+        
+    }
+}
+
+router.delete('/song', deleteOneSong);
+
+function deleteForm(req, res){
+    res.render('delete.hbs', deleteFormDetails());
+}
+
+router.get('/delete', deleteForm);
+
+function deleteFormDetails(message, success, failure, song){
+    if (typeof message === 'undefined') message = false;
+    if (typeof error === 'undefined') error = false;
+    if (typeof success != true) successMessage = false;
+
+    return pageData = {
+        message: message,
+        success: success,
+        error: error,
+        song: song,
+        endpoint: "/song",
+        method: "post",
+        legend: "Delete a song from your collection",
+        formfields: [
+            { field: "title", pretty: "Title" },
+            { field: "artist", pretty: "Artist" }
+        ]
+    }
+
+}
+
 module.exports = {
     router,
     routeRoot
