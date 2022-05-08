@@ -264,10 +264,57 @@ test("songsModel.updateSong() rejects invalid replacement data", async () => {
 
     // Try to replace the original song with these bad values. Model should throw an InvalidInputError.
     logger.debug(`Attempting to replace \'${title}\' with \'${badTitle}\'...`);
-    await expect(async ()=>{
+    await expect(async () => {
         await songsModel.updateSong(1, title, artist, badTitle, badArtist, badGenre, badAlbum);
     }).rejects.toThrowError(errorTypes.InvalidInputError);
 
     logger.debug("TEST PASSED.");
+})
+
+test("songsModel.updateSong() doesn't crash when attempting to replace nonexistent song", async () => {
+    logger.debug("RUNNING TEST: \'songsModel.updateSong() doesn't crash when attempting to replace nonexistent song\'.");
+
+    // Generate a valid user and add them to the database.
+    const { userId, username, password } = generateUserData();
+    logger.debug("Test generated following user:");
+    logger.debug({
+        username: username,
+        password: password
+    })
+    const connection = songsModel.getConnection();
+    const userQuery = `INSERT INTO users (username, password) VALUES (?, ?)`;
+    await connection.query(userQuery, [username, password]);
+    logger.debug(`Successfully inserted \'${username}\' into users table.`);
+
+    // Generate valid replacement data without inserting a song first.
+    const newTitle = "Fly Me To The Moon";
+    const newArtist = "Frank Sinatra";
+    const newGenre = "Jazz";
+    const newAlbum = "It Might As Well Be Swing";
+    logger.debug("Test generated the following replacement song:");
+    logger.debug({
+        title: newTitle,
+        artist: newArtist,
+        genre: newGenre,
+        album: newAlbum
+    });
+
+    // Attempt to replace the nonexistent song with this replacement data.
+    const {title, artist, genre, album} = generateSongData();
+    logger.debug("Test generated following valid song without inserting it into the Songs table:");
+    logger.debug({
+        title: title,
+        artist: artist,
+        genre: genre,
+        album: album
+    });
+
+    logger.debug(`Attempting to replace the nonexistent ${title} with ${newTitle}...`);
+    await expect(async () => {
+        await songsModel.updateSong(1, title, artist, newTitle, newArtist, newGenre, newAlbum);
+    }).rejects.toThrowError(errorTypes.InvalidInputError);
+
+    logger.debug("TEST PASSED.");
+
 })
 //#endregion
