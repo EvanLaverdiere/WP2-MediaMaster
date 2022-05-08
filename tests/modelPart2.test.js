@@ -378,3 +378,63 @@ test("songsModel.updateSong() doesn't crash when database is inaccessible", asyn
 
 })
 //#endregion
+
+//#region Model DELETE Tests
+test("songsModel.deleteSong() can delete an existing song", async () => {
+    logger.debug("RUNNING TEST: \'songsModel.deleteSong() can delete an existing song\'.");
+
+    // Generate a valid user and add them to the database.
+    const { userId, username, password } = generateUserData();
+    logger.debug("Test generated following user:");
+    logger.debug({
+        username: username,
+        password: password
+    })
+    const connection = songsModel.getConnection();
+    const userQuery = `INSERT INTO users (username, password) VALUES (?, ?)`;
+    await connection.query(userQuery, [username, password]);
+    logger.debug(`Successfully inserted \'${username}\' into users table.`);
+
+    // Generate a valid song and add it to the database for that user.
+    const { title, artist, genre, album } = generateSongData();
+    logger.debug("Test generated following song:");
+    logger.debug({
+        title: title,
+        artist: artist,
+        genre: genre,
+        album: album
+    })
+    logger.debug("Attempting to insert song into Songs table...");
+    const addResult = await songsModel.addSong(title, artist, genre, album, 1);
+    logger.debug("Insertion successful.");
+
+    // Attempt to delete the passed song from the database.
+    logger.debug(`Attempting to delete ${title} from user's collection...`);
+    const deleteResult = await songsModel.deleteSong(1, title, artist);
+    logger.debug("Deleted the following record:");
+    logger.debug(deleteResult);
+
+    // Method should return an object representing the deleted song.
+    logger.debug("Verifying that deleted record's fields match those of generated song...");
+    expect(deleteResult.title === title).toBe(true);
+    expect(deleteResult.artist === artist).toBe(true);
+    expect(deleteResult.genre === genre).toBe(true);
+    if(album){
+        expect(deleteResult.album === album).toBe(true);
+    }
+    logger.debug("All fields match.");
+
+    // Query the database to confirm that the deletion took place.
+    logger.debug("Querying database to confirm successful DELETE operation...");
+    const sql = "SELECT * FROM Songs WHERE userId = 1";
+    const [records, metadata] = await connection.query(sql);
+
+    // Query should return an array of records with nothing in it.
+    logger.debug(`Query produced ${records.length} records from the Songs table.`);
+    expect(records.length).toBe(0);
+    logger.debug("Correct number of records retrieved.");
+
+    logger.debug("TEST PASSED.");
+
+})
+//#endregion
