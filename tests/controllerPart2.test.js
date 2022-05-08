@@ -57,7 +57,6 @@ test("songController.getSong() 200 success case test", async () => {
 
     // Generate a valid user and add them to the database.
     const { userId, username, password } = generateUserData();
-    // await usersModel.addUser(username, password);
 
     const connection = songsModel.getConnection();
     const userQuery = `INSERT INTO users (username, password) VALUES (?, ?)`;
@@ -76,6 +75,41 @@ test("songController.getSong() 200 success case test", async () => {
     expect(testResponse.status).toBe(200);
     logger.debug("Correct status code received.");
 
+    logger.debug("TEST PASSED.");
+})
+
+test("songController.getSong() sends 404 response for invalid song", async () => {
+    logger.debug("RUNNING TEST: \'songController.getSong() sends 404 response for invalid song\'.");
+
+    // Generate a valid user and add them to the database.
+    const { userId, username, password } = generateUserData();
+
+    const connection = songsModel.getConnection();
+    const userQuery = `INSERT INTO users (username, password) VALUES (?, ?)`;
+    await connection.query(userQuery, [username, password]);
+
+    // Generate a valid song and add them to the database.
+    const { title, artist, genre, album } = generateSongData();
+    const addResult = await songsModel.addSong(title, artist, genre, album, 1);
+
+    // Generate an invalid song.
+    const badTitle = "Wannabe";
+    const badArtist = "Spice Girls";
+    logger.debug("Test generated following invalid song:");
+    logger.debug({
+        title: badTitle,
+        artist: badArtist
+    })
+
+    // Send a GET request for this invalid song to the /song endpoint.
+    logger.debug(`Sending a GET request to the /song endpoint with query parameters for title=${badTitle} and artist=${badArtist}...`);
+    const testResponse = await testRequest.get(`/song?title=${badTitle}&artist=${badArtist}`);
+
+    // Controller should send back a 404 response code.
+    logger.debug(`Received a ${testResponse.status} response code from the songController.`);
+    expect(testResponse.status).toBe(404);
+    logger.debug("Correct status code received.");
+    
     logger.debug("TEST PASSED.");
 })
 //#endregion
