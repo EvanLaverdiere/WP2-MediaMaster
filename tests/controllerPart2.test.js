@@ -109,8 +109,38 @@ test("songController.getSong() sends 404 response for invalid song", async () =>
     logger.debug(`Received a ${testResponse.status} response code from the songController.`);
     expect(testResponse.status).toBe(404);
     logger.debug("Correct status code received.");
-    
+
     logger.debug("TEST PASSED.");
+})
+
+test("songController.getSong() sends 500 response for inaccessible database", async () => {
+    logger.debug("RUNNING TEST: \'songController.getSong() sends 500 response for inaccessible database\'.");
+
+    // Generate a valid user and add them to the database.
+    const { userId, username, password } = generateUserData();
+
+    const connection = songsModel.getConnection();
+    const userQuery = `INSERT INTO users (username, password) VALUES (?, ?)`;
+    await connection.query(userQuery, [username, password]);
+
+    // Generate a valid song and add them to the database.
+    const { title, artist, genre, album } = generateSongData();
+    const addResult = await songsModel.addSong(title, artist, genre, album, 1);
+
+    // Close the connection.
+    await connection.close();
+
+    // Send a GET request for that song to the '/song' endpoint.
+    logger.debug(`Sending a GET request to the /song endpoint with query parameters for title=${title} and artist=${artist}...`);
+    const testResponse = await testRequest.get(`/song?title=${title}&artist=${artist}`);
+
+    // Controller should send back a 500 response code.
+    logger.debug(`Received a ${testResponse.status} response code from the songController.`);
+    expect(testResponse.status).toBe(500);
+    logger.debug("Correct status code received.");
+
+    logger.debug("TEST PASSED.");
+
 })
 //#endregion
 
