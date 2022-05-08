@@ -220,4 +220,54 @@ test("songsModel.updateSong() can update an existing song with valid new data", 
 
     logger.debug("TEST PASSED.");
 })
+
+test("songsModel.updateSong() rejects invalid replacement data", async () => {
+    logger.debug("RUNNING TEST: \'songsModel.updateSong() rejects invalid replacement data\'.");
+
+    // Generate a valid user and add them to the database.
+    const { userId, username, password } = generateUserData();
+    logger.debug("Test generated following user:");
+    logger.debug({
+        username: username,
+        password: password
+    })
+    const connection = songsModel.getConnection();
+    const userQuery = `INSERT INTO users (username, password) VALUES (?, ?)`;
+    await connection.query(userQuery, [username, password]);
+    logger.debug(`Successfully inserted \'${username}\' into users table.`);
+
+    // Generate a valid song and add it to the database for that user.
+    const { title, artist, genre, album } = generateSongData();
+    logger.debug("Test generated following [original] song:");
+    logger.debug({
+        oldTitle: title,
+        oldArtist: artist,
+        oldGenre: genre,
+        oldAlbum: album
+    })
+    logger.debug("Attempting to insert song into Songs table...");
+    const addResult = await songsModel.addSong(title, artist, genre, album, 1);
+    logger.debug("Insertion successful.");
+
+    // Generate invalid replacement data.
+    const badTitle = "Sp3c1@l_M3sS";
+    const badArtist = "Vanilla Ice";
+    const badGenre = "Rock";
+    const badAlbum = "NOYB";
+    logger.debug("Test generated following invalid replacement song:");
+    logger.debug({
+        title: badTitle,
+        artist: badArtist,
+        genre: badGenre,
+        album: badAlbum
+    })
+
+    // Try to replace the original song with these bad values. Model should throw an InvalidInputError.
+    logger.debug(`Attempting to replace \'${title}\' with \'${badTitle}\'...`);
+    await expect(async ()=>{
+        await songsModel.updateSong(1, title, artist, badTitle, badArtist, badGenre, badAlbum);
+    }).rejects.toThrowError(errorTypes.InvalidInputError);
+
+    logger.debug("TEST PASSED.");
+})
 //#endregion
