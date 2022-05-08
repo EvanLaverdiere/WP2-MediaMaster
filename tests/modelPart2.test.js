@@ -419,7 +419,7 @@ test("songsModel.deleteSong() can delete an existing song", async () => {
     expect(deleteResult.title === title).toBe(true);
     expect(deleteResult.artist === artist).toBe(true);
     expect(deleteResult.genre === genre).toBe(true);
-    if(album){
+    if (album) {
         expect(deleteResult.album === album).toBe(true);
     }
     logger.debug("All fields match.");
@@ -436,5 +436,37 @@ test("songsModel.deleteSong() can delete an existing song", async () => {
 
     logger.debug("TEST PASSED.");
 
+})
+
+test("songsModel.deleteSong() cannot delete a nonexistent song", async () => {
+    logger.debug("RUNNING TEST: \'songsModel.deleteSong() cannot delete a nonexistent song\'.");
+
+    // Generate a valid user and add them to the database.
+    const { userId, username, password } = generateUserData();
+    logger.debug("Test generated following user:");
+    logger.debug({
+        username: username,
+        password: password
+    })
+    const connection = songsModel.getConnection();
+    const userQuery = `INSERT INTO users (username, password) VALUES (?, ?)`;
+    await connection.query(userQuery, [username, password]);
+    logger.debug(`Successfully inserted \'${username}\' into users table.`);
+
+    // Attempt to delete a song which hasn't been entered into the database yet.
+    const { title, artist, genre, album } = generateSongData();
+    logger.debug("Test generated following song without inserting it into the database:");
+    logger.debug({
+        title: title,
+        artist: artist,
+        genre: genre,
+        album: album
+    });
+    logger.debug(`Attempting to delete ${title} from user's collection...`);
+    await expect(async () => {
+        await songsModel.deleteSong(1, title, artist);
+    }).rejects.toThrowError(errorTypes.InvalidInputError);
+
+    logger.debug("TEST PASSED.");
 })
 //#endregion
