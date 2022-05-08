@@ -342,5 +342,45 @@ test("songController.editSong() sends 500 response when database is inaccessible
 //#endregion
 
 //#region Controller DELETE Tests
+test("songController.deleteOneSong() 200 success case test", async () => {
+    logger.debug("RUNNING TEST: \'songController.deleteOneSong() 200 success case test\'.");
 
+    // Generate a valid user and add them to the database.
+    const { userId, username, password } = generateUserData();
+
+    const connection = songsModel.getConnection();
+    const userQuery = `INSERT INTO users (username, password) VALUES (?, ?)`;
+    await connection.query(userQuery, [username, password]);
+
+    // Generate a valid song and add them to the database.
+    const { title, artist, genre, album } = generateSongData();
+    logger.debug("Test generated the following valid [original] song:");
+    logger.debug({
+        title: title,
+        artist: artist,
+        genre: genre,
+        album: album
+    });
+    const addResult = await songsModel.addSong(title, artist, genre, album, 1);
+
+    // Send a DELETE request to the /song endpoint with body parameters for title and artist.
+    logger.debug(`Sending a DELETE request to the /song endpoint with the following body parameters:`);
+    logger.debug({
+        title: title,
+        artist: artist
+    });
+    testResponse = await testRequest.delete('/song')
+        .send({
+            title: title,
+            artist: artist
+        });
+
+    // Controller should send back a 200 response code.
+    logger.debug(`Received a ${testResponse.status} response code from the songController.`);
+    expect(testResponse.status).toBe(200);
+    logger.debug("Correct status code received.");
+
+    logger.debug("TEST PASSED.");
+
+})
 //#endregion
