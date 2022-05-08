@@ -207,6 +207,70 @@ test("songController.editSong() 200 success case test", async () => {
     logger.debug("TEST PASSED.");
 
 })
+
+test("songController.editSong() sends 404 response for invalid new data", async () => {
+    logger.debug("RUNNING TEST: \'songController.editSong() sends 404 response for invalid new data\'.");
+
+    // Generate a valid user and add them to the database.
+    const { userId, username, password } = generateUserData();
+
+    const connection = songsModel.getConnection();
+    const userQuery = `INSERT INTO users (username, password) VALUES (?, ?)`;
+    await connection.query(userQuery, [username, password]);
+
+    // Generate a valid song and add them to the database.
+    const { title, artist, genre, album } = generateSongData();
+    logger.debug("Test generated the following valid [original] song:");
+    logger.debug({
+        title: title,
+        artist: artist,
+        genre: genre,
+        album: album
+    });
+    const addResult = await songsModel.addSong(title, artist, genre, album, 1);
+
+    // Generate invalid replacement data.
+    const badTitle = "Sp3c1@l_M3sS";
+    const badArtist = "Vanilla Ice";
+    const badGenre = "Rock";
+    const badAlbum = "NOYB";
+    logger.debug("Test generated following invalid replacement song:");
+    logger.debug({
+        title: badTitle,
+        artist: badArtist,
+        genre: badGenre,
+        album: badAlbum
+    })
+
+    // Send a PUT request to the /song endpoint with this invalid replacement data.
+    logger.debug("Sending a PUT request to the /song endpoint with the following body parameters:");
+    logger.debug({
+        oldTitle: title,
+        oldArtist: artist,
+        newTitle: badTitle,
+        newArtist: badArtist,
+        newGenre: badGenre,
+        newAlbum: badAlbum
+    });
+    const testResponse = await testRequest.put('/song')
+        .send({
+            oldTitle: title,
+            oldArtist: artist,
+            newTitle: badTitle,
+            newArtist: badArtist,
+            newGenre: badGenre,
+            newAlbum: badAlbum
+        });
+
+    // Controller should send back a 404 response.
+    logger.debug(`Received a ${testResponse.status} response code from the songController.`);
+    expect(testResponse.status).toBe(404);
+    logger.debug("Correct status code received.");
+
+    logger.debug("TEST PASSED.");
+
+
+})
 //#endregion
 
 //#region Controller DELETE Tests
