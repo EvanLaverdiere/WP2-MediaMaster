@@ -469,4 +469,46 @@ test("songsModel.deleteSong() cannot delete a nonexistent song", async () => {
 
     logger.debug("TEST PASSED.");
 })
+
+test("songsModel.deleteSong() doesn't crash when database is inaccessible", async () => {
+    logger.debug("RUNNING TEST: \'songsModel.deleteSong() doesn't crash when database is inaccessible\'.");
+
+    // Generate a valid user and add them to the database.
+    const { userId, username, password } = generateUserData();
+    logger.debug("Test generated following user:");
+    logger.debug({
+        username: username,
+        password: password
+    })
+    const connection = songsModel.getConnection();
+    const userQuery = `INSERT INTO users (username, password) VALUES (?, ?)`;
+    await connection.query(userQuery, [username, password]);
+    logger.debug(`Successfully inserted \'${username}\' into users table.`);
+
+    // Generate a valid song and add it to the database for that user.
+    const { title, artist, genre, album } = generateSongData();
+    logger.debug("Test generated following song:");
+    logger.debug({
+        title: title,
+        artist: artist,
+        genre: genre,
+        album: album
+    })
+    logger.debug("Attempting to insert song into Songs table...");
+    const addResult = await songsModel.addSong(title, artist, genre, album, 1);
+    logger.debug("Insertion successful.");
+
+    // Close the connection.
+    logger.debug("Closing the connection...");
+    await connection.close();
+    logger.debug("Connection closed.");
+
+    // Attempt to delete the song. Should throw a DatabaseError.
+    logger.debug(`Attempting to delete ${title} from user's collection while connection is closed...`);
+    await expect(async () => {
+        await songsModel.deleteSong(1, title, artist);
+    }).rejects.toThrowError(errorTypes.DatabaseError);
+
+    logger.debug("TEST PASSED.");
+})
 //#endregion
