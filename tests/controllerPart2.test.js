@@ -52,7 +52,32 @@ const generateSongData = () => {
 }
 
 //#region Controller GET Tests
+test("songController.getSong() 200 success case test", async () => {
+    logger.debug("RUNNING TEST: \'songController.getSong() 200 success case test\'.");
 
+    // Generate a valid user and add them to the database.
+    const { userId, username, password } = generateUserData();
+    // await usersModel.addUser(username, password);
+
+    const connection = songsModel.getConnection();
+    const userQuery = `INSERT INTO users (username, password) VALUES (?, ?)`;
+    await connection.query(userQuery, [username, password]);
+
+    // Generate a valid song and add them to the database.
+    const { title, artist, genre, album } = generateSongData();
+    const addResult = await songsModel.addSong(title, artist, genre, album, 1);
+
+    // Send a GET request for that song to the '/song' endpoint.
+    logger.debug(`Sending a GET request to the /song endpoint with query parameters for title=${title} and artist=${artist}...`);
+    const testResponse = await testRequest.get(`/song?title=${title}&artist=${artist}`);
+
+    // Controller should send back a 200 response code.
+    logger.debug(`Received a ${testResponse.status} response code from the songController.`);
+    expect(testResponse.status).toBe(200);
+    logger.debug("Correct status code received.");
+
+    logger.debug("TEST PASSED.");
+})
 //#endregion
 
 //#region Controller UPDATE Tests
