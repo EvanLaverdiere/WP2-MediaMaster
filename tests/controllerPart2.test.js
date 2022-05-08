@@ -383,4 +383,46 @@ test("songController.deleteOneSong() 200 success case test", async () => {
     logger.debug("TEST PASSED.");
 
 })
+
+test("songController.deleteOneSong() sends 404 response for invalid song", async () => {
+    logger.debug("RUNNING TEST: \'songController.deleteOneSong() sends 404 response for invalid song\'.");
+
+    // Generate a valid user and add them to the database.
+    const { userId, username, password } = generateUserData();
+
+    const connection = songsModel.getConnection();
+    const userQuery = `INSERT INTO users (username, password) VALUES (?, ?)`;
+    await connection.query(userQuery, [username, password]);
+
+    // Attempt to delete a song which hasn't been entered into the database yet.
+    const { title, artist, genre, album } = generateSongData();
+    logger.debug("Test generated following song without inserting it into the database:");
+    logger.debug({
+        title: title,
+        artist: artist,
+        genre: genre,
+        album: album
+    });
+
+    // Send a DELETE request to the /song endpoint with body parameters for title and artist.
+    logger.debug(`Sending a DELETE request to the /song endpoint with the following body parameters:`);
+    logger.debug({
+        title: title,
+        artist: artist
+    });
+
+    testResponse = await testRequest.delete('/song')
+        .send({
+            title: title,
+            artist: artist
+        });
+
+    // Controller should send back a 404 response.
+    logger.debug(`Received a ${testResponse.status} response code from the songController.`);
+    expect(testResponse.status).toBe(404);
+    logger.debug("Correct status code received.");
+
+    logger.debug("TEST PASSED.");
+
+})
 //#endregion
