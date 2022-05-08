@@ -148,3 +148,76 @@ test("songsModel.getOneSong() doesn't crash if the database is inaccessible", as
     logger.debug("TEST PASSED.");
 })
 //#endregion
+
+//#region Model UPDATE Tests
+test("songsModel.updateSong() can update an existing song with valid new data", async () => {
+    logger.debug("RUNNING TEST: \'songsModel.updateSong() can update an existing song with valid new data\'.");
+
+    // Generate a valid user and add them to the database.
+    const { userId, username, password } = generateUserData();
+    logger.debug("Test generated following user:");
+    logger.debug({
+        username: username,
+        password: password
+    })
+    const connection = songsModel.getConnection();
+    const userQuery = `INSERT INTO users (username, password) VALUES (?, ?)`;
+    await connection.query(userQuery, [username, password]);
+    logger.debug(`Successfully inserted \'${username}\' into users table.`);
+
+    // Generate a valid song and add it to the database for that user.
+    const { title, artist, genre, album } = generateSongData();
+    logger.debug("Test generated following [original] song:");
+    logger.debug({
+        oldTitle: title,
+        oldArtist: artist,
+        oldGenre: genre,
+        oldAlbum: album
+    })
+    logger.debug("Attempting to insert song into Songs table...");
+    const addResult = await songsModel.addSong(title, artist, genre, album, 1);
+    logger.debug("Insertion successful.");
+
+    // Generate valid replacement data.
+    const newTitle = "Fly Me To The Moon";
+    const newArtist = "Frank Sinatra";
+    const newGenre = "Jazz";
+    const newAlbum = "It Might As Well Be Swing";
+    logger.debug("Test generated the following replacement song:");
+    logger.debug({
+        title: newTitle,
+        artist: newArtist,
+        genre: newGenre,
+        album: newAlbum
+    });
+
+    // Attempt to replace the original song's data with this replacement data.
+    logger.debug(`Attempting to replace \'${title}\' with \'${newTitle}\'...`);
+    const updateResult = await songsModel.updateSong(1, title, artist, newTitle, newArtist, newGenre, newAlbum);
+
+    // The model should return the number of rows changed in the database. The number should be 1.
+    logger.debug(`Operation changed ${updateResult} records in the Songs table.`);
+    expect(updateResult).toBe(1);
+    logger.debug("Correct number of records changed.");
+
+    // Query the database directly to confirm that the replacement took place.
+    logger.debug("Querying database to confirm successful UPDATE operation...");
+    const sql = "SELECT * FROM Songs WHERE userId = 1";
+    const [records, metadata] = await connection.query(sql);
+
+    // Query should produce an array containing a single record.
+    logger.debug(`Query retrieved ${records.length} records from the Songs table.`);
+    expect(records.length).toBe(1);
+    logger.debug("Correct number of records retrieved.");
+
+    // This record's values should match the generated replacement data.
+    logger.debug("Verifying that retrieved record matches the replacement song...");
+    expect(records[0].title === newTitle).toBe(true);
+    expect(records[0].artist === newArtist).toBe(true);
+    expect(records[0].genre === newGenre).toBe(true);
+    expect(records[0].album === newAlbum).toBe(true);
+    logger.debug("All fields match.");
+
+    logger.debug("TEST PASSED.");
+})
+//#endregion
