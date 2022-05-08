@@ -271,6 +271,74 @@ test("songController.editSong() sends 404 response for invalid new data", async 
 
 
 })
+
+test("songController.editSong() sends 500 response when database is inaccessible", async () => {
+    logger.debug("RUNNING TEST: \'songController.editSong() sends 500 response when database is inaccessible\'.");
+
+    // Generate a valid user and add them to the database.
+    const { userId, username, password } = generateUserData();
+
+    const connection = songsModel.getConnection();
+    const userQuery = `INSERT INTO users (username, password) VALUES (?, ?)`;
+    await connection.query(userQuery, [username, password]);
+
+    // Generate a valid song and add them to the database.
+    const { title, artist, genre, album } = generateSongData();
+    logger.debug("Test generated the following valid [original] song:");
+    logger.debug({
+        title: title,
+        artist: artist,
+        genre: genre,
+        album: album
+    });
+    const addResult = await songsModel.addSong(title, artist, genre, album, 1);
+
+    // Generate a valid replacement song.
+    const newTitle = "Fly Me To The Moon";
+    const newArtist = "Frank Sinatra";
+    const newGenre = "Jazz";
+    const newAlbum = "It Might As Well Be Swing";
+    logger.debug("Test generated the following replacement song:");
+    logger.debug({
+        title: newTitle,
+        artist: newArtist,
+        genre: newGenre,
+        album: newAlbum
+    });
+
+    // Close the connection.
+    logger.debug("Closing connection...");
+    await connection.close();
+    logger.debug("Connection closed.");
+
+    // Send a PUT request to the /song endpoint containing the titles, artists, genre, and album fields.
+    logger.debug("Sending a PUT request to the /song endpoint with the following body parameters while connection is closed:");
+    logger.debug({
+        oldTitle: title,
+        oldArtist: artist,
+        newTitle: newTitle,
+        newArtist: newArtist,
+        newGenre: newGenre,
+        newAlbum: newAlbum
+    });
+    const testResponse = await testRequest.put('/song')
+        .send({
+            oldTitle: title,
+            oldArtist: artist,
+            newTitle: newTitle,
+            newArtist: newArtist,
+            newGenre: newGenre,
+            newAlbum: newAlbum
+        });
+
+    // Controller should send back a 500 response code.
+    logger.debug(`Received a ${testResponse.status} response code from the songController.`);
+    expect(testResponse.status).toBe(500);
+    logger.debug("Correct status code received.");
+
+    logger.debug("TEST PASSED.");
+
+})
 //#endregion
 
 //#region Controller DELETE Tests
