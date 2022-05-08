@@ -425,4 +425,52 @@ test("songController.deleteOneSong() sends 404 response for invalid song", async
     logger.debug("TEST PASSED.");
 
 })
+
+test("songController.deleteOneSong() sends 500 response when database is inaccessible", async () => {
+    logger.debug("RUNNING TEST: \'songController.deleteOneSong() sends 500 response when database is inaccessible\'.");
+
+    // Generate a valid user and add them to the database.
+    const { userId, username, password } = generateUserData();
+
+    const connection = songsModel.getConnection();
+    const userQuery = `INSERT INTO users (username, password) VALUES (?, ?)`;
+    await connection.query(userQuery, [username, password]);
+
+    // Generate a valid song and add them to the database.
+    const { title, artist, genre, album } = generateSongData();
+    logger.debug("Test generated the following valid [original] song:");
+    logger.debug({
+        title: title,
+        artist: artist,
+        genre: genre,
+        album: album
+    });
+    const addResult = await songsModel.addSong(title, artist, genre, album, 1);
+
+    // Close the connection.
+    logger.debug("Closing connection...");
+    await connection.close();
+    logger.debug("Connection closed.");
+
+    // Send a DELETE request to the /song endpoint while the connection is closed.
+    logger.debug(`Sending a DELETE request to the /song endpoint with the following body parameters while the connection is closed:`);
+    logger.debug({
+        title: title,
+        artist: artist
+    });
+
+    testResponse = await testRequest.delete('/song')
+        .send({
+            title: title,
+            artist: artist
+        });
+
+    // Controller should send back a 500 status response code.
+    logger.debug(`Received a ${testResponse.status} response code from the songController.`);
+    expect(testResponse.status).toBe(500);
+    logger.debug("Correct status code received.");
+
+    logger.debug("TEST PASSED.");
+
+})
 //#endregion
