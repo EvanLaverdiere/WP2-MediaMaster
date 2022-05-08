@@ -138,9 +138,12 @@ test("songsModel.getOneSong() doesn't crash if the database is inaccessible", as
 
     // Close the database connection.
     // const connection = songsModel.getConnection();
+    logger.debug("Closing connection...");
     await connection.close();
+    logger.debug("Connection closed.");
 
     // Attempt to retrieve the song using getOneSong(). Should throw a DatabaseError.
+    logger.debug(`Attempting to retrieve \'${title}\' from the Songs table while connection is closed...`);
     await expect(async () => {
         await songsModel.getOneSong(1, title, artist);
     }).rejects.toThrowError(errorTypes.DatabaseError);
@@ -300,7 +303,7 @@ test("songsModel.updateSong() doesn't crash when attempting to replace nonexiste
     });
 
     // Attempt to replace the nonexistent song with this replacement data.
-    const {title, artist, genre, album} = generateSongData();
+    const { title, artist, genre, album } = generateSongData();
     logger.debug("Test generated following valid song without inserting it into the Songs table:");
     logger.debug({
         title: title,
@@ -315,6 +318,63 @@ test("songsModel.updateSong() doesn't crash when attempting to replace nonexiste
     }).rejects.toThrowError(errorTypes.InvalidInputError);
 
     logger.debug("TEST PASSED.");
+
+})
+
+test("songsModel.updateSong() doesn't crash when database is inaccessible", async () => {
+    logger.debug("RUNNING TEST: \'songsModel.updateSong() doesn't crash when database is inaccessible\'.");
+
+    // Generate a valid user and add them to the database.
+    const { userId, username, password } = generateUserData();
+    logger.debug("Test generated following user:");
+    logger.debug({
+        username: username,
+        password: password
+    })
+    const connection = songsModel.getConnection();
+    const userQuery = `INSERT INTO users (username, password) VALUES (?, ?)`;
+    await connection.query(userQuery, [username, password]);
+    logger.debug(`Successfully inserted \'${username}\' into users table.`);
+
+    // Generate a valid song and add it to the database for that user.
+    const { title, artist, genre, album } = generateSongData();
+    logger.debug("Test generated following [original] song:");
+    logger.debug({
+        oldTitle: title,
+        oldArtist: artist,
+        oldGenre: genre,
+        oldAlbum: album
+    })
+    logger.debug("Attempting to insert song into Songs table...");
+    const addResult = await songsModel.addSong(title, artist, genre, album, 1);
+    logger.debug("Insertion successful.");
+
+    // Generate valid replacement data.
+    const newTitle = "Fly Me To The Moon";
+    const newArtist = "Frank Sinatra";
+    const newGenre = "Jazz";
+    const newAlbum = "It Might As Well Be Swing";
+    logger.debug("Test generated the following replacement song:");
+    logger.debug({
+        title: newTitle,
+        artist: newArtist,
+        genre: newGenre,
+        album: newAlbum
+    });
+
+    // Close the database connection.
+    logger.debug("Closing the connection...");
+    await connection.close();
+    logger.debug("Connection closed.");
+
+    // Attempt to replace the original song with the new values. Should throw a DatabaseError.
+    logger.debug(`Attempting to replace \'${title}\' with \'${newTitle}\' while the connection is closed...`);
+    await expect(async () => {
+        await songsModel.updateSong(1, title, artist, newTitle, newArtist, newGenre, newAlbum);
+    }).rejects.toThrowError(errorTypes.DatabaseError);
+
+    logger.debug("TEST PASSED.");
+
 
 })
 //#endregion
