@@ -16,6 +16,7 @@ beforeEach(async () => {
         // await usersModel.addUser("MusicLover95", "I_luv_songs");
     }
     catch (error) {
+        logger.error(error);
         // Fail gracefully.
     }
 });
