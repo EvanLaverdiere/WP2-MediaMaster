@@ -1,5 +1,5 @@
 const mysql = require('mysql2/promise');
-const validate = require('../validation/validateUtils');
+const validate = require('./validateUtils');
 const logger = require('../logger');
 const bcrypt = require('bcrypt'); //TODO: Document that you've added bcrypt module.
 const errorTypes = require('./errorModel.js');
@@ -52,7 +52,7 @@ async function initialize(dbname, reset) {
     }
     catch (error) {
         logger.error(error);
-        throw new errorTypes.DatabaseError();
+        throw new errorTypes.DatabaseError("The database is offline.");
     }
 }
 
@@ -103,7 +103,7 @@ async function getUser(username, password) {
 
     //check if username and password match in db
     if (!validated)
-        throw new errorTypes.AuthenticationError("Authentication failed.");
+        throw new errorTypes.AuthenticationError("Username and/or password are invalid.");
 
     let sqlQuery = "SELECT username, password FROM users WHERE username = "
         + connection.escape(username);

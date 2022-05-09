@@ -48,7 +48,7 @@ async function addUser(request, response) {
             response.status(400);
             response.render('register.hbs', {
                 failureMessage: true,
-                message: "Failed to register: invalid input.",
+                message: "Failed to register: invalid input. " + err.message,
                 endpoint: "/users",
                 method: "post"
             });
@@ -57,7 +57,7 @@ async function addUser(request, response) {
             response.status(400);
             response.render('register.hbs', {
                 failureMessage: true,
-                message: "Failed to register: user already exists.",
+                message: "Failed to register: " + err.message,
                 endpoint: "/users",
                 method: "post"
             });
@@ -66,7 +66,7 @@ async function addUser(request, response) {
             response.status(500);
             response.render('register.hbs', {
                 failureMessage: true,
-                message: "Failed to register: something wrong happened in the database.",
+                message: "Failed to register: "+ err.message,
                 endpoint: "/users",
                 method: "post"
             });
@@ -75,7 +75,7 @@ async function addUser(request, response) {
             response.status(500);
             response.render('register.hbs', {
                 failureMessage: true,
-                message: "Failed to register: unknown cause.",
+                message: "Failed to register: unknown cause. " + err.message,
                 endpoint: "/users",
                 method: "post"
             });

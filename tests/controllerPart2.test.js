@@ -14,6 +14,7 @@ beforeEach(async () => {
         await songsModel.initialize(dbName, true);
     }
     catch (error) {
+        logger.error(error);
         // Fail gracefully.
     }
 });
