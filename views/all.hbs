@@ -1,0 +1,22 @@
+<body>
+    <div id="tableDiv">
+        <table id="listAllTable">
+            <tr>
+                <th>Title</th>
+                <th>Artist</th>
+                <th>Genre</th>
+                <th>Album</th>
+            </tr>
+            {{#each song}}
+            <tr>
+                <td>{{title}}</td>
+                <td>{{artist}}</td>
+                <td>{{genre}}</td>
+                <td>{{album}}</td>
+            </tr>
+            {{/each}}
+
+        </table>
+    </div>
+
+</body>
