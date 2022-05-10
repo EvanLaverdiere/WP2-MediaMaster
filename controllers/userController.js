@@ -9,8 +9,8 @@ const errorTypes = require('../models/errorModel.js');
  function showLoginForm(request, response) {
     const pageData = {
         message: false,
-        endpoint: "/users",
-        method: "get",
+        endpoint: "/user",
+        method: "post",
     }
     response.render('login.hbs', pageData);
 }
@@ -42,7 +42,8 @@ async function addUser(request, response) {
             successMessage: true,
             message: "Successfully registered user!",
             username: username,
-            colors: ["Red", "Green", "Blue", "Yellow"]
+            colors: ["Dark", "Light"],
+            languages: ["English", "French"]
         });
     }
     catch (err) {
@@ -98,7 +99,8 @@ async function getUser(request, response){
             successMessage: true,
             message: "Successfully logged in!",
             username: username,
-            colors: ["Red", "Green", "Blue", "Yellow"]
+            colors: ["Dark", "Light"],
+            languages: ["English", "French"]
         });
         //TODO: response.render
     }
