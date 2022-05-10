@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "jest --verbose ./tests --runInBand",
+    "test": "jest -t --verbose ./tests/modelPart1.test.js --runInBand --detectOpenHandles",
     "start": "node server.js"
   },
   "repository": {
