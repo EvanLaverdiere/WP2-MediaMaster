@@ -99,7 +99,7 @@ router.get('/songs', allSongs)
 async function getSong(req, res) {
     let targetTitle = req.query.title;
     let targetArtist = req.query.artist;
-    let userId = 1;
+    let userId = req.cookies.userId;
 
     // try{
     //     let {title, artist, genre, album} = await model.getOneSong(userId, targetTitle, targetArtist);
