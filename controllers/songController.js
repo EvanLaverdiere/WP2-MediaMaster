@@ -8,7 +8,7 @@ const { InvalidInputError, DatabaseError } = require('../models/errorModel.js');
 const router = express.Router();
 const routeRoot = '/';
 
-//#region ADD Endpoints
+//#region ADD Endpoint
 /**
  * Endpoint reached after user submits the add form to add a song.
  * It reads the input from the user through the body of the request.
@@ -36,36 +36,8 @@ async function add(req, res) {
 }
 router.post('/song', add)
 
-/**
- * End point reached after user clicks in the navbar the add button.
- * This endpoint calls the addform function which renders an add form to add a song.
- * Sending some details for the creation of the form.
- * Such as endpoint, method, fields for adding a song, and all the genres
- * @param {*} req 
- * @param {*} res 
- */
-function addForm(req, res) {
+ function showAddForm(res) {
     res.render('add.hbs', addFormDetails());
-}
-router.get('/addForm', addForm)
-
-
-function addFormDetails(message, error, success) {
-    if (typeof message === 'undefined') message = false;
-    if (typeof error === 'undefined') error = false;
-    if (typeof success != true) successMessage = false;
-    return pageData = {
-        message: message,
-        success: success,
-        error: error,
-        endpoint: "/song",
-        method: "post",
-        legend: "Enter details to add a song",
-        formfields: [{ field: "title", pretty: "Title" },
-        { field: "artist", pretty: "Artist" },
-        { field: "album", pretty: "Album", album: true }],
-        genres: model.allGenres()
-    }
 }
 
 //#endregion
@@ -93,8 +65,7 @@ router.get('/songs', allSongs)
 //#endregion
 
 
-
-
+//#region GET song
 
 async function getSong(req, res) {
     let targetTitle = req.query.title;
@@ -130,35 +101,15 @@ async function getSong(req, res) {
     }
 
 }
-
 router.get('/song', getSong);
 
-function getOneForm(req, res) {
+function showOneForm(res) {
     res.render('getOne.hbs', getFormDetails());
 }
+//#endregion
 
-router.get('/getOne', getOneForm)
 
-function getFormDetails(message, error, success, song) {
-    if (typeof message === 'undefined') message = false;
-    if (typeof error === 'undefined') error = false;
-    if (typeof success != true) successMessage = false;
-
-    return pageData = {
-        message: message,
-        success: success,
-        error: error,
-        song: song,
-        endpoint: "/song",
-        method: "get",
-        legend: "Search for a specific song by title and artist",
-        formfields: [
-            { field: "title", pretty: "Title" },
-            { field: "artist", pretty: "Artist" }
-        ]
-    }
-}
-
+//#region EDIT song
 async function editSong(req, res) {
     let oldTitle = req.body.oldTitle;
     let oldArtist = req.body.oldArtist;
@@ -195,80 +146,15 @@ async function editSong(req, res) {
 
     }
 }
-
-function editForm(req, res) {
-    res.render('edit.hbs', editFormDetails());
-}
-
-router.get('/edit', editForm);
-
-function editFormDetails(message, error, success, song) {
-    if (typeof message === 'undefined') message = false;
-    if (typeof error === 'undefined') error = false;
-    if (typeof success != true) successMessage = false;
-
-    return pageData = {
-        message: message,
-        success: success,
-        error: error,
-        song: song,
-        endpoint: "/song",
-        method: "post",
-        legend: "Edit or replace an existing song",
-        formfields: [
-            { field: "oldTitle", pretty: "Old Title", title: true },
-            { field: "oldArtist", pretty: "Old Artist" },
-            { field: "newTitle", pretty: "New Title" },
-            { field: "newArtist", pretty: "New Artist" },
-            // { field: "newGenre", pretty: "New Genre", genre: true },
-            { field: "newAlbum", pretty: "New Album" }
-        ],
-        // titles: model.getAllTitles(1),
-        newGenre: model.allGenres()
-    }
-
-}
-
 router.put('/song', editSong);
 
 
-
-/** Show the appropriate form based on user choice */
-function showForm(request, response) {
-    switch (request.body.choice) {
-        case 'add':
-            showAddForm(response);
-            break;
-        case 'show':
-            showShowForm(response);
-            break;
-        case 'list':
-            response.redirect('/songs');
-            break;
-        case 'edit':
-            showEditForm(response);
-            break;
-        case 'delete':
-            showDeleteForm(response);
-            break;
-        default:
-            response.render('home.hbs');
-    }
-} // no valid choice made
-router.post('/forms', showForm);
-
-/**
- * End point reached after user clicks in the navbar the add button.
- * This endpoint calls the addform function which renders an add form to add a song.
- * Sending some details for the creation of the form.
- * Such as endpoint, method, fields for adding a song, and all the genres
- * @param {*} req 
- * @param {*} res 
- */
- function showAddForm(res) {
-    res.render('add.hbs', addFormDetails());
+function showEditForm(res) {
+    res.render('edit.hbs', editFormDetails());
 }
+//#endregion
 
+//#region DELETE song
 async function deleteOneSong(req, res){
     let title = req.body.title;
     let artist = req.body.artist;
@@ -298,12 +184,74 @@ async function deleteOneSong(req, res){
 
 router.delete('/song', deleteOneSong);
 
-function deleteForm(req, res){
+function showDeleteForm(res){
     res.render('delete.hbs', deleteFormDetails());
 }
+//#endregion
 
-router.get('/delete', deleteForm);
+//#region Form Details
+function addFormDetails(message, error, success) {
+    if (typeof message === 'undefined') message = false;
+    if (typeof error === 'undefined') error = false;
+    if (typeof success != true) successMessage = false;
+    return pageData = {
+        message: message,
+        success: success,
+        error: error,
+        endpoint: "/song",
+        method: "post",
+        legend: "Enter details to add a song",
+        formfields: [{ field: "title", pretty: "Title" },
+        { field: "artist", pretty: "Artist" },
+        { field: "album", pretty: "Album", album: true }],
+        genres: model.allGenres()
+    }
+}
+function getFormDetails(message, error, success, song) {
+    if (typeof message === 'undefined') message = false;
+    if (typeof error === 'undefined') error = false;
+    if (typeof success != true) successMessage = false;
 
+    return pageData = {
+        message: message,
+        success: success,
+        error: error,
+        song: song,
+        endpoint: "/song",
+        method: "get",
+        legend: "Search for a specific song by title and artist",
+        formfields: [
+            { field: "title", pretty: "Title" },
+            { field: "artist", pretty: "Artist" }
+        ]
+    }
+}
+function editFormDetails(message, error, success, song) {
+    if (typeof message === 'undefined') message = false;
+    if (typeof error === 'undefined') error = false;
+    if (typeof success != true) successMessage = false;
+
+    return pageData = {
+        message: message,
+        success: success,
+        error: error,
+        song: song,
+        endpoint: "/song",
+        method: "post",
+        legend: "Edit or replace an existing song",
+        formfields: [
+            { field: "oldTitle", pretty: "Old Title", title: true },
+            { field: "oldArtist", pretty: "Old Artist" },
+            { field: "newTitle", pretty: "New Title" },
+            { field: "newArtist", pretty: "New Artist" },
+            // { field: "newGenre", pretty: "New Genre", genre: true },
+            { field: "newAlbum", pretty: "New Album" }
+        ],
+        // titles: model.getAllTitles(1),
+        newGenre: model.allGenres()
+    }
+
+}
 function deleteFormDetails(message, error, success, song){
     if (typeof message === 'undefined') message = false;
     if (typeof error === 'undefined') error = false;
@@ -325,6 +273,31 @@ function deleteFormDetails(message, error, success, song){
 
 }
 
+//#endregion
+
+/** Show the appropriate form based on user choice */
+function showForm(request, response) {
+    switch (request.body.choice) {
+        case 'add':
+            showAddForm(response);
+            break;
+        case 'show':
+            showOneForm(response);
+            break;
+        case 'list':
+            response.redirect('/songs');
+            break;
+        case 'edit':
+            showEditForm(response);
+            break;
+        case 'delete':
+            showDeleteForm(response);
+            break;
+        default:
+            response.render('home.hbs');
+    }
+} // no valid choice made
+router.post('/songForm', showForm);
 module.exports = {
     router,
     routeRoot

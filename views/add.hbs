@@ -41,13 +41,17 @@
         <form action="{{endpoint}}" method="{{method}}" class="forms" role="form" name="myForm"
             enctype="application/x-www-form-urlencoded">
             <legend>{{legend}}</legend>
+                          <div class="mb-3">
+
             {{#each formfields}}
-            <label for="{{field}}">{{pretty}}</label><br>
+
+            <label for="{{field}}" class="form-label">{{pretty}}</label><br>
             {{#if album}}
-            <input type="text" name="{{field}}"><br>
+            <input class="form-control" type="text" name="{{field}}"><br>
             {{else}}
             <input type="text" id="{{field}}" name="{{field}}" required><br>
             {{/if}}
+              
             {{/each}}
             <label for="genre">Genres</label><br>           
             <select name="genres">
@@ -55,7 +59,7 @@
                 <option value="{{this}}">{{this}}</option>
                 {{/each}}
             </select><br>
-
+</div>
             <br>
             <br><button type="submit" id="marginTop" class="btn btn-outline-light">Submit</button>
         </form>
