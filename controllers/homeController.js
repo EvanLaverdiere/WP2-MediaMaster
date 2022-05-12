@@ -21,6 +21,8 @@ function renderAbout(req, res) {
 }
 router.get('/aboutUs', renderAbout)
 
+
+
 module.exports = {
     router,
     routeRoot

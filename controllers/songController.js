@@ -194,6 +194,61 @@ async function editSong(req, res) {
 
 router.put('/song', editSong);
 
+
+
+/** Show the appropriate form based on user choice */
+function showForm(request, response) {
+    switch (request.body.choice) {
+        case 'add':
+            showAddForm(response);
+            break;
+        case 'show':
+            showShowForm(response);
+            break;
+        case 'list':
+            response.redirect('/songs');
+            break;
+        case 'edit':
+            showEditForm(response);
+            break;
+        case 'delete':
+            showDeleteForm(response);
+            break;
+        default:
+            response.render('home.hbs');
+    }
+} // no valid choice made
+router.post('/forms', showForm);
+
+/**
+ * End point reached after user clicks in the navbar the add button.
+ * This endpoint calls the addform function which renders an add form to add a song.
+ * Sending some details for the creation of the form.
+ * Such as endpoint, method, fields for adding a song, and all the genres
+ * @param {*} req 
+ * @param {*} res 
+ */
+ function showAddForm(res) {
+    res.render('add.hbs', addFormDetails());
+}
+
+function addFormDetails(message, error, success) {
+    if (typeof message === 'undefined') message = false;
+    if (typeof error === 'undefined') error = false;
+    if (typeof success != true) successMessage = false;
+    return pageData = {
+        message: message,
+        success: success,
+        error: error,
+        endpoint: "/song",
+        method: "post",
+        legend: "Enter details to add a song",
+        formfields: [{ field: "title", pretty: "Title" },
+        { field: "artist", pretty: "Artist" },
+        { field: "album", pretty: "Album", album: true }],
+        genres: model.allGenres()
+    }
+}
 module.exports = {
     router,
     routeRoot
