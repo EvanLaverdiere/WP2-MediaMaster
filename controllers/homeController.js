@@ -3,6 +3,12 @@ const router = express.Router();
 const routeRoot = '/';
 const model = require('../models/songModelMySql')
 
+class Tracker{
+    constructor(username){
+        this.username = username
+    }
+}
+
 function renderHome(req, res) {
     res.render('home.hbs',
     {

@@ -1,6 +1,13 @@
 const validator = require('validator');
+<<<<<<< HEAD
 const model = require('../models/userModelMySql.js');
 const errorTypes = require('../models/errorModel.js');
+=======
+const model = require('../models/userModelMySql');
+const errorTypes = require('../models/errorModel');
+const bcrypt = require('bcrypt'); //TODO: Document that you've added bcrypt module.
+const logger = require('../logger.js');
+>>>>>>> 98e43fbcd96ad4b7a5f4d070a7412ce2fbde707d
 const genreTypes = [
     "alternative",
     "blues",
@@ -58,6 +65,7 @@ function validateSong(title, artist, genre) {
 async function authenticateUser(username, password, connection) {
 
     try {
+<<<<<<< HEAD
         //create sql query to check db if username already exists in database
         const sqlQuery = "SELECT username, password FROM users WHERE username = "
             + connection.escape(username) + " AND password = "
@@ -69,6 +77,36 @@ async function authenticateUser(username, password, connection) {
     }
     catch(err){
         console.log(err);
+=======
+        const sqlQuery = "SELECT username FROM users WHERE username = "
+        + connection.escape(username);
+
+        const result = await connection.execute(sqlQuery);
+        
+        if(result[0].length == 0)
+            throw new errorTypes.AuthenticationError("User not found in database");
+
+        //create sql query to check db if username already exists in database
+        const sqlQuery2 = "SELECT password FROM users WHERE username = "
+            + connection.escape(username);
+
+        //execute query
+        const result2 = await connection.execute(sqlQuery2);
+
+        if(await bcrypt.compare(password, result2[0][0].password)){
+            return true;
+        }
+
+        return false;
+    }
+    catch(err){
+        if(err instanceof errorTypes.AuthenticationError)
+            throw err;
+
+        logger.error(err);
+        console.log(err);
+        
+>>>>>>> 98e43fbcd96ad4b7a5f4d070a7412ce2fbde707d
         throw new errorTypes.DatabaseError("Something wrong happened in the database.");
     }
 
@@ -92,7 +130,10 @@ function validatePassword(password) {
  * @returns True if the username is unique, false otherwise.
  */
 async function validateUniqueUser(username, connection) {
+<<<<<<< HEAD
 
+=======
+>>>>>>> 98e43fbcd96ad4b7a5f4d070a7412ce2fbde707d
     try {
         //create sql query to check db if username already exists in database
         const sqlQuery = "SELECT username FROM users WHERE username = "

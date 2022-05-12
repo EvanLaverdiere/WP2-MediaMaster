@@ -23,15 +23,15 @@ async function add(req, res) {
     try {
         var result = await model.addSong(title, artist, genre, album);
         if (result == true) {
-            let message=`Song [${title}] was successfully added`;
-            res.render('add.hbs',addFormDetails(message,undefined,true)); //TODO: send success message
+            let message = `Song [${title}] was successfully added`;
+            res.render('add.hbs', addFormDetails(message, undefined, true)); //TODO: send success message
         }
     }
     catch (error) {
         let errorMessage;
-        if(error instanceof InvalidInputError){res.status(400); errorMessage="Error 400";}
-        if(error instanceof DatabaseError){res.status(500); errorMessage="Error 500 "; }else{errorMessage=""}
-        res.render('add.hbs', addFormDetails(errorMessage+error.message, true))
+        if (error instanceof InvalidInputError) { res.status(400); errorMessage = "Error 400"; }
+        if (error instanceof DatabaseError) { res.status(500); errorMessage = "Error 500 "; } else { errorMessage = "" }
+        res.render('add.hbs', addFormDetails(errorMessage + error.message, true))
     }
 }
 router.post('/song', add)
@@ -82,11 +82,11 @@ function addFormDetails(message, error, success) {
 async function allSongs(req, res) {
     try {
         var song = await model.getAllSongs(1);
-        res.render('all.hbs',{song});
+        res.render('all.hbs', { song });
     } catch (error) {
-        let message = "Error 500, The tasks were not retrieved:"+ error.message;
-        let obj={showError:true, message:message}
-        res.render('home.hbs',obj);
+        let message = "Error 500, The tasks were not retrieved:" + error.message;
+        let obj = { showError: true, message: message }
+        res.render('home.hbs', obj);
     }
 }
 router.get('/songs', allSongs)
@@ -119,15 +119,13 @@ async function getSong(req, res) {
             res.status(404);
             // RENDER NOT FINALIZED YET.
 
-            res.render('home.hbs', {
-
-            });
+            res.render('getOne.hbs', getFormDetails("404 Error: " + error.message, true, false));
         }
         else if (error instanceof DatabaseError) {
             // RENDER NOT FINALIZED YET.
 
             res.status(500);
-            res.render('home.hbs', {});
+            res.render('getOne.hbs', getFormDetails("500 Error: " + error.message, true, false));
         }
     }
 
@@ -135,7 +133,7 @@ async function getSong(req, res) {
 
 router.get('/song', getSong);
 
-function getOneForm(req, res){
+function getOneForm(req, res) {
     res.render('getOne.hbs', getFormDetails());
 }
 
@@ -168,28 +166,67 @@ async function editSong(req, res) {
     let newArtist = req.body.newArtist;
     let newGenre = req.body.newGenre;
     let newAlbum = req.body.newAlbum;
-    let userId = 1;
+    let userId = req.cookies.userId;
 
     try {
-        let changedRows = await model.updateSong(1, oldTitle, oldArtist, newTitle, newArtist, newGenre, newAlbum);
-        res.render('home.hbs', {});
+        let changedRows = await model.updateSong(userId, oldTitle, oldArtist, newTitle, newArtist, newGenre, newAlbum);
+        let message = `Successfully replaced ${oldTitle} by ${oldArtist} with ${newTitle} by ${newArtist}`;
+        res.render('edit.hbs', editFormDetails(message, false, true, {
+            title: newTitle,
+            artist: newArtist,
+            genre: newGenre,
+            album: newAlbum
+        }));
     } catch (error) {
         if (error instanceof InvalidInputError) {
             res.status(404);
             // RENDER NOT FINALIZED YET.
+            let message = `404 Error: Could not update ${oldTitle} by ${oldArtist}: ` + error.message;
 
-            res.render('home.hbs', {
-
-            });
+            res.render('edit.hbs', editFormDetails(message, true));
         }
         else if (error instanceof DatabaseError) {
             // RENDER NOT FINALIZED YET.
 
             res.status(500);
-            res.render('home.hbs', {});
+            let message = "500 Error: Problem accessing database: " + error.message;
+            res.render('edit.hbs', editFormDetails(message, true));
         }
 
     }
+}
+
+function editForm(req, res) {
+    res.render('edit.hbs', editFormDetails());
+}
+
+router.get('/edit', editForm);
+
+function editFormDetails(message, error, success, song) {
+    if (typeof message === 'undefined') message = false;
+    if (typeof error === 'undefined') error = false;
+    if (typeof success != true) successMessage = false;
+
+    return pageData = {
+        message: message,
+        success: success,
+        error: error,
+        song: song,
+        endpoint: "/song",
+        method: "post",
+        legend: "Edit or replace an existing song",
+        formfields: [
+            { field: "oldTitle", pretty: "Old Title", title: true },
+            { field: "oldArtist", pretty: "Old Artist" },
+            { field: "newTitle", pretty: "New Title" },
+            { field: "newArtist", pretty: "New Artist" },
+            // { field: "newGenre", pretty: "New Genre", genre: true },
+            { field: "newAlbum", pretty: "New Album" }
+        ],
+        // titles: model.getAllTitles(1),
+        newGenre: model.allGenres()
+    }
+
 }
 
 router.put('/song', editSong);
@@ -232,23 +269,62 @@ router.post('/forms', showForm);
     res.render('add.hbs', addFormDetails());
 }
 
-function addFormDetails(message, error, success) {
+async function deleteOneSong(req, res){
+    let title = req.body.title;
+    let artist = req.body.artist;
+    let userId = req.cookies.userId;
+
+    try {
+        const deletedSong = await model.deleteSong(userId, title, artist);
+        res.render('delete.hbs', deleteFormDetails(`Successfully removed ${title} by ${artist} from your collection.`, false, true, deletedSong));
+    } catch (error) {
+        if (error instanceof InvalidInputError) {
+            res.status(404);
+            // RENDER NOT FINALIZED YET.
+            let message = `404 Error: Could not delete ${title} by ${artist}: ` + error.message;
+
+            res.render('delete.hbs', deleteFormDetails(message, true));
+        }
+        else if (error instanceof DatabaseError) {
+            // RENDER NOT FINALIZED YET.
+
+            res.status(500);
+            let message = "500 Error: Problem accessing database: " + error.message;
+            res.render('delete.hbs', deleteFormDetails(message, true));
+        }
+
+    }
+}
+
+router.delete('/song', deleteOneSong);
+
+function deleteForm(req, res){
+    res.render('delete.hbs', deleteFormDetails());
+}
+
+router.get('/delete', deleteForm);
+
+function deleteFormDetails(message, error, success, song){
     if (typeof message === 'undefined') message = false;
     if (typeof error === 'undefined') error = false;
     if (typeof success != true) successMessage = false;
+
     return pageData = {
         message: message,
         success: success,
         error: error,
+        song: song,
         endpoint: "/song",
         method: "post",
-        legend: "Enter details to add a song",
-        formfields: [{ field: "title", pretty: "Title" },
-        { field: "artist", pretty: "Artist" },
-        { field: "album", pretty: "Album", album: true }],
-        genres: model.allGenres()
+        legend: "Delete a song from your collection",
+        formfields: [
+            { field: "title", pretty: "Title" },
+            { field: "artist", pretty: "Artist" }
+        ]
     }
+
 }
+
 module.exports = {
     router,
     routeRoot

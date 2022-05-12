@@ -4,7 +4,11 @@
   "description": "",
   "main": "server.js",
   "scripts": {
+<<<<<<< HEAD
     "test": "jest -t --verbose ./tests/modelPart1.test.js --runInBand --detectOpenHandles",
+=======
+    "test": "jest --verbose ./tests --runInBand --detectOpenHandles",
+>>>>>>> 98e43fbcd96ad4b7a5f4d070a7412ce2fbde707d
     "start": "node server.js"
   },
   "repository": {

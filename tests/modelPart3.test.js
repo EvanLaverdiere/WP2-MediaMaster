@@ -32,13 +32,12 @@ test('[MODEL PART 3] Adding a user: Success case', async () => {
     await model.addUser(username, password);
 
     const sqlQuery = "SELECT username, password FROM users WHERE username = "
-    + connection.escape(username) + " AND password = "
-    + connection.escape(password) + "";
+    + connection.escape(username);
     const [rows, fields] = await connection.execute(sqlQuery);
 
     expect(Array.isArray(rows)).toBe(true);
     expect(rows[rows.length - 1].username.toLowerCase() == username.toLowerCase()).toBe(true);
-    expect(rows[rows.length - 1].password.toLowerCase() == password.toLowerCase()).toBe(true);
+    expect(await bcrypt.compare(password, rows[rows.length - 1].password)).toBe(true);
 })
 
 test('[MODEL PART 3] Adding a user: Failure case (InvalidInputError)', async () => {
@@ -72,7 +71,7 @@ test('[MODEL PART 3] Getting a user: Success case', async () => {
     const result = await model.getUser(username, password);
 
     expect(result.username.toLowerCase() == username.toLowerCase()).toBe(true);
-    expect(result.password.toLowerCase() == password.toLowerCase()).toBe(true);
+    expect(await bcrypt.compare(password, result.password)).toBe(true);
 })
 
 test('[MODEL PART 3] Getting a user: Failure case (AuthenticationError)', async () => {
