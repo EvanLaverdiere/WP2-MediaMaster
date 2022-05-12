@@ -69,7 +69,8 @@ test("songController.getSong() 200 success case test", async () => {
 
     // Send a GET request for that song to the '/song' endpoint.
     logger.debug(`Sending a GET request to the /song endpoint with query parameters for title=${title} and artist=${artist}...`);
-    const testResponse = await testRequest.get(`/song?title=${title}&artist=${artist}`);
+    const testResponse = await testRequest.get(`/song?title=${title}&artist=${artist}`)
+        .set("Cookie", "userId=1");
 
     // Controller should send back a 200 response code.
     logger.debug(`Received a ${testResponse.status} response code from the songController.`);
@@ -104,7 +105,8 @@ test("songController.getSong() sends 404 response for invalid song", async () =>
 
     // Send a GET request for this invalid song to the /song endpoint.
     logger.debug(`Sending a GET request to the /song endpoint with query parameters for title=${badTitle} and artist=${badArtist}...`);
-    const testResponse = await testRequest.get(`/song?title=${badTitle}&artist=${badArtist}`);
+    const testResponse = await testRequest.get(`/song?title=${badTitle}&artist=${badArtist}`)
+        .set("Cookie", "userId=1");
 
     // Controller should send back a 404 response code.
     logger.debug(`Received a ${testResponse.status} response code from the songController.`);
@@ -133,7 +135,8 @@ test("songController.getSong() sends 500 response for inaccessible database", as
 
     // Send a GET request for that song to the '/song' endpoint.
     logger.debug(`Sending a GET request to the /song endpoint with query parameters for title=${title} and artist=${artist}...`);
-    const testResponse = await testRequest.get(`/song?title=${title}&artist=${artist}`);
+    const testResponse = await testRequest.get(`/song?title=${title}&artist=${artist}`)
+        .set("Cookie", "userId=1");
 
     // Controller should send back a 500 response code.
     logger.debug(`Received a ${testResponse.status} response code from the songController.`);
