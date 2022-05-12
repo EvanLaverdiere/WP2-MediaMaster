@@ -374,7 +374,8 @@ test("songController.deleteOneSong() 200 success case test", async () => {
         .send({
             title: title,
             artist: artist
-        });
+        })
+        .set("Cookie", "userId=1");
 
     // Controller should send back a 200 response code.
     logger.debug(`Received a ${testResponse.status} response code from the songController.`);
