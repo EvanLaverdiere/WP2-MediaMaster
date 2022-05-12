@@ -417,7 +417,8 @@ test("songController.deleteOneSong() sends 404 response for invalid song", async
         .send({
             title: title,
             artist: artist
-        });
+        })
+        .set("Cookie", "userId=1");
 
     // Controller should send back a 404 response.
     logger.debug(`Received a ${testResponse.status} response code from the songController.`);
@@ -465,7 +466,8 @@ test("songController.deleteOneSong() sends 500 response when database is inacces
         .send({
             title: title,
             artist: artist
-        });
+        })
+        .set("Cookie", "userId=1");
 
     // Controller should send back a 500 status response code.
     logger.debug(`Received a ${testResponse.status} response code from the songController.`);
