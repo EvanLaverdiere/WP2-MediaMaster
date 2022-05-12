@@ -6,6 +6,7 @@ const logger = require('./logger');
 const { engine } = require('express-handlebars');
 const bodyParser = require('body-parser')
 const pinohttp = require('pino-http');
+const cookieParser = require('cookie-parser');
 
 logger.info("Creating app");
 
@@ -35,6 +36,7 @@ app.use(methodOverride(function (req, res) {
   }
 }));
 
+app.use(cookieParser());
 
 app.use(express.json());
 app.use(express.static('public'))

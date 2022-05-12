@@ -109,13 +109,15 @@ async function getOneSong(userId, title, artist) {
 
     // TO-DO: Validate passed title, artist, & genre.
 
-    let query = "SELECT * FROM Songs " +
-        'WHERE title = \'' + title + '\' ' +
-        'AND artist = \'' + artist + '\' ' +
-        'AND userId = ' + userId + ' ' +
-        'LIMIT 1';
+    // let query = "SELECT * FROM Songs " +
+    //     'WHERE title = \'' + title + '\' ' +
+    //     'AND artist = \'' + artist + '\' ' +
+    //     'AND userId = ' + userId + ' ' +
+    //     'LIMIT 1';
 
-    const results = await connection.query(query)
+    let query = "SELECT * FROM Songs WHERE title = ? AND artist = ? AND userId = ? LIMIT 1";
+
+    const results = await connection.query(query, [title, artist, userId])
         .catch((err) => {
             // Log the error.
             logger.error(err);

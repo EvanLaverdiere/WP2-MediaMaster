@@ -198,7 +198,8 @@ test("songController.editSong() 200 success case test", async () => {
             newArtist: newArtist,
             newGenre: newGenre,
             newAlbum: newAlbum
-        });
+        })
+        .set("Cookie", "userId=1");
 
     // Controller should send a 200 response.
     logger.debug(`Received a ${testResponse.status} response code from the songController.`);
@@ -261,7 +262,8 @@ test("songController.editSong() sends 404 response for invalid new data", async 
             newArtist: badArtist,
             newGenre: badGenre,
             newAlbum: badAlbum
-        });
+        })
+        .set("Cookie", "userId=1");
 
     // Controller should send back a 404 response.
     logger.debug(`Received a ${testResponse.status} response code from the songController.`);
@@ -330,7 +332,8 @@ test("songController.editSong() sends 500 response when database is inaccessible
             newArtist: newArtist,
             newGenre: newGenre,
             newAlbum: newAlbum
-        });
+        })
+        .set("Cookie", "userId=1");
 
     // Controller should send back a 500 response code.
     logger.debug(`Received a ${testResponse.status} response code from the songController.`);
@@ -374,7 +377,8 @@ test("songController.deleteOneSong() 200 success case test", async () => {
         .send({
             title: title,
             artist: artist
-        });
+        })
+        .set("Cookie", "userId=1");
 
     // Controller should send back a 200 response code.
     logger.debug(`Received a ${testResponse.status} response code from the songController.`);
@@ -416,7 +420,8 @@ test("songController.deleteOneSong() sends 404 response for invalid song", async
         .send({
             title: title,
             artist: artist
-        });
+        })
+        .set("Cookie", "userId=1");
 
     // Controller should send back a 404 response.
     logger.debug(`Received a ${testResponse.status} response code from the songController.`);
@@ -464,7 +469,8 @@ test("songController.deleteOneSong() sends 500 response when database is inacces
         .send({
             title: title,
             artist: artist
-        });
+        })
+        .set("Cookie", "userId=1");
 
     // Controller should send back a 500 status response code.
     logger.debug(`Received a ${testResponse.status} response code from the songController.`);

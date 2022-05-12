@@ -166,10 +166,10 @@ async function editSong(req, res) {
     let newArtist = req.body.newArtist;
     let newGenre = req.body.newGenre;
     let newAlbum = req.body.newAlbum;
-    let userId = 1;
+    let userId = req.cookies.userId;
 
     try {
-        let changedRows = await model.updateSong(1, oldTitle, oldArtist, newTitle, newArtist, newGenre, newAlbum);
+        let changedRows = await model.updateSong(userId, oldTitle, oldArtist, newTitle, newArtist, newGenre, newAlbum);
         let message = `Successfully replaced ${oldTitle} by ${oldArtist} with ${newTitle} by ${newArtist}`;
         res.render('edit.hbs', editFormDetails(message, false, true, {
             title: newTitle,
@@ -234,7 +234,7 @@ router.put('/song', editSong);
 async function deleteOneSong(req, res){
     let title = req.body.title;
     let artist = req.body.artist;
-    let userId = 1;
+    let userId = req.cookies.userId;
 
     try {
         const deletedSong = await model.deleteSong(userId, title, artist);
