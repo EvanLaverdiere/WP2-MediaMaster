@@ -234,7 +234,7 @@ router.put('/song', editSong);
 async function deleteOneSong(req, res){
     let title = req.body.title;
     let artist = req.body.artist;
-    let userId = 1;
+    let userId = req.cookies.userId;
 
     try {
         const deletedSong = await model.deleteSong(userId, title, artist);
