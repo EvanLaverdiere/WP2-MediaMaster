@@ -60,7 +60,6 @@ function validateSong(title, artist, genre) {
 async function authenticateUser(username, password, connection) {
 
     try {
-<<<<<<< HEAD
         const sqlQuery = "SELECT username FROM users WHERE username = "
         + connection.escape(username);
 
@@ -89,19 +88,6 @@ async function authenticateUser(username, password, connection) {
         logger.error(err);
         console.log(err);
         
-=======
-        //create sql query to check db if username already exists in database
-        const sqlQuery = "SELECT username, password FROM users WHERE username = "
-            + connection.escape(username) + " AND password = "
-            + connection.escape(password);
-
-        //execute query
-        const rows = await connection.execute(sqlQuery);
-        return rows[0].length == 1;
-    }
-    catch(err){
-        console.log(err);
->>>>>>> 85e21e6fe82e21f0e32f2d18779cf2c01acb5cd9
         throw new errorTypes.DatabaseError("Something wrong happened in the database.");
     }
 
@@ -125,10 +111,6 @@ function validatePassword(password) {
  * @returns True if the username is unique, false otherwise.
  */
 async function validateUniqueUser(username, connection) {
-<<<<<<< HEAD
-=======
-
->>>>>>> 85e21e6fe82e21f0e32f2d18779cf2c01acb5cd9
     try {
         //create sql query to check db if username already exists in database
         const sqlQuery = "SELECT username FROM users WHERE username = "
