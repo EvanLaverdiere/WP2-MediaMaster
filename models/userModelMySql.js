@@ -1,5 +1,5 @@
 const mysql = require('mysql2/promise');
-const validate = require('./validateUtils');
+const validate = require('./validateUtils.js');
 const logger = require('../logger');
 const bcrypt = require('bcrypt'); //TODO: Document that you've added bcrypt module.
 const errorTypes = require('./errorModel.js');

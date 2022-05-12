@@ -1,6 +1,10 @@
 const mysql = require('mysql2/promise');
 const logger = require('../logger');
+<<<<<<< HEAD
 const validator = require('../validation/validateUtils');
+=======
+const validator = require('../validation/validateUtils.js');
+>>>>>>> 85e21e6fe82e21f0e32f2d18779cf2c01acb5cd9
 
 const errorTypes = require('./errorModel.js');
 const userModel = require('./userModelMySql.js');
@@ -21,7 +25,7 @@ async function initialize(db, reset) {
 
 
         await setConnection(db);
-
+        
         if (reset)
             await dropTable();
 
@@ -270,7 +274,11 @@ async function checkDuplicate(title, artist, genre, album, currentUserId) {
     let query = "select * from Songs where title = ? and artist = ? and genre = ? and album =? and userId=?;"
     let [rows, fields] = [];
     try {
+<<<<<<< HEAD
         [rows, fields] = await connection.execute(query, [title, artist, genre, album, 1]);
+=======
+        [rows, fields] = await connection.query(query, [title, artist, genre, album,1]);
+>>>>>>> 85e21e6fe82e21f0e32f2d18779cf2c01acb5cd9
 
     } catch (error) {
         logger.error(error.message);
