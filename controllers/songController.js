@@ -201,9 +201,9 @@ function addFormDetails(message, error, success) {
         endpoint: "/song",
         method: "post",
         legend: "Enter details to add a song",
-        formfields: [{ field: "title", pretty: "Title" },
-        { field: "artist", pretty: "Artist" },
-        { field: "album", pretty: "Album", album: true }],
+        formfields: [{ field: "title", pretty: "Title",required: "required"},
+        { field: "artist", pretty: "Artist",required: "required" },
+        { field: "album", pretty: "Album" }],
         genres: model.allGenres()
     }
 }

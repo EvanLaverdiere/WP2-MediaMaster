@@ -24,6 +24,17 @@ color:#778eff !important;
 text-decoration: none;
 
 }
+input, textarea, select {
+    background-color : rgb(77 78 84);
+    color : #fff;
+    }
+
+    .forms {
+        background-color: rgb(66 66 66);
+        border:5px solid rgb(17 105 155);
+        border-radius: 5px;
+        padding : 5px;
+        }
 #titleWrap{
     display: flex;
     justify-content: center;
@@ -33,7 +44,7 @@ text-decoration: none;
 
 #formWrapper{
     display: flex;
-    height: 300px;
+    height: 360px;
     justify-content: center;
     margin: 3rem;
 }
