@@ -57,7 +57,7 @@ async function allSongs(req, res) {
         res.render('all.hbs', { song });
     } catch (error) {
         let errorMessage ;
-        if (error instanceof DatabaseError) { res.status(500); errorMessage = "Error 500, The tasks were not retrieved:"; } else { errorMessage = "" }
+        if (error instanceof DatabaseError) { res.status(500); errorMessage = "Error 500, The songs were not retrieved:"; } else { errorMessage = "" }
 
         errorMessage += error.message;
         let obj = { showError: true, message: errorMessage }

@@ -77,7 +77,7 @@ test("Controller - POST - Failure - Closed Connection", async () => {
 })
 
 test("Controller: GET /songs success case", async () => {
-    let songs = generateRandomSongSlice();
+    let song = generateRandomSongSlice();
     await songsModel.addSong(song.title, song.artist, song.genre, song.album);
     response = await testRequest.get('/songs');
     await expect(response.status).toBe(200);

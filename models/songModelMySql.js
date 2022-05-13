@@ -59,8 +59,9 @@ async function addSong(title, artist, genre, album, currentUserId) {
     validator.validateSong(title, artist, genre); //Throws specific error messages if invalid, it needs to get caught it controller
     if (typeof (album) == 'undefined') album = "";
 
-    try {
     await checkDuplicate(title, artist, genre, album);  //Throws if the song is already added in the db
+
+    try {
 
         let query = "insert into Songs(title, artist, genre, album, userId) values(?, ?, ?, ?, ?);";
         let results = await connection.execute(query, [title, artist, genre, album, 1]);
