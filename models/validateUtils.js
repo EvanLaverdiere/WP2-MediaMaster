@@ -75,6 +75,7 @@ async function authenticateUser(username, password, connection) {
         //execute query
         const result2 = await connection.execute(sqlQuery2);
 
+        //encrypt the user's input first then compare it with database password
         if(await bcrypt.compare(password, result2[0][0].password)){
             return true;
         }
@@ -121,10 +122,10 @@ async function validateUniqueUser(username, connection) {
         return rows.length == 0;
     }
     catch (err) {
+        logger.error(err);
         console.log(err);
         throw new errorTypes.DatabaseError("Something wrong happened in the database.");
     }
-
 }
 
 module.exports = {
