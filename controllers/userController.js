@@ -14,7 +14,6 @@ const errorTypes = require('../models/errorModel.js');
     }
     response.render('login.hbs', pageData);
 }
-router.get('/users/forms/login', showLoginForm);
 
 function showRegisterForm(request, response) {
    const pageData = {
@@ -24,7 +23,6 @@ function showRegisterForm(request, response) {
    }
    response.render('register.hbs', pageData);
 }
-router.get('/users/forms/register', showRegisterForm);
 
 //#endregion
 
@@ -43,7 +41,9 @@ async function addUser(request, response) {
             message: "Successfully registered user!",
             username: username,
             colors: ["Dark", "Light"],
-            languages: ["English", "French"]
+            languages: ["English", "French"],
+            logged:true,
+            username: username
         });
     }
     catch (err) {
@@ -137,8 +137,21 @@ async function getUser(request, response){
 router.post('/user', getUser);
 
 //#endregion
-
+function showUserForm(request, response) {
+    switch (request) {
+        case 'login':
+            showLoginForm(request,response);
+            break;
+        case 'register':
+            showRegisterForm(request,response);
+            break;
+        default:
+            response.render('home.hbs');
+    }
+} // no valid choice made
+router.post('/user', showUserForm);
 module.exports = {
     router,
-    routeRoot
+    routeRoot,
+    showUserForm
 }

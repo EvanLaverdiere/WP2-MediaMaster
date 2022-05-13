@@ -30,7 +30,7 @@
     </svg>
 
     <div class="alert alert-danger d-flex align-items-center justify-content-center" role="alert">
-        
+
         <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
             <use xlink:href="#exclamation-triangle-fill" />
         </svg>
@@ -38,7 +38,7 @@
         <div>
             <h3>{{message}}</h3>
         </div>
-        
+
     </div>
     {{/if}}
 
@@ -49,11 +49,19 @@
 
             <legend>Register now to access our website!</legend><br><br>
 
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username"><br><br>
+            <p>
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username"><br><br>
+                <i class="bi bi-eye-slash"  style="visibility:hidden;"></i>
+            </p>
 
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password"><br><br>
+
+            <p>
+                <label for="password">Password:</label>
+                <input type="password" name="password" id="password" />
+                <i class="bi bi-eye-slash" id="toggle" onclick="showPassword()"></i><br><br>
+            </p>
+
 
             <button type="submit" id="marginTop" class="btn btn-outline-light">Register</button>
 

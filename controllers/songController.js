@@ -19,9 +19,10 @@ const routeRoot = '/';
  * @param {*} res 
  */
 async function add(req, res) {
-    let title = req.body.title; let artist = req.body.artist; let genre = req.body.genres; let album = req.body.album;
+    let title = req.body.title; let artist = req.body.artist; let genre = req.body.genres;
+    let album = req.body.album; let userId = req.cookies.userId;
     try {
-        var result = await model.addSong(title, artist, genre, album);
+        var result = await model.addSong(title, artist, genre, album, userId);
         if (result == true) {
             let message = `Song [${title}] was successfully added`;
             res.render('add.hbs', addFormDetails(message, undefined, true)); //TODO: send success message
@@ -36,7 +37,7 @@ async function add(req, res) {
 }
 router.post('/song', add)
 
- function showAddForm(res) {
+function showAddForm(res) {
     res.render('add.hbs', addFormDetails());
 }
 
@@ -53,10 +54,12 @@ router.post('/song', add)
  */
 async function allSongs(req, res) {
     try {
-        var song = await model.getAllSongs(1);
-        res.render('all.hbs', { song });
+        let userId = req.cookies.userId;
+        // If cookie is not set then redirect to login page
+        var song = await model.getAllSongs(userId);
+        res.render('all.hbs', { song, logged: true });
     } catch (error) {
-        let errorMessage ;
+        let errorMessage;
         if (error instanceof DatabaseError) { res.status(500); errorMessage = "Error 500, The songs were not retrieved:"; } else { errorMessage = "" }
 
         errorMessage += error.message;
@@ -158,7 +161,7 @@ function showEditForm(res) {
 //#endregion
 
 //#region DELETE song
-async function deleteOneSong(req, res){
+async function deleteOneSong(req, res) {
     let title = req.body.title;
     let artist = req.body.artist;
     let userId = req.cookies.userId;
@@ -187,13 +190,15 @@ async function deleteOneSong(req, res){
 
 router.delete('/song', deleteOneSong);
 
-function showDeleteForm(res){
+function showDeleteForm(res) {
     res.render('delete.hbs', deleteFormDetails());
 }
 //#endregion
 
 //#region Form Details
 function addFormDetails(message, error, success) {
+    // if user got to this point they should be logged in
+    if (typeof (userId) != 'undefined') logged = true;
     if (typeof message === 'undefined') message = false;
     if (typeof error === 'undefined') error = false;
     if (typeof success != true) successMessage = false;
@@ -204,10 +209,11 @@ function addFormDetails(message, error, success) {
         endpoint: "/song",
         method: "post",
         legend: "Enter details to add a song",
-        formfields: [{ field: "title", pretty: "Title",required: "required"},
-        { field: "artist", pretty: "Artist",required: "required" },
+        formfields: [{ field: "title", pretty: "Title", required: "required" },
+        { field: "artist", pretty: "Artist", required: "required" },
         { field: "album", pretty: "Album" }],
-        genres: model.allGenres()
+        genres: model.allGenres(),
+        logged: true
     }
 }
 function getFormDetails(message, error, success, song) {
@@ -226,7 +232,8 @@ function getFormDetails(message, error, success, song) {
         formfields: [
             { field: "title", pretty: "Title" },
             { field: "artist", pretty: "Artist" }
-        ]
+        ],
+        logged: true
     }
 }
 function editFormDetails(message, error, success, song) {
@@ -251,11 +258,12 @@ function editFormDetails(message, error, success, song) {
             { field: "newAlbum", pretty: "New Album" }
         ],
         // titles: model.getAllTitles(1),
-        newGenre: model.allGenres()
+        newGenre: model.allGenres(),
+        logged: true
     }
 
 }
-function deleteFormDetails(message, error, success, song){
+function deleteFormDetails(message, error, success, song) {
     if (typeof message === 'undefined') message = false;
     if (typeof error === 'undefined') error = false;
     if (typeof success != true) successMessage = false;
@@ -271,13 +279,14 @@ function deleteFormDetails(message, error, success, song){
         formfields: [
             { field: "title", pretty: "Title" },
             { field: "artist", pretty: "Artist" }
-        ]
+        ],
+        logged: true
     }
 
 }
 
 //#endregion
-
+const userController = require('./userController')
 /** Show the appropriate form based on user choice */
 function showForm(request, response) {
     switch (request.body.choice) {
@@ -296,11 +305,17 @@ function showForm(request, response) {
         case 'delete':
             showDeleteForm(response);
             break;
+        case 'register':
+            userController.showUserForm('register', response);
+            break;
+        case 'login':
+            userController.showUserForm('login', response);
+            break;
         default:
             response.render('home.hbs');
     }
 } // no valid choice made
-router.post('/songForm', showForm);
+router.post('/form', showForm);
 module.exports = {
     router,
     routeRoot
