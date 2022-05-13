@@ -32,5 +32,8 @@
     "puppeteer": "^13.7.0",
     "supertest": "^6.2.3",
     "validator": "^13.7.0"
+  },
+  "jest":{
+    "testTimeout": 10000
   }
 }
