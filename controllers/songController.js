@@ -5,6 +5,7 @@ const { json } = require('express/lib/response');
 const res = require('express/lib/response');
 const { request } = require('express');
 const { InvalidInputError, DatabaseError } = require('../models/errorModel.js');
+const { createTracker } = require('./cookieController');
 const router = express.Router();
 const routeRoot = '/';
 
@@ -261,6 +262,10 @@ async function deleteOneSong(req, res){
 router.delete('/song', deleteOneSong);
 
 function deleteForm(req, res){
+    if(!req.cookies.tracker){
+        let tracker = createTracker("Bob", req);
+        res.cookie("tracker", JSON.stringify(tracker));
+    }
     res.render('delete.hbs', deleteFormDetails());
 }
 
