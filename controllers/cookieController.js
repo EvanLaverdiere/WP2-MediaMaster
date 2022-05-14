@@ -4,7 +4,7 @@ const uuid = require('uuid');
 class Tracker{
     constructor(username){
         this.username = username
-        this.pages = [];
+        this.pagesVisited = [];
     }
 }
 
@@ -14,32 +14,42 @@ function createTracker(username, req){
     let tracker = new Tracker(username);
     let page = getCurrentPage(req);
 
-    tracker.pages.push(page);
+    tracker.pagesVisited.push(page);
 
     return tracker;
 }
 
 function getCurrentPage(req){
     let url = req.url;
-    let time = new Date();
+    let timeArrived = new Date();
 
-    return {url, time};
+    return {url, time: timeArrived};
 }
 
+/**
+ * Updates an existing Tracker object.
+ * @param {*} tracker The Tracker to be updated.
+ * @param {*} req The HTTP request which sent in the Tracker.
+ * @returns A new, updated Tracker object if the user has moved to a different page since they last sent a request, or null otherwise.
+ */
 function updateTracker(tracker, req){
-    let length = tracker.pages.length;
-    let lastPage = tracker.pages[length - 1];
+    // Get the last page the user visited before this request was sent in.
+    let length = tracker.pagesVisited.length;
+    let lastPage = tracker.pagesVisited[length - 1];
 
     // Is the user still on the previous page?
     if(lastPage.url === req.url){
-        return null;
+        return null; // If so, nothing needs to be changed. Return null.
     }
 
+    // Otherwise, mark the current time as the moment when the user left the previous page.
     lastPage.timeLeft = new Date();
 
+    // Then add the current page to the Tracker's pagesVisited array.
     let nextPage = getCurrentPage(req);
-    tracker.pages.push(nextPage);
+    tracker.pagesVisited.push(nextPage);
 
+    // Return the modified Tracker.
     return tracker;
 
 }
