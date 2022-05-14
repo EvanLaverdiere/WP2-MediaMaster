@@ -65,6 +65,7 @@ function manageTracker(req, username){
 }
 
 module.exports = {
-    createTracker,
-    updateTracker
+    // createTracker,
+    // updateTracker
+    manageTracker
 }
