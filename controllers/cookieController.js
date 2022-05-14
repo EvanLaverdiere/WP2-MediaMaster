@@ -44,6 +44,26 @@ function updateTracker(tracker, req){
 
 }
 
+function manageTracker(req, username){
+    let tracker;
+    
+    if(!req.cookies.tracker){
+        tracker = createTracker(username, req);
+    }
+    else{
+        let oldTracker = JSON.parse(req.cookies.tracker);
+        let updatedTracker = updateTracker(oldTracker, req);
+        if(updatedTracker != null){
+            tracker = updatedTracker;
+        }
+        else{
+            tracker = oldTracker;
+        }
+    }
+
+    return tracker;
+}
+
 module.exports = {
     createTracker,
     updateTracker
