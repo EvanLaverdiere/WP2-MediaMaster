@@ -30,8 +30,21 @@ function updateTracker(tracker, req){
     let length = tracker.pages.length;
     let lastPage = tracker.pages[length - 1];
 
+    // Is the user still on the previous page?
+    if(lastPage.url === req.url){
+        return null;
+    }
+
+    lastPage.timeLeft = new Date();
+
+    let nextPage = getCurrentPage(req);
+    tracker.pages.push(nextPage);
+
+    return tracker;
+
 }
 
 module.exports = {
-    createTracker
+    createTracker,
+    updateTracker
 }

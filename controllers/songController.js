@@ -5,7 +5,7 @@ const { json } = require('express/lib/response');
 const res = require('express/lib/response');
 const { request } = require('express');
 const { InvalidInputError, DatabaseError } = require('../models/errorModel.js');
-const { createTracker } = require('./cookieController');
+const { createTracker, updateTracker } = require('./cookieController');
 const router = express.Router();
 const routeRoot = '/';
 
@@ -198,6 +198,17 @@ async function editSong(req, res) {
 }
 
 function editForm(req, res) {
+    if(!req.cookies.tracker){
+        let tracker = createTracker("Bob", req);
+        res.cookie("tracker", JSON.stringify(tracker));
+    }
+    else{
+        let tracker = JSON.parse(req.cookies.tracker);
+        let updatedTracker = updateTracker(tracker, req);
+        if(updatedTracker != null){
+            res.cookie("tracker", JSON.stringify(updatedTracker));
+        }
+    }
     res.render('edit.hbs', editFormDetails());
 }
 
@@ -265,6 +276,13 @@ function deleteForm(req, res){
     if(!req.cookies.tracker){
         let tracker = createTracker("Bob", req);
         res.cookie("tracker", JSON.stringify(tracker));
+    }
+    else{
+        let tracker = JSON.parse(req.cookies.tracker);
+        let updatedTracker = updateTracker(tracker, req);
+        if(updatedTracker != null){
+            res.cookie("tracker", JSON.stringify(updatedTracker));
+        }
     }
     res.render('delete.hbs', deleteFormDetails());
 }
