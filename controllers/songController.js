@@ -135,6 +135,8 @@ async function getSong(req, res) {
 router.get('/song', getSong);
 
 function getOneForm(req, res) {
+    let tracker = manageTracker(req, "Bob");
+    res.cookie("tracker", JSON.stringify(tracker));
     res.render('getOne.hbs', getFormDetails());
 }
 

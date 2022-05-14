@@ -44,19 +44,32 @@ function updateTracker(tracker, req){
 
 }
 
+/**
+ * Updates the tracker cookie sent by an HTTP request. If the request has no cookie, method creates a new Tracker instead.
+ * @param {*} req The incoming HTTP request.
+ * @param {*} username The user to whom this tracker is attached.
+ * @returns A Tracker object.
+ */
 function manageTracker(req, username){
     let tracker;
     
+    // Does the request have a tracker cookie already?
     if(!req.cookies.tracker){
+        // If not, create one.
         tracker = createTracker(username, req);
     }
     else{
+        // Otherwise, update the existing one.
         let oldTracker = JSON.parse(req.cookies.tracker);
         let updatedTracker = updateTracker(oldTracker, req);
+
+        // Were any changes made to the tracker?
         if(updatedTracker != null){
+            // If so, return the updated tracker.
             tracker = updatedTracker;
         }
         else{
+            // Otherwise, return the original tracker.
             tracker = oldTracker;
         }
     }
