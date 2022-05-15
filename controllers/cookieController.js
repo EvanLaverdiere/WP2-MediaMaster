@@ -8,6 +8,12 @@ class Tracker{
     }
 }
 
+/**
+ * Creates a new Tracker object.
+ * @param {*} username The user with whom this Tracker will be associated.
+ * @param {*} req The HTTP Request detailing which page the user was on when the Tracker was created.
+ * @returns The new Tracker object.
+ */
 function createTracker(username, req){
     const trackerId = uuid.v4();
     
@@ -19,6 +25,11 @@ function createTracker(username, req){
     return tracker;
 }
 
+/**
+ * Retrieves an object representing the current page that a user is on.
+ * @param {*} req The HTTP Request containing the current URL.
+ * @returns An object containing the page's URL and the time at which the request was received.
+ */
 function getCurrentPage(req){
     let url = req.url;
     let timeArrived = new Date();
