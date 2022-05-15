@@ -29,6 +29,10 @@ async function initialize(db, reset, conn) {
 }
 
 //#region CREATE Operations
+/**
+ * Creates a new session and adds it to the database.
+ * @param {*} userId The ID of the user to whom this session belongs.
+ */
 async function addSession(userId) {
     //TODO: Verify that passed userId is already in the database.
 
@@ -45,6 +49,11 @@ async function addSession(userId) {
 //#endregion
 
 //#region GET Operations
+/**
+ * Retrieves an existing session from the database.
+ * @param {*} sessionId The ID of the session.
+ * @returns An object representing the session.
+ */
 async function getSession(sessionId) {
     const sql = "SELECT * FROM sessions WHERE sessionId = ?";
 
@@ -68,6 +77,11 @@ async function getSession(sessionId) {
 //#endregion
 
 //#region UPDATE Operations
+/**
+ * Refreshes an existing session, extending its duration.
+ * @param {*} sessionId The session's ID.
+ * @returns The number of database records changed, and an object representing the updated session.
+ */
 async function updateSession(sessionId) {
     // Verify that the session exists.
     const session = await getSession(sessionId)
@@ -92,7 +106,14 @@ async function updateSession(sessionId) {
         throw new errorTypes.AuthenticationError(errorMessage);
     }
 
-    return changedRows;
+    const refreshedSession = {
+        sessionId: session.sessionId,
+        userId: session.userId,
+        openedAt: session.openedAt,
+        closesAt: newExpiryTime
+    }
+
+    return {changedRows: changedRows, session: refreshedSession};
 }
 //#endregion
 
@@ -100,6 +121,11 @@ async function updateSession(sessionId) {
 
 //#endregion
 
+/**
+ * Verifies whether a given session is expired.
+ * @param {*} sessionId The ID of the session to check.
+ * @returns True if the session is expired, false otherwise.
+ */
 async function isExpired(sessionId){
     try {
         let session = await getSession(sessionId);
