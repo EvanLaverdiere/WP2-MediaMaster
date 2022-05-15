@@ -66,7 +66,32 @@ async function getSession(sessionId) {
 //#endregion
 
 //#region UPDATE Operations
+async function updateSession(sessionId) {
+    // Verify that the session exists.
+    const session = await getSession(sessionId)
+        .catch((err) => { throw err });
 
+    // Extend the session's duration by 25 minutes.
+    const newExpiryTime = new Date(Date.now() + 25 * 60000);
+
+    const sql = "UPDATE sessions SET closedAt = ? WHERE sessionId = ?";
+
+    const results = await connection.query(sql, [newExpiryTime, sessionId])
+        .catch((err) => {
+            logger.error(err);
+            throw new errorTypes.DatabaseError(err);
+        });
+
+    const changedRows = results[0].changedRows;
+
+    if(changedRows == 0){
+        let errorMessage = "No sessions were changed.";
+        logger.error("ERROR: " + errorMessage);
+        throw new errorTypes.AuthenticationError(errorMessage);
+    }
+
+    return changedRows;
+}
 //#endregion
 
 //#region DELETE Operations
