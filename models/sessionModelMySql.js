@@ -100,6 +100,16 @@ async function updateSession(sessionId) {
 
 //#endregion
 
+async function isExpired(sessionId){
+    try {
+        let session = await getSession(sessionId);
+
+        return session.expiresAt < new Date();
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
     initialize
 }
