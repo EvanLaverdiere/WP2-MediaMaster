@@ -17,7 +17,7 @@ async function initialize(db, reset, conn) {
             await connection.execute(dropCommand);
         }
 
-        const createCommand = "CREATE TABLE IF NOT EXISTS sessions(sessionId varchar(50), userId int NOT NULL, openedAt Date NOT NULL, closedAt Date, " +
+        const createCommand = "CREATE TABLE IF NOT EXISTS sessions(sessionId varchar(50), userId int NOT NULL, openedAt Date NOT NULL, closesAt Date NOT NULL, " +
             "PRIMARY KEY (sessionId), CONSTRAINT fk_users_sessions FOREIGN KEY (userId) REFERENCES users (userId))";
 
 
@@ -36,9 +36,11 @@ async function addSession(userId) {
 
     const openedAt = new Date();
 
-    const sql = "INSERT INTO sessions (sessionId, userId, openedAt) VALUES(?, ?, ?)";
+    const closesAt = new Date(Date.now() + 25 * 60000);
 
-    let results = await connection.query(sql, [sessionId, userId, openedAt]);
+    const sql = "INSERT INTO sessions (sessionId, userId, openedAt, closesAt) VALUES(?, ?, ?, ?)";
+
+    let results = await connection.query(sql, [sessionId, userId, openedAt, closesAt]);
 }
 //#endregion
 
@@ -74,7 +76,7 @@ async function updateSession(sessionId) {
     // Extend the session's duration by 25 minutes.
     const newExpiryTime = new Date(Date.now() + 25 * 60000);
 
-    const sql = "UPDATE sessions SET closedAt = ? WHERE sessionId = ?";
+    const sql = "UPDATE sessions SET closesAt = ? WHERE sessionId = ?";
 
     const results = await connection.query(sql, [newExpiryTime, sessionId])
         .catch((err) => {
