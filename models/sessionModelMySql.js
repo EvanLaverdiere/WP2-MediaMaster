@@ -4,6 +4,7 @@ const validator = require('../validation/validateUtils');
 
 const errorTypes = require('./errorModel.js');
 const userModel = require('./userModelMySql.js');
+const uuid = require('uuid');
 
 var connection;
 
@@ -28,7 +29,17 @@ async function initialize(db, reset, conn) {
 }
 
 //#region CREATE Operations
+async function addSession(userId){
+    //TODO: Verify that passed userId is already in the database.
 
+    const sessionId = uuid.v4(); // Generate a random value for the session Id.
+
+    const openedAt = new Date();
+
+    const sql = "INSERT INTO sessions (sessionId, userId, openedAt) VALUES(?, ?, ?)";
+
+    let results = await connection.query(sql, [sessionId, userId, openedAt]);
+}
 //#endregion
 
 //#region GET Operations
