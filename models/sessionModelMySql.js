@@ -29,7 +29,7 @@ async function initialize(db, reset, conn) {
 }
 
 //#region CREATE Operations
-async function addSession(userId){
+async function addSession(userId) {
     //TODO: Verify that passed userId is already in the database.
 
     const sessionId = uuid.v4(); // Generate a random value for the session Id.
@@ -43,18 +43,25 @@ async function addSession(userId){
 //#endregion
 
 //#region GET Operations
-async function getSession(sessionId){
+async function getSession(sessionId) {
     const sql = "SELECT * FROM sessions WHERE sessionId = ?";
 
-    let results = await connection.query(sql, [sessionId]);
+    const results = await connection.query(sql, [sessionId])
+        .catch((err) => {
+            logger.error(err);
+            throw new errorTypes.DatabaseError(err);
+        });
 
-    let sessions = results[0];
+    const sessions = results[0];
 
-    if(sessions.length == 0){
+    if (sessions.length == 0) {
         // Throw some kind of error.
+        let errorMessage = "No session with the id \'" + sessionId + "\' exists.";
+        logger.error("ERROR: " + errorMessage);
+        throw new errorTypes.AuthenticationError(errorMessage);
     }
 
-    return sessions[0]; 
+    return sessions[0];
 }
 //#endregion
 
