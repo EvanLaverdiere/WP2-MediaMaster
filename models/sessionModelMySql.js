@@ -43,7 +43,19 @@ async function addSession(userId){
 //#endregion
 
 //#region GET Operations
+async function getSession(sessionId){
+    const sql = "SELECT * FROM sessions WHERE sessionId = ?";
 
+    let results = await connection.query(sql, [sessionId]);
+
+    let sessions = results[0];
+
+    if(sessions.length == 0){
+        // Throw some kind of error.
+    }
+
+    return sessions[0]; 
+}
 //#endregion
 
 //#region UPDATE Operations
