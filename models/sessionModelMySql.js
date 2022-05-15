@@ -100,7 +100,7 @@ async function updateSession(sessionId) {
 
     const changedRows = results[0].changedRows;
 
-    if(changedRows == 0){
+    if (changedRows == 0) {
         let errorMessage = "No sessions were changed.";
         logger.error("ERROR: " + errorMessage);
         throw new errorTypes.AuthenticationError(errorMessage);
@@ -113,12 +113,27 @@ async function updateSession(sessionId) {
         closesAt: newExpiryTime
     }
 
-    return {changedRows: changedRows, session: refreshedSession};
+    return { changedRows: changedRows, session: refreshedSession };
 }
 //#endregion
 
 //#region DELETE Operations
+async function deleteSession(sessionId) {
+    const sql = "DELETE FROM sessions WHERE sessionId = ?";
 
+    let results = await connection.query(sql, [sessionId])
+        .catch((err) => {
+            logger.error(err);
+            throw new errorTypes.DatabaseError(err);
+        });
+
+    let affectedRows = results[0].affectedRows;
+    if(affectedRows <= 0){
+        let errorMessage = "No sessions were deleted.";
+        logger.error("ERROR: " + errorMessage);
+        throw new errorTypes.AuthenticationError(errorMessage);
+    }
+}
 //#endregion
 
 /**
@@ -126,7 +141,7 @@ async function updateSession(sessionId) {
  * @param {*} sessionId The ID of the session to check.
  * @returns True if the session is expired, false otherwise.
  */
-async function isExpired(sessionId){
+async function isExpired(sessionId) {
     try {
         let session = await getSession(sessionId);
 
