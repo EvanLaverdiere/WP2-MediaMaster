@@ -1,6 +1,9 @@
 const uuid = require('uuid');
 
 
+/**
+ * Object representing a tracking cookie. Contains a user's name and an array of the pages that the user has visited on the site.
+ */
 class Tracker{
     constructor(username){
         this.username = username
