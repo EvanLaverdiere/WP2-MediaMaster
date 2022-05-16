@@ -158,5 +158,6 @@ async function isExpired(sessionId) {
 }
 
 module.exports = {
-    initialize
+    initialize,
+    addSession
 }
