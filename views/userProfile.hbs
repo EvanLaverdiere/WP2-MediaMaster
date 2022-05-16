@@ -20,7 +20,22 @@
     </div>
     {{/if}}
 
-    <h3>User Profile Content</h3>
+    <h3>User Profile Content</h3><br>
+    <p>Username: {{username}}</p>
+
+    <label for="colors">Change theme: </label>
+    <select name="colors">
+        {{#each colors}}
+        <option value="{{this}}">{{this}}</option>
+        {{/each}}
+    </select><br>
+
+    <label for="languages">Change language displayed: </label>
+        <select name="languages">
+        {{#each languages}}
+        <option value="{{this}}">{{this}}</option>
+        {{/each}}
+    </select><br><br>
 
     <img src="https://images.pexels.com/photos/733767/pexels-photo-733767.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
         alt="">
