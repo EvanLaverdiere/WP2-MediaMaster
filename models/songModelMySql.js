@@ -4,6 +4,7 @@ const validator = require('../validation/validateUtils');
 
 const errorTypes = require('./errorModel.js');
 const userModel = require('./userModelMySql.js');
+const sessionModel = require('./sessionModelMySql');
 
 var connection;
 
@@ -21,7 +22,9 @@ async function initialize(db, reset) {
 
 
         await setConnection(db);
+
         
+
         if (reset)
             await dropTable();
 

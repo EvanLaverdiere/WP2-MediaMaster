@@ -5,6 +5,7 @@ const { json } = require('express/lib/response');
 const res = require('express/lib/response');
 const { request } = require('express');
 const { InvalidInputError, DatabaseError } = require('../models/errorModel.js');
+const { createTracker, updateTracker, manageTracker } = require('./cookieController');
 const router = express.Router();
 const routeRoot = '/';
 
@@ -99,7 +100,7 @@ router.get('/songs', allSongs)
 async function getSong(req, res) {
     let targetTitle = req.query.title;
     let targetArtist = req.query.artist;
-    let userId = 1;
+    let userId = req.cookies.userId;
 
     // try{
     //     let {title, artist, genre, album} = await model.getOneSong(userId, targetTitle, targetArtist);
@@ -134,6 +135,8 @@ async function getSong(req, res) {
 router.get('/song', getSong);
 
 function getOneForm(req, res) {
+    let tracker = manageTracker(req, "Bob");
+    res.cookie("tracker", JSON.stringify(tracker));
     res.render('getOne.hbs', getFormDetails());
 }
 
@@ -197,6 +200,19 @@ async function editSong(req, res) {
 }
 
 function editForm(req, res) {
+    // if(!req.cookies.tracker){
+    //     let tracker = createTracker("Bob", req);
+    //     res.cookie("tracker", JSON.stringify(tracker));
+    // }
+    // else{
+    //     let tracker = JSON.parse(req.cookies.tracker);
+    //     let updatedTracker = updateTracker(tracker, req);
+    //     if(updatedTracker != null){
+    //         res.cookie("tracker", JSON.stringify(updatedTracker));
+    //     }
+    // }
+    let tracker = manageTracker(req, "Bob");
+    res.cookie("tracker", JSON.stringify(tracker));
     res.render('edit.hbs', editFormDetails());
 }
 
@@ -261,6 +277,19 @@ async function deleteOneSong(req, res){
 router.delete('/song', deleteOneSong);
 
 function deleteForm(req, res){
+    // if(!req.cookies.tracker){
+    //     let tracker = createTracker("Bob", req);
+    //     res.cookie("tracker", JSON.stringify(tracker));
+    // }
+    // else{
+    //     let tracker = JSON.parse(req.cookies.tracker);
+    //     let updatedTracker = updateTracker(tracker, req);
+    //     if(updatedTracker != null){
+    //         res.cookie("tracker", JSON.stringify(updatedTracker));
+    //     }
+    // }
+    let tracker = manageTracker(req, "Bob");
+    res.cookie("tracker", JSON.stringify(tracker));
     res.render('delete.hbs', deleteFormDetails());
 }
 
