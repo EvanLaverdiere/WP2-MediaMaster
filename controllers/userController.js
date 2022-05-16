@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const routeRoot = '/';
 const model = require('../models/userModelMySql');
+const cookieController = require('./cookieController');
 const errorTypes = require('../models/errorModel.js');
 
 //#region SHOW FORMS
@@ -93,8 +94,12 @@ async function getUser(request, response){
         const passwordInput = request.body.password;
 
         const { username, password } = await model.getUser(usernameInput, passwordInput);
+        const userId = await model.getUserId(username);
+        const tracker = await cookieController.manageTracker(request, username);
 
         response.status(200);
+        response.cookie("userId", userId);
+        response.cookie("tracker", JSON.stringify(tracker));
         response.render('userProfile.hbs', {
             successMessage: true,
             message: "Successfully logged in!",

@@ -38,6 +38,9 @@ async function initialize(dbname, reset) {
         if (reset) {
             const dropSongs = "DROP TABLE IF EXISTS Songs;";
             await connection.execute(dropSongs);
+
+            const dropSessions = "DROP TABLE IF EXISTS sessions;";
+            await connection.execute(dropSessions);
             
             const dropUsers = "DROP TABLE IF EXISTS users;";
             await connection.execute(dropUsers);
@@ -119,9 +122,26 @@ async function getUser(username, password) {
     }
 }
 
+async function getUserId(username){
+    let sql = "SELECT userId FROM users WHERE username = ?";
+
+    let [records, metadata] = await connection.query(sql, [username])
+    .catch((err) => {
+        logger.error(err);
+        throw new errorTypes.DatabaseError(err);
+    });
+
+    if(records.length == 0){
+        // throw an error
+    }
+
+    return records[0].userId;
+}
+
 module.exports = {
     getConnection,
     initialize,
     addUser,
-    getUser
+    getUser,
+    getUserId
 }
