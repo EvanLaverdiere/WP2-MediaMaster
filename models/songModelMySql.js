@@ -23,7 +23,7 @@ async function initialize(db, reset) {
 
         await setConnection(db);
 
-        
+        await sessionModel.initialize(db, reset, connection);
 
         if (reset)
             await dropTable();

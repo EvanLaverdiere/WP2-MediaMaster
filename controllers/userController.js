@@ -89,8 +89,8 @@ router.post('/users', addUser);
 
 async function getUser(request, response){
     try{
-        const usernameInput = request.query.username;
-        const passwordInput = request.query.password;
+        const usernameInput = request.body.username;
+        const passwordInput = request.body.password;
 
         const { username, password } = await model.getUser(usernameInput, passwordInput);
 
