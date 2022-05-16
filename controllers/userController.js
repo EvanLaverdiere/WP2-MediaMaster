@@ -9,8 +9,8 @@ const errorTypes = require('../models/errorModel.js');
  function showLoginForm(request, response) {
     const pageData = {
         message: false,
-        endpoint: "/users",
-        method: "get",
+        endpoint: "/user",
+        method: "post",
     }
     response.render('login.hbs', pageData);
 }
@@ -32,15 +32,18 @@ router.get('/users/forms/register', showRegisterForm);
 
 async function addUser(request, response) {
     try {
-        const username = request.body.username;
-        const password = request.body.password;
+        const usernameInput = request.body.username;
+        const passwordInput = request.body.password;
 
-        await model.addUser(username, password);
+        const {username, password} = await model.addUser(usernameInput, passwordInput);
 
         response.status(200);
         response.render('userProfile.hbs', {
             successMessage: true,
-            message: "Successfully registered user!"
+            message: "Successfully registered user!",
+            username: username,
+            colors: ["Dark", "Light"],
+            languages: ["English", "French"]
         });
     }
     catch (err) {
@@ -86,34 +89,52 @@ router.post('/users', addUser);
 
 async function getUser(request, response){
     try{
-        const username = request.query.username;
-        const password = request.query.password;
+        const usernameInput = request.query.username;
+        const passwordInput = request.query.password;
 
-        const result = await model.getUser(username, password);
+        const { username, password } = await model.getUser(usernameInput, passwordInput);
 
         response.status(200);
-        response.render('userProfile.hbs', {});
+        response.render('userProfile.hbs', {
+            successMessage: true,
+            message: "Successfully logged in!",
+            username: username,
+            colors: ["Dark", "Light"],
+            languages: ["English", "French"]
+        });
         //TODO: response.render
     }
     catch(err){
         if (err instanceof errorTypes.AuthenticationError) {
             response.status(400);
-            response.render('login.hbs', {});
-            //TODO: response.render
+            response.render('login.hbs', {
+                failureMessage: true,
+                message: "Failed to login: " + err.message,
+                endpoint: "/user",
+                method: "post"
+            });
         }
         else if (err instanceof errorTypes.DatabaseError) {
             response.status(500);
-            response.render('login.hbs', {});
-            //TODO: response.render
+            response.render('login.hbs', {
+                failureMessage: true,
+                message: "Failed to login: " + err.message,
+                endpoint: "/user",
+                method: "post"
+            });
         }
         else {
             response.status(500);
-            response.render('login.hbs', {});
-            //TODO: response.render
+            response.render('login.hbs', {
+                failureMessage: true,
+                message: "Failed to login: unknown cause. " + err.message,
+                endpoint: "/user",
+                method: "post"
+            });
         }
     }
 }
-router.get('/users', getUser);
+router.post('/user', getUser);
 
 //#endregion
 
