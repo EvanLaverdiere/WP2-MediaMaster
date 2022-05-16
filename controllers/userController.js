@@ -102,7 +102,7 @@ async function getUser(request, response){
         response.status(200);
         response.cookie("userId", userId);
         response.cookie("tracker", JSON.stringify(tracker));
-        response.cookie("sessionId", session.sessionId, {expires: session.closesAt, httpOnly: true});
+        response.cookie("sessionId", session.sessionId, {expires: session.closesAt, httpOnly: true}); 
         response.render('userProfile.hbs', {
             successMessage: true,
             message: "Successfully logged in!",
