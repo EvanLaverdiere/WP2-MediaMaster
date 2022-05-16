@@ -132,7 +132,9 @@ async function getUserId(username){
     });
 
     if(records.length == 0){
-        // throw an error
+        let errorMessage = "No such user exists.";
+        logger.error(errorMessage);
+        throw new errorTypes.AuthenticationError(errorMessage);
     }
 
     return records[0].userId;
