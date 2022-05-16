@@ -1,4 +1,5 @@
 const uuid = require('uuid');
+const sessionModel = require('../models/sessionModelMySql');
 
 
 /**
@@ -37,7 +38,7 @@ function getCurrentPage(req){
     let url = req.url;
     let timeArrived = new Date();
 
-    return {url, time: timeArrived};
+    return {url, timeArrived};
 }
 
 /**
@@ -99,6 +100,10 @@ function manageTracker(req, username){
     }
 
     return tracker;
+}
+
+function manageSession(req){
+
 }
 
 module.exports = {

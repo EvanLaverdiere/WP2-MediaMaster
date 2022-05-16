@@ -44,7 +44,13 @@ async function addSession(userId) {
 
     const sql = "INSERT INTO sessions (sessionId, userId, openedAt, closesAt) VALUES(?, ?, ?, ?)";
 
-    let results = await connection.query(sql, [sessionId, userId, openedAt, closesAt]);
+    let results = await connection.query(sql, [sessionId, userId, openedAt, closesAt])
+        .catch((err) => {
+            logger.error(err);
+            throw new errorTypes.DatabaseError(err);
+        });
+
+    return {sessionId: sessionId, closesAt: closesAt};
 }
 //#endregion
 
@@ -128,7 +134,7 @@ async function deleteSession(sessionId) {
         });
 
     let affectedRows = results[0].affectedRows;
-    if(affectedRows <= 0){
+    if (affectedRows <= 0) {
         let errorMessage = "No sessions were deleted.";
         logger.error("ERROR: " + errorMessage);
         throw new errorTypes.AuthenticationError(errorMessage);
