@@ -203,7 +203,7 @@ async function editSong(req, res) {
     }
 }
 
-function editForm(req, res) {
+async function editForm(req, res) {
     // if(!req.cookies.tracker){
     //     let tracker = createTracker("Bob", req);
     //     res.cookie("tracker", JSON.stringify(tracker));
@@ -216,6 +216,10 @@ function editForm(req, res) {
     //     }
     // }
     let tracker = manageTracker(req, "Bob");
+    let session = await manageSession(req);
+    if(session){
+        res.cookie("sessionId", session.sessionId, {expires: session.closesAt});
+    }
     res.cookie("tracker", JSON.stringify(tracker));
     res.render('edit.hbs', editFormDetails());
 }
@@ -280,7 +284,7 @@ async function deleteOneSong(req, res){
 
 router.delete('/song', deleteOneSong);
 
-function deleteForm(req, res){
+async function deleteForm(req, res){
     // if(!req.cookies.tracker){
     //     let tracker = createTracker("Bob", req);
     //     res.cookie("tracker", JSON.stringify(tracker));
@@ -293,6 +297,10 @@ function deleteForm(req, res){
     //     }
     // }
     let tracker = manageTracker(req, "Bob");
+    let session = await manageSession(req);
+    if(session){
+        res.cookie("sessionId", session.sessionId, {expires: session.closesAt});
+    }
     res.cookie("tracker", JSON.stringify(tracker));
     res.render('delete.hbs', deleteFormDetails());
 }
