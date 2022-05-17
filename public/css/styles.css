@@ -19,6 +19,9 @@ color:#778eff !important;
 text-decoration: none;
 
 }
+legend{
+    margin-bottom: 5rem;
+}
 input, textarea, select {
     background-color : rgb(77 78 84);
     color : #fff;
@@ -36,10 +39,12 @@ input, textarea, select {
     align-items: center;
     margin-top: 4rem;
 }
-
+.formImg{
+    height:400px;
+    margin-left: 2rem;
+}
 #formWrapper{
     display: flex;
-    height: 360px;
     justify-content: center;
     margin: 3rem;
 }
