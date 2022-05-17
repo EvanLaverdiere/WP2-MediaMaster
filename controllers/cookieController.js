@@ -112,7 +112,14 @@ async function manageSession(req){
         let sessionId = req.cookies.sessionId;
         let userId = req.cookies.userId;
 
-        let userSession = await sessionModel.getSession(sessionId);
+        let userSession;
+        if(sessionId){
+            userSession = await sessionModel.getSession(sessionId);
+        }
+        else{
+            userSession = await sessionModel.getSessionByUserId(userId);
+        }
+        // let userSession = await sessionModel.getSession(sessionId);
     
         if(await sessionModel.isExpired(sessionId)){
             await sessionModel.deleteSession(sessionId);

@@ -80,6 +80,23 @@ async function getSession(sessionId) {
 
     return sessions[0];
 }
+
+async function getSessionByUserId(userId) {
+    const sql = "SELECT * FROM sessions WHERE userId = ?";
+
+    const [sessions, metadata] = await connection.query(sql, [userId]).catch((err) =>{
+        logger.error(err);
+        throw new errorTypes.DatabaseError(err);
+    });
+
+    if(sessions.length == 0){
+        let errorMessage = "No sessions found for the user ID " + userId + ".";
+        logger.error("ERROR: " + errorMessage);
+        throw new errorTypes.AuthenticationError(errorMessage);
+    }
+
+    return sessions[0];
+}
 //#endregion
 
 //#region UPDATE Operations
@@ -179,6 +196,7 @@ module.exports = {
     initialize,
     addSession,
     getSession,
+    getSessionByUserId,
     updateSession,
     refreshSession,
     deleteSession,
