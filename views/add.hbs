@@ -13,7 +13,7 @@
         </div>
     </div>
     {{/if}}
-    {{!--  --}}
+    {{!-- --}}
 
     {{!-- Success message --}}
     {{#if success}}
@@ -32,35 +32,40 @@
         </div>
     </div>
     {{/if}}
-    {{!--  --}}
+    {{!-- --}}
 
-    
+
 
 
     <div id="formWrapper">
-        <form action="{{endpoint}}" method="{{method}}" class="forms" role="form" name="myForm"
-            enctype="application/x-www-form-urlencoded">
-            <legend>{{legend}}</legend>
-            {{#each formfields}}
-            <label for="{{field}}">{{pretty}}</label><br>
-            {{#if album}}
-            <input type="text" name="{{field}}"><br>
-            {{else}}
-            <input type="text" id="{{field}}" name="{{field}}" required><br>
-            {{/if}}
-            {{/each}}
-            <label for="genre">Genres</label><br>           
-            <select name="genres">
-                {{#each genres}}
-                <option value="{{this}}">{{this}}</option>
-                {{/each}}
-            </select><br>
+        <div>
+<form action="{{endpoint}}" method="{{method}}" class="forms" role="form" name="myForm"
+                enctype="application/x-www-form-urlencoded" id="form">
 
-            <br>
-            <br><button type="submit" id="marginTop" class="btn btn-outline-light">Submit</button>
-        </form>
+                <legend style="text-align:center; margin-bottom:2rem;">{{legend}}</legend>
 
-        <img src="https://images.pexels.com/photos/733767/pexels-photo-733767.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-            alt="">
+                    {{#each formfields}}
+
+                    <label for="{{field}}" >{{pretty}}</label>
+                    <input  type="text" name="{{field}}" {{required}}><br><br>
+
+                    {{/each}}
+                    <label for="genre">Genre</label>
+                    <select name="genres">
+                        {{#each genres}}
+                        <option value="{{this}}">{{this}}</option>
+                        {{/each}}
+
+                    </select>
+                <br><br><button type="submit" id="marginTop" class="btn btn-outline-light">Submit</button>  
+            </form><br>
+        </div>
+            
+
+            <img style="margin-left:2rem;" src="https://images.pexels.com/photos/733767/pexels-photo-733767.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+                alt="">
+
     </div>
+
+
 </body>

@@ -59,7 +59,7 @@
             <legend>{{legend}}</legend>
             <input type="hidden" name="_method" value="PUT">
             {{#each formfields}}
-            <label for="{{field}}">{{pretty}}</label><br>
+            <label for="{{field}}">{{pretty}}</label>
             {{!-- {{#if album}}
             <input type="text" name="{{field}}"><br> --}}
             {{!-- {{#if title}}
@@ -75,7 +75,7 @@
                 {{/each}}
             </select><br>
             {{else}} --}}
-            <input type="text" id="{{field}}" name="{{field}}" required><br>
+            <input type="text" id="{{field}}" name="{{field}}" required><br><br>
             {{!-- {{/if}} --}}
             {{/each}}
             <label for="genre">Genres</label><br>

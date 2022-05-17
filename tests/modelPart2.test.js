@@ -1,6 +1,4 @@
-const app = require('../app');
 const supertest = require('supertest');
-const testRequest = supertest(app);
 const errorTypes = require('../models/errorModel');
 
 // Initialise the test database before each test.
