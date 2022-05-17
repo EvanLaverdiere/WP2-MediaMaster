@@ -1,4 +1,5 @@
 const uuid = require('uuid');
+const logger = require('../logger');
 const sessionModel = require('../models/sessionModelMySql');
 
 
@@ -102,12 +103,29 @@ function manageTracker(req, username){
     return tracker;
 }
 
-function manageSession(req){
+async function manageSession(req){
+    try {
+        let sessionId = req.cookies.sessionId;
 
+        let userSession = await sessionModel.getSession(sessionId);
+    
+        if(await sessionModel.isExpired(sessionId)){
+            await sessionModel.deleteSession(sessionId);
+            return null;
+        }
+        else{
+            userSession = await sessionModel.updateSession(sessionId);
+        }
+        return userSession;
+    } catch (error) {
+        logger.error(error);
+        return null;
+    }    
 }
 
 module.exports = {
     // createTracker,
     // updateTracker
-    manageTracker
+    manageTracker,
+    manageSession
 }

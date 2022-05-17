@@ -5,7 +5,7 @@ const { json } = require('express/lib/response');
 const res = require('express/lib/response');
 const { request } = require('express');
 const { InvalidInputError, DatabaseError } = require('../models/errorModel.js');
-const { createTracker, updateTracker, manageTracker } = require('./cookieController');
+const { createTracker, updateTracker, manageTracker, manageSession } = require('./cookieController');
 const router = express.Router();
 const routeRoot = '/';
 
@@ -134,8 +134,12 @@ async function getSong(req, res) {
 
 router.get('/song', getSong);
 
-function getOneForm(req, res) {
+async function getOneForm(req, res) {
     let tracker = manageTracker(req, "Bob");
+    let session = await manageSession(req);
+    if(session){
+        res.cookie("sessionId", session.sessionId, {expires: session.closesAt});
+    }
     res.cookie("tracker", JSON.stringify(tracker));
     res.render('getOne.hbs', getFormDetails());
 }

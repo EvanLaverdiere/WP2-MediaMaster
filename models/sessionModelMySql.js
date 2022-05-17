@@ -86,7 +86,7 @@ async function getSession(sessionId) {
 /**
  * Refreshes an existing session, extending its duration.
  * @param {*} sessionId The session's ID.
- * @returns The number of database records changed, and an object representing the updated session.
+ * @returns The updated session.
  */
 async function updateSession(sessionId) {
     // Verify that the session exists.
@@ -119,7 +119,7 @@ async function updateSession(sessionId) {
         closesAt: newExpiryTime
     }
 
-    return { changedRows: changedRows, session: refreshedSession };
+    return refreshedSession;
 }
 //#endregion
 
@@ -159,5 +159,9 @@ async function isExpired(sessionId) {
 
 module.exports = {
     initialize,
-    addSession
+    addSession,
+    getSession,
+    updateSession,
+    deleteSession,
+    isExpired
 }
