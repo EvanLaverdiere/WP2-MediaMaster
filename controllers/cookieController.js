@@ -83,6 +83,8 @@ function manageTracker(req, username){
     if(!req.cookies.tracker){
         // If not, create one.
         tracker = createTracker(username, req);
+        let pagesVisited = tracker.pagesVisited;
+        logger.debug(`Started tracking user \'${username}\' at ${pagesVisited[pagesVisited.length - 1].url}.`);
     }
     else{
         // Otherwise, update the existing one.
@@ -93,6 +95,7 @@ function manageTracker(req, username){
         if(updatedTracker != null){
             // If so, return the updated tracker.
             tracker = updatedTracker;
+            logger.debug(`User \'${username}\' moved to a new page.`);
         }
         else{
             // Otherwise, return the original tracker.
@@ -100,6 +103,7 @@ function manageTracker(req, username){
         }
     }
 
+    logger.debug({tracker: tracker});
     return tracker;
 }
 
