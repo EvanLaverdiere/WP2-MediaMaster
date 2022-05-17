@@ -17,7 +17,7 @@ async function initialize(db, reset, conn) {
             await connection.execute(dropCommand);
         }
 
-        const createCommand = "CREATE TABLE IF NOT EXISTS sessions(sessionId varchar(50), userId int NOT NULL, openedAt Date NOT NULL, closesAt Date NOT NULL, " +
+        const createCommand = "CREATE TABLE IF NOT EXISTS sessions(sessionId varchar(50), userId int NOT NULL, openedAt Datetime NOT NULL, closesAt Datetime NOT NULL, " +
             "PRIMARY KEY (sessionId), CONSTRAINT fk_users_sessions FOREIGN KEY (userId) REFERENCES users (userId))";
 
 
