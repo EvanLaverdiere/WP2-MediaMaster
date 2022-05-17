@@ -8,7 +8,7 @@ const errorTypes = require('../models/errorModel.js');
 
 //#region SHOW FORMS
 
- function showLoginForm(request, response) {
+function showLoginForm(request, response) {
     const pageData = {
         message: false,
         endpoint: "/user",
@@ -18,12 +18,12 @@ const errorTypes = require('../models/errorModel.js');
 }
 
 function showRegisterForm(request, response) {
-   const pageData = {
-       message: false,
-       endpoint: "/users",
-       method: "post",
-   }
-   response.render('register.hbs', pageData);
+    const pageData = {
+        message: false,
+        endpoint: "/users",
+        method: "post",
+    }
+    response.render('register.hbs', pageData);
 }
 
 //#endregion
@@ -35,7 +35,7 @@ async function addUser(request, response) {
         const usernameInput = request.body.username;
         const passwordInput = request.body.password;
 
-        const {username, password} = await model.addUser(usernameInput, passwordInput);
+        const { username, password } = await model.addUser(usernameInput, passwordInput);
 
         response.status(200);
         response.render('userProfile.hbs', {
@@ -44,7 +44,7 @@ async function addUser(request, response) {
             username: username,
             colors: ["Dark", "Light"],
             languages: ["English", "French"],
-            logged:true,
+            logged: true,
             username: username
         });
     }
@@ -71,7 +71,7 @@ async function addUser(request, response) {
             response.status(500);
             response.render('register.hbs', {
                 failureMessage: true,
-                message: "Failed to register: "+ err.message,
+                message: "Failed to register: " + err.message,
                 endpoint: "/users",
                 method: "post"
             });
@@ -89,8 +89,8 @@ async function addUser(request, response) {
 }
 router.post('/users', addUser);
 
-async function getUser(request, response){
-    try{
+async function getUser(request, response) {
+    try {
         const usernameInput = request.body.username;
         const passwordInput = request.body.password;
 
@@ -102,7 +102,7 @@ async function getUser(request, response){
         response.status(200);
         response.cookie("userId", userId);
         response.cookie("tracker", JSON.stringify(tracker));
-        response.cookie("sessionId", session.sessionId, {expires: session.closesAt, httpOnly: true}); 
+        response.cookie("sessionId", session.sessionId, { expires: session.closesAt, httpOnly: true });
         response.render('userProfile.hbs', {
             successMessage: true,
             message: "Successfully logged in!",
@@ -110,9 +110,11 @@ async function getUser(request, response){
             colors: ["Dark", "Light"],
             languages: ["English", "French"]
         });
-        //TODO: response.render
+        
     }
-    catch(err){
+
+    catch (err) {
+
         if (err instanceof errorTypes.AuthenticationError) {
             response.status(400);
             response.render('login.hbs', {
@@ -122,6 +124,7 @@ async function getUser(request, response){
                 method: "post"
             });
         }
+
         else if (err instanceof errorTypes.DatabaseError) {
             response.status(500);
             response.render('login.hbs', {
@@ -131,6 +134,7 @@ async function getUser(request, response){
                 method: "post"
             });
         }
+
         else {
             response.status(500);
             response.render('login.hbs', {
@@ -145,19 +149,22 @@ async function getUser(request, response){
 router.post('/user', getUser);
 
 //#endregion
+
+// no valid choice made
 function showUserForm(request, response) {
     switch (request) {
         case 'login':
-            showLoginForm(request,response);
+            showLoginForm(request, response);
             break;
         case 'register':
-            showRegisterForm(request,response);
+            showRegisterForm(request, response);
             break;
         default:
             response.render('home.hbs');
     }
-} // no valid choice made
+} 
 router.post('/user', showUserForm);
+
 module.exports = {
     router,
     routeRoot,

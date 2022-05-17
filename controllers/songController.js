@@ -110,13 +110,7 @@ async function getSong(req, res) {
 }
 router.get('/song', getSong);
 
-<<<<<<< HEAD
-function getOneForm(req, res) {
-    let tracker = manageTracker(req, "Bob");
-    res.cookie("tracker", JSON.stringify(tracker));
-=======
 function showOneForm(res) {
->>>>>>> 93662c6adb36e9e83f2aaf9c14a00f3e4387f9e5
     res.render('getOne.hbs', getFormDetails());
 }
 //#endregion
@@ -161,52 +155,6 @@ async function editSong(req, res) {
 }
 router.put('/song', editSong);
 
-<<<<<<< HEAD
-function editForm(req, res) {
-    // if(!req.cookies.tracker){
-    //     let tracker = createTracker("Bob", req);
-    //     res.cookie("tracker", JSON.stringify(tracker));
-    // }
-    // else{
-    //     let tracker = JSON.parse(req.cookies.tracker);
-    //     let updatedTracker = updateTracker(tracker, req);
-    //     if(updatedTracker != null){
-    //         res.cookie("tracker", JSON.stringify(updatedTracker));
-    //     }
-    // }
-    let tracker = manageTracker(req, "Bob");
-    res.cookie("tracker", JSON.stringify(tracker));
-    res.render('edit.hbs', editFormDetails());
-}
-
-router.get('/edit', editForm);
-
-function editFormDetails(message, error, success, song) {
-    if (typeof message === 'undefined') message = false;
-    if (typeof error === 'undefined') error = false;
-    if (typeof success != true) successMessage = false;
-
-    return pageData = {
-        message: message,
-        success: success,
-        error: error,
-        song: song,
-        endpoint: "/song",
-        method: "post",
-        legend: "Edit or replace an existing song",
-        formfields: [
-            { field: "oldTitle", pretty: "Old Title", title: true },
-            { field: "oldArtist", pretty: "Old Artist" },
-            { field: "newTitle", pretty: "New Title" },
-            { field: "newArtist", pretty: "New Artist" },
-            // { field: "newGenre", pretty: "New Genre", genre: true },
-            { field: "newAlbum", pretty: "New Album" }
-        ],
-        // titles: model.getAllTitles(1),
-        newGenre: model.allGenres()
-    }
-=======
->>>>>>> 93662c6adb36e9e83f2aaf9c14a00f3e4387f9e5
 
 function showEditForm(res) {
     res.render('edit.hbs', editFormDetails());
@@ -243,24 +191,7 @@ async function deleteOneSong(req, res) {
 
 router.delete('/song', deleteOneSong);
 
-<<<<<<< HEAD
-function deleteForm(req, res){
-    // if(!req.cookies.tracker){
-    //     let tracker = createTracker("Bob", req);
-    //     res.cookie("tracker", JSON.stringify(tracker));
-    // }
-    // else{
-    //     let tracker = JSON.parse(req.cookies.tracker);
-    //     let updatedTracker = updateTracker(tracker, req);
-    //     if(updatedTracker != null){
-    //         res.cookie("tracker", JSON.stringify(updatedTracker));
-    //     }
-    // }
-    let tracker = manageTracker(req, "Bob");
-    res.cookie("tracker", JSON.stringify(tracker));
-=======
 function showDeleteForm(res) {
->>>>>>> 93662c6adb36e9e83f2aaf9c14a00f3e4387f9e5
     res.render('delete.hbs', deleteFormDetails());
 }
 //#endregion
