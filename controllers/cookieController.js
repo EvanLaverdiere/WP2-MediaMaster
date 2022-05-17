@@ -6,8 +6,8 @@ const sessionModel = require('../models/sessionModelMySql');
 /**
  * Object representing a tracking cookie. Contains a user's name and an array of the pages that the user has visited on the site.
  */
-class Tracker{
-    constructor(username){
+class Tracker {
+    constructor(username) {
         this.username = username
         this.pagesVisited = [];
     }
@@ -19,9 +19,9 @@ class Tracker{
  * @param {*} req The HTTP Request detailing which page the user was on when the Tracker was created.
  * @returns The new Tracker object.
  */
-function createTracker(username, req){
+function createTracker(username, req) {
     const trackerId = uuid.v4();
-    
+
     let tracker = new Tracker(username);
     let page = getCurrentPage(req);
 
@@ -35,11 +35,11 @@ function createTracker(username, req){
  * @param {*} req The HTTP Request containing the current URL.
  * @returns An object containing the page's URL and the time at which the request was received.
  */
-function getCurrentPage(req){
+function getCurrentPage(req) {
     let url = req.url;
     let timeArrived = new Date();
 
-    return {url, timeArrived};
+    return { url, timeArrived };
 }
 
 /**
@@ -48,13 +48,13 @@ function getCurrentPage(req){
  * @param {*} req The HTTP request which sent in the Tracker.
  * @returns A new, updated Tracker object if the user has moved to a different page since they last sent a request, or null otherwise.
  */
-function updateTracker(tracker, req){
+function updateTracker(tracker, req) {
     // Get the last page the user visited before this request was sent in.
     let length = tracker.pagesVisited.length;
     let lastPage = tracker.pagesVisited[length - 1];
 
     // Is the user still on the previous page?
-    if(lastPage.url === req.url){
+    if (lastPage.url === req.url) {
         return null; // If so, nothing needs to be changed. Return null.
     }
 
@@ -76,63 +76,63 @@ function updateTracker(tracker, req){
  * @param {*} username The user to whom this tracker is attached.
  * @returns A Tracker object.
  */
-function manageTracker(req, username){
+function manageTracker(req, username) {
     let tracker;
-    
+
     // Does the request have a tracker cookie already?
-    if(!req.cookies.tracker){
+    if (!req.cookies.tracker) {
         // If not, create one.
         tracker = createTracker(username, req);
         let pagesVisited = tracker.pagesVisited;
         logger.debug(`Started tracking user \'${username}\' at ${pagesVisited[pagesVisited.length - 1].url}.`);
     }
-    else{
+    else {
         // Otherwise, update the existing one.
         let oldTracker = JSON.parse(req.cookies.tracker);
         let updatedTracker = updateTracker(oldTracker, req);
 
         // Were any changes made to the tracker?
-        if(updatedTracker != null){
+        if (updatedTracker != null) {
             // If so, return the updated tracker.
             tracker = updatedTracker;
             logger.debug(`User \'${username}\' moved to a new page.`);
         }
-        else{
+        else {
             // Otherwise, return the original tracker.
             tracker = oldTracker;
         }
     }
 
-    logger.debug({tracker: tracker});
+    logger.debug({ tracker: tracker });
     return tracker;
 }
 
-async function manageSession(req){
+async function manageSession(req) {
     try {
         let sessionId = req.cookies.sessionId;
         let userId = req.cookies.userId;
 
         let userSession;
-        if(sessionId){
+        if (sessionId) {
             userSession = await sessionModel.getSession(sessionId);
         }
-        else{
+        else {
             userSession = await sessionModel.getSessionByUserId(userId);
         }
         // let userSession = await sessionModel.getSession(sessionId);
-    
-        if(await sessionModel.isExpired(userId)){
+
+        if (await sessionModel.isExpired(userId)) {
             await sessionModel.deleteSessionByUserId(userId);
             return null;
         }
-        else{
+        else {
             userSession = await sessionModel.refreshSession(userId, sessionId);
         }
         return userSession;
     } catch (error) {
         logger.error(error);
         return null;
-    }    
+    }
 }
 
 module.exports = {

@@ -35,13 +35,13 @@ const genreTypes = [
 function validateSong(title, artist, genre) {
     title = title.replace(/ /g, '');
     let notAdded = "The song was not added: ";
-    
+
     //Not checking if the genre matches since user is not actually typing in a genre, we provide them
     //Not checking if is string type since whatever the user types in, is considered as string
     //Not checking if is null since, user cannot send nulls
 
-    if(!(validator.isAlphanumeric(title)))
-        throw new errorTypes.InvalidInputError(notAdded+" the title can only contains letters and/or numbers")
+    if (!(validator.isAlphanumeric(title)))
+        throw new errorTypes.InvalidInputError(notAdded + " the title can only contains letters and/or numbers")
 
 
     // return (genreTypes.includes(genre.toLowerCase())
@@ -61,11 +61,11 @@ async function authenticateUser(username, password, connection) {
 
     try {
         const sqlQuery = "SELECT username FROM users WHERE username = "
-        + connection.escape(username);
+            + connection.escape(username);
 
         const result = await connection.execute(sqlQuery);
-        
-        if(result[0].length == 0)
+
+        if (result[0].length == 0)
             throw new errorTypes.AuthenticationError("User not found in database");
 
         //create sql query to check db if username already exists in database
@@ -76,19 +76,19 @@ async function authenticateUser(username, password, connection) {
         const result2 = await connection.execute(sqlQuery2);
 
         //encrypt the user's input first then compare it with database password
-        if(await bcrypt.compare(password, result2[0][0].password)){
+        if (await bcrypt.compare(password, result2[0][0].password)) {
             return true;
         }
 
         return false;
     }
-    catch(err){
-        if(err instanceof errorTypes.AuthenticationError)
+    catch (err) {
+        if (err instanceof errorTypes.AuthenticationError)
             throw err;
 
         logger.error(err);
         console.log(err);
-        
+
         throw new errorTypes.DatabaseError("Something wrong happened in the database.");
     }
 

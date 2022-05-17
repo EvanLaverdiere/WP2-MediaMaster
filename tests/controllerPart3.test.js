@@ -56,7 +56,7 @@ test('[CONTROLLER] Adding a user: Failure case (UserAlreadyExistsError)', async 
         username: username,
         password: password
     });
-    
+
     const testResponse = await testRequest.post("/users").send({
         username: username,
         password: password
@@ -78,21 +78,20 @@ test('[CONTROLLER] Adding a user: Failure case (DatabaseError)', async () => {
     expect(testResponse.status).toBe(500);
 });
 
-// test('[CONTROLLER] Getting a user: Success case', async () => {
-//     const { username, password } = generateUserData();
-//     await testRequest.post("/users").send({
-//         username: username,
-//         password: password
-//     });
+test('[CONTROLLER] Getting a user: Success case', async () => {
+    const { username, password } = generateUserData();
+    await testRequest.post("/users").send({
+        username: username,
+        password: password
+    });
 
-//     //ASK TALIB HOW TO IMPLEMENT GETTING A USERNAME AND PASSWORD
-//     const testResponse = await testRequest.post("/users").send({
-//         username: username,
-//         password: password
-//     });
+    const testResponse = await testRequest.post("/user").send({
+        username: username,
+        password: password
+    });
 
-//     expect(testResponse.status).toBe(200);
-// });
+    expect(testResponse.status).toBe(200);
+});
 
 afterEach(async () => {
     connection = model.getConnection();

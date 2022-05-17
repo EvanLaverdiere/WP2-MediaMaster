@@ -110,7 +110,7 @@ async function getUser(request, response) {
             colors: ["Dark", "Light"],
             languages: ["English", "French"]
         });
-        
+
     }
 
     catch (err) {
@@ -162,8 +162,7 @@ function showUserForm(request, response) {
         default:
             response.render('home.hbs');
     }
-} 
-router.post('/user', showUserForm);
+}
 
 module.exports = {
     router,

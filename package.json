@@ -31,10 +31,6 @@
     "pino-http": "^6.6.0",
     "puppeteer": "^13.7.0",
     "supertest": "^6.2.3",
-    "uuid": "^8.3.2",
     "validator": "^13.7.0"
-  },
-  "jest": {
-    "testTimeout": 10000
   }
 }

@@ -9,15 +9,15 @@ const routeRoot = '/';
  * @param {response} req 
  * @param {request} res 
  */
-function errorResponse(req,res) {
-    res.statusCode=404;
+function errorResponse(req, res) {
+    res.statusCode = 404;
     res.render('error.hbs',
         {
-            message:"Error 404 Not Found: The site you were trying to visit could not be found"
+            message: "Error 404 Not Found: The site you were trying to visit could not be found"
         })
 }
-router.all('*',errorResponse);
+router.all('*', errorResponse);
 module.exports = {
- router,
- routeRoot
+    router,
+    routeRoot
 }

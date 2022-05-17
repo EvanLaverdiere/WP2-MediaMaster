@@ -41,7 +41,7 @@ async function initialize(dbname, reset) {
 
             const dropSessions = "DROP TABLE IF EXISTS sessions;";
             await connection.execute(dropSessions);
-            
+
             const dropUsers = "DROP TABLE IF EXISTS users;";
             await connection.execute(dropUsers);
             // logger.info("Table song dropped");
@@ -74,7 +74,7 @@ async function addUser(username, password) {
 
     //validate the username: make sure its unique (doesn't already exist)
     let validatedUsername = await validate.validateUniqueUser(username, connection);
-    if(!validatedUsername)
+    if (!validatedUsername)
         throw new errorTypes.UserAlreadyExistsError("User already exists.");
 
     //hash the password
@@ -122,16 +122,16 @@ async function getUser(username, password) {
     }
 }
 
-async function getUserId(username){
+async function getUserId(username) {
     let sql = "SELECT userId FROM users WHERE username = ?";
 
     let [records, metadata] = await connection.query(sql, [username])
-    .catch((err) => {
-        logger.error(err);
-        throw new errorTypes.DatabaseError(err);
-    });
+        .catch((err) => {
+            logger.error(err);
+            throw new errorTypes.DatabaseError(err);
+        });
 
-    if(records.length == 0){
+    if (records.length == 0) {
         let errorMessage = "No such user exists.";
         logger.error(errorMessage);
         throw new errorTypes.AuthenticationError(errorMessage);

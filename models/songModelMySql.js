@@ -1,10 +1,9 @@
 const mysql = require('mysql2/promise');
 const logger = require('../logger');
-const validator = require('../validation/validateUtils.js');
+const validator = require('../validation/validateUtils');
 
 const errorTypes = require('./errorModel.js');
 const userModel = require('./userModelMySql.js');
-const sessionModel = require('./sessionModelMySql');
 
 var connection;
 
@@ -22,9 +21,7 @@ async function initialize(db, reset) {
 
 
         await setConnection(db);
-
-        await sessionModel.initialize(db, reset, connection);
-
+        
         if (reset)
             await dropTable();
 
@@ -61,14 +58,12 @@ async function addSong(title, artist, genre, album, currentUserId) {
 
     validator.validateSong(title, artist, genre); //Throws specific error messages if invalid, it needs to get caught it controller
     if (typeof (album) == 'undefined') album = "";
-    if (typeof (currentUserId) == 'undefined') currentUserId =1; //Left so tests pass, but it needs to be changed along the tests
 
     await checkDuplicate(title, artist, genre, album);  //Throws if the song is already added in the db
 
     try {
-
         let query = "insert into Songs(title, artist, genre, album, userId) values(?, ?, ?, ?, ?);";
-        let results = await connection.execute(query, [title, artist, genre, album, currentUserId]);
+        let results = await connection.execute(query, [title, artist, genre, album, 1]);
         logger.info(`Song [${title}] was successfully added `);
         return true;
     } catch (error) {
@@ -86,8 +81,6 @@ async function addSong(title, artist, genre, album, currentUserId) {
  * @returns 
  */
 async function getAllSongs(currentUserId) {
-    if (typeof (currentUserId) == 'undefined') currentUserId =1; //Left so tests pass, but it needs to be changed along the tests
-
     let query = "select title, artist, genre, album from Songs where userId=" + connection.escape(currentUserId) + ";";
 
     try {
@@ -106,17 +99,19 @@ async function getAllSongs(currentUserId) {
  * @param {*} title The title of the desired song.
  * @param {*} artist The artist who wrote the song.
  * @returns An object representing the retrieved song.
- * @throws DatabaseError if the database is inaccessible when called.
- * @throws InvalidInputError if the passed song does not exist.
  */
 async function getOneSong(userId, title, artist) {
     // TO-DO: Validate passed userId
 
     // TO-DO: Validate passed title, artist, & genre.
 
-    let query = "SELECT * FROM Songs WHERE title = ? AND artist = ? AND userId = ? LIMIT 1";
+    let query = "SELECT * FROM Songs " +
+        'WHERE title = \'' + title + '\' ' +
+        'AND artist = \'' + artist + '\' ' +
+        'AND userId = ' + userId + ' ' +
+        'LIMIT 1';
 
-    const results = await connection.query(query, [title, artist, userId])
+    const results = await connection.query(query)
         .catch((err) => {
             // Log the error.
             logger.error(err);
@@ -133,7 +128,7 @@ async function getOneSong(userId, title, artist) {
     if (songs.length == 0) {
         let errorMessage = "User's collection does not contain the song \'" + title + "\' by " + artist + ".";
         logger.error(errorMessage);
-        //Throw appropriate error. 
+        //To-Do: throw appropriate error. 
         throw new errorTypes.InvalidInputError(errorMessage);
     }
 
@@ -206,15 +201,6 @@ async function updateSong(userId, oldTitle, oldArtist, newTitle, newArtist, newG
 //#endregion
 
 //#region DELETE Regions
-/**
- * Deletes a song from the database.
- * @param {*} userId The ID of the song's owner.
- * @param {*} title The title of the song to be deleted.
- * @param {*} artist The artist who performed the song.
- * @returns An object representing the deleted song.
- * @throws InvalidInputError if the song to be deleted doesn't exist.
- * @throws DatabaseError if the database is inaccessible when called.
- */
 async function deleteSong(userId, title, artist) {
     // To-Do: Validate passed userId.
 
@@ -239,7 +225,6 @@ async function deleteSong(userId, title, artist) {
         let errorMessage = "No records were deleted.";
         logger.error(errorMessage);
         // To-Do: Throw appropriate error.
-        throw new errorTypes.InvalidInputError(errorMessage);
     }
 
     logger.info("Deletion successful.");
@@ -285,7 +270,7 @@ async function checkDuplicate(title, artist, genre, album, currentUserId) {
     let query = "select * from Songs where title = ? and artist = ? and genre = ? and album =? and userId=?;"
     let [rows, fields] = [];
     try {
-        [rows, fields] = await connection.query(query, [title, artist, genre, album,1]);
+        [rows, fields] = await connection.execute(query, [title, artist, genre, album, 1]);
 
     } catch (error) {
         logger.error(error.message);
