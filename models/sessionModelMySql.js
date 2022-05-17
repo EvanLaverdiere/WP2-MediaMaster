@@ -180,6 +180,8 @@ async function refreshSession(userId, sessionId) {
 /**
  * Deletes a session by passed session ID. To be used when a sessionId cookie exists.
  * @param {*} sessionId The ID of the session to be deleted.
+ * @throws AuthenticationError If the function failed to delete any sessions from the database.
+ * @throws DatabaseError if the database is inaccessible when called.
  */
 async function deleteSession(sessionId) {
     const sql = "DELETE FROM sessions WHERE sessionId = ?";
@@ -227,6 +229,8 @@ async function deleteSessionByUserId(userId) {
  * Verifies whether a given session is expired.
  * @param {*} sessionId The ID of the session to check.
  * @returns True if the session is expired, false otherwise.
+ * @throws AuthenticationError if the passed sessionId is invalid.
+ * @throws DatabaseError if the database is inaccessible when this function is called.
  */
 async function isExpired(userId) {
     try {

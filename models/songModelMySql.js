@@ -102,17 +102,13 @@ async function getAllSongs(currentUserId) {
  * @param {*} title The title of the desired song.
  * @param {*} artist The artist who wrote the song.
  * @returns An object representing the retrieved song.
+ * @throws DatabaseError if the database is inaccessible when called.
+ * @throws InvalidInputError if the passed song does not exist.
  */
 async function getOneSong(userId, title, artist) {
     // TO-DO: Validate passed userId
 
     // TO-DO: Validate passed title, artist, & genre.
-
-    // let query = "SELECT * FROM Songs " +
-    //     'WHERE title = \'' + title + '\' ' +
-    //     'AND artist = \'' + artist + '\' ' +
-    //     'AND userId = ' + userId + ' ' +
-    //     'LIMIT 1';
 
     let query = "SELECT * FROM Songs WHERE title = ? AND artist = ? AND userId = ? LIMIT 1";
 
@@ -133,7 +129,7 @@ async function getOneSong(userId, title, artist) {
     if (songs.length == 0) {
         let errorMessage = "User's collection does not contain the song \'" + title + "\' by " + artist + ".";
         logger.error(errorMessage);
-        //To-Do: throw appropriate error. 
+        //Throw appropriate error. 
         throw new errorTypes.InvalidInputError(errorMessage);
     }
 
@@ -206,6 +202,15 @@ async function updateSong(userId, oldTitle, oldArtist, newTitle, newArtist, newG
 //#endregion
 
 //#region DELETE Regions
+/**
+ * Deletes a song from the database.
+ * @param {*} userId The ID of the song's owner.
+ * @param {*} title The title of the song to be deleted.
+ * @param {*} artist The artist who performed the song.
+ * @returns An object representing the deleted song.
+ * @throws InvalidInputError if the song to be deleted doesn't exist.
+ * @throws DatabaseError if the database is inaccessible when called.
+ */
 async function deleteSong(userId, title, artist) {
     // To-Do: Validate passed userId.
 
@@ -230,6 +235,7 @@ async function deleteSong(userId, title, artist) {
         let errorMessage = "No records were deleted.";
         logger.error(errorMessage);
         // To-Do: Throw appropriate error.
+        throw new errorTypes.InvalidInputError(errorMessage);
     }
 
     logger.info("Deletion successful.");
