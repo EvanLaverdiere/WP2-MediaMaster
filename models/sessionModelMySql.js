@@ -50,7 +50,7 @@ async function addSession(userId) {
             throw new errorTypes.DatabaseError(err);
         });
 
-    return {sessionId: sessionId, closesAt: closesAt};
+    return { sessionId: sessionId, closesAt: closesAt };
 }
 //#endregion
 
@@ -121,6 +121,24 @@ async function updateSession(sessionId) {
 
     return refreshedSession;
 }
+
+async function refreshSession(userId, sessionId) {
+    try {
+        // Verify that the passed session ID exists.
+        const oldSession = await getSession(sessionId);
+
+        // Create a new session to replace the original session.
+        const newSession = await addSession(userId);
+
+        // Delete the original, obsolete session.
+        await deleteSession(oldSession.sessionId);
+
+        // Return the new session.
+        return newSession;
+    } catch (error) {
+        throw error;
+    }
+}
 //#endregion
 
 //#region DELETE Operations
@@ -162,6 +180,7 @@ module.exports = {
     addSession,
     getSession,
     updateSession,
+    refreshSession,
     deleteSession,
     isExpired
 }

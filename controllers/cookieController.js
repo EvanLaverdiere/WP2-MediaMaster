@@ -106,6 +106,7 @@ function manageTracker(req, username){
 async function manageSession(req){
     try {
         let sessionId = req.cookies.sessionId;
+        let userId = req.cookies.userId;
 
         let userSession = await sessionModel.getSession(sessionId);
     
@@ -114,7 +115,7 @@ async function manageSession(req){
             return null;
         }
         else{
-            userSession = await sessionModel.updateSession(sessionId);
+            userSession = await sessionModel.refreshSession(userId, sessionId);
         }
         return userSession;
     } catch (error) {
