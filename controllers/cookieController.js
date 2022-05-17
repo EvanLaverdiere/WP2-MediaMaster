@@ -1,4 +1,5 @@
 const uuid = require('uuid');
+const logger = require('../logger');
 const sessionModel = require('../models/sessionModelMySql');
 
 
@@ -82,6 +83,8 @@ function manageTracker(req, username){
     if(!req.cookies.tracker){
         // If not, create one.
         tracker = createTracker(username, req);
+        let pagesVisited = tracker.pagesVisited;
+        logger.debug(`Started tracking user \'${username}\' at ${pagesVisited[pagesVisited.length - 1].url}.`);
     }
     else{
         // Otherwise, update the existing one.
@@ -92,6 +95,7 @@ function manageTracker(req, username){
         if(updatedTracker != null){
             // If so, return the updated tracker.
             tracker = updatedTracker;
+            logger.debug(`User \'${username}\' moved to a new page.`);
         }
         else{
             // Otherwise, return the original tracker.
@@ -99,15 +103,41 @@ function manageTracker(req, username){
         }
     }
 
+    logger.debug({tracker: tracker});
     return tracker;
 }
 
-function manageSession(req){
+async function manageSession(req){
+    try {
+        let sessionId = req.cookies.sessionId;
+        let userId = req.cookies.userId;
 
+        let userSession;
+        if(sessionId){
+            userSession = await sessionModel.getSession(sessionId);
+        }
+        else{
+            userSession = await sessionModel.getSessionByUserId(userId);
+        }
+        // let userSession = await sessionModel.getSession(sessionId);
+    
+        if(await sessionModel.isExpired(userId)){
+            await sessionModel.deleteSessionByUserId(userId);
+            return null;
+        }
+        else{
+            userSession = await sessionModel.refreshSession(userId, sessionId);
+        }
+        return userSession;
+    } catch (error) {
+        logger.error(error);
+        return null;
+    }    
 }
 
 module.exports = {
     // createTracker,
     // updateTracker
-    manageTracker
+    manageTracker,
+    manageSession
 }

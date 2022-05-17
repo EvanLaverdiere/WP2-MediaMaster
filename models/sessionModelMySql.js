@@ -17,7 +17,7 @@ async function initialize(db, reset, conn) {
             await connection.execute(dropCommand);
         }
 
-        const createCommand = "CREATE TABLE IF NOT EXISTS sessions(sessionId varchar(50), userId int NOT NULL, openedAt Date NOT NULL, closesAt Date NOT NULL, " +
+        const createCommand = "CREATE TABLE IF NOT EXISTS sessions(sessionId char(36), userId int NOT NULL, openedAt Datetime NOT NULL, closesAt Datetime NOT NULL, " +
             "PRIMARY KEY (sessionId), CONSTRAINT fk_users_sessions FOREIGN KEY (userId) REFERENCES users (userId))";
 
 
@@ -30,17 +30,18 @@ async function initialize(db, reset, conn) {
 
 //#region CREATE Operations
 /**
- * Creates a new session and adds it to the database.
+ * Creates a new session that will expire in 25 minutes. Adds it to the database.
  * @param {*} userId The ID of the user to whom this session belongs.
+ * @throws DatabaseError if the database is inaccessible when this function is called.
  */
 async function addSession(userId) {
     //TODO: Verify that passed userId is already in the database.
 
     const sessionId = uuid.v4(); // Generate a random value for the session Id.
 
-    const openedAt = new Date();
+    const openedAt = new Date(); // Session is opened at the current time.
 
-    const closesAt = new Date(Date.now() + 25 * 60000);
+    const closesAt = new Date(Date.now() + 25 * 60000); // Session will expire in 25 minutes.
 
     const sql = "INSERT INTO sessions (sessionId, userId, openedAt, closesAt) VALUES(?, ?, ?, ?)";
 
@@ -50,7 +51,8 @@ async function addSession(userId) {
             throw new errorTypes.DatabaseError(err);
         });
 
-    return {sessionId: sessionId, closesAt: closesAt};
+    // Returns the newly created session's ID and closing time. These will be used to set the sessionId cookie.
+    return { sessionId: sessionId, closesAt: closesAt };
 }
 //#endregion
 
@@ -59,6 +61,8 @@ async function addSession(userId) {
  * Retrieves an existing session from the database.
  * @param {*} sessionId The ID of the session.
  * @returns An object representing the session.
+ * @throws AuthenticationError if the passed sessionId is invalid.
+ * @throws DatabaseError if the database is inaccessible when this function is called.
  */
 async function getSession(sessionId) {
     const sql = "SELECT * FROM sessions WHERE sessionId = ?";
@@ -72,8 +76,33 @@ async function getSession(sessionId) {
     const sessions = results[0];
 
     if (sessions.length == 0) {
-        // Throw some kind of error.
+        // If no records were retrieved, the sessions table must not contain the passed sessionId.
         let errorMessage = "No session with the id \'" + sessionId + "\' exists.";
+        logger.error("ERROR: " + errorMessage);
+        throw new errorTypes.AuthenticationError(errorMessage);
+    }
+
+    return sessions[0];
+}
+
+/**
+ * Retrieves an existing session from the database by the passed user ID.
+ * @param {*} userId The session's associated user ID.
+ * @returns An object representing the session.
+ * @throws AuthenticationError if the passed sessionId is invalid.
+ * @throws DatabaseError if the database is inaccessible when this function is called.
+ */
+async function getSessionByUserId(userId) {
+    const sql = "SELECT * FROM sessions WHERE userId = ?";
+
+    const [sessions, metadata] = await connection.query(sql, [userId])
+        .catch((err) => {
+            logger.error(err);
+            throw new errorTypes.DatabaseError(err);
+        });
+
+    if (sessions.length == 0) {
+        let errorMessage = "No sessions found for the user ID " + userId + ".";
         logger.error("ERROR: " + errorMessage);
         throw new errorTypes.AuthenticationError(errorMessage);
     }
@@ -86,7 +115,7 @@ async function getSession(sessionId) {
 /**
  * Refreshes an existing session, extending its duration.
  * @param {*} sessionId The session's ID.
- * @returns The number of database records changed, and an object representing the updated session.
+ * @returns The updated session.
  */
 async function updateSession(sessionId) {
     // Verify that the session exists.
@@ -119,11 +148,41 @@ async function updateSession(sessionId) {
         closesAt: newExpiryTime
     }
 
-    return { changedRows: changedRows, session: refreshedSession };
+    return refreshedSession;
+}
+
+/**
+ * Refresh a session by replacing its original value with a new one.
+ * @param {*} userId The User ID associated with the session.
+ * @param {*} sessionId The session's ID.
+ * @returns The refreshed session.
+ */
+async function refreshSession(userId, sessionId) {
+    try {
+        // Verify that the passed session ID exists. Will throw if the ID is not found.
+        const oldSession = await getSession(sessionId);
+
+        // Create a new session to replace the original session.
+        const newSession = await addSession(userId);
+
+        // Delete the original, obsolete session.
+        await deleteSession(oldSession.sessionId);
+
+        // Return the new session.
+        return newSession;
+    } catch (error) {
+        throw error; // If anything goes wrong in one of the called functions, throw the resulting error. Those functions will log it.
+    }
 }
 //#endregion
 
 //#region DELETE Operations
+/**
+ * Deletes a session by passed session ID. To be used when a sessionId cookie exists.
+ * @param {*} sessionId The ID of the session to be deleted.
+ * @throws AuthenticationError If the function failed to delete any sessions from the database.
+ * @throws DatabaseError if the database is inaccessible when called.
+ */
 async function deleteSession(sessionId) {
     const sql = "DELETE FROM sessions WHERE sessionId = ?";
 
@@ -140,18 +199,46 @@ async function deleteSession(sessionId) {
         throw new errorTypes.AuthenticationError(errorMessage);
     }
 }
+
+/**
+ * Deletes a session by its corresponding user ID. To be used when no sessionId cookie exists, having expired.
+ * @param {*} userId The user ID of the session. In normal circumstances, a user will only have one session open at a time.
+ * @throws AuthenticationError If the function failed to delete any sessions from the database.
+ * @throws DatabaseError if the database is inaccessible when called.
+ */
+async function deleteSessionByUserId(userId) {
+    const sql = "DELETE FROM sessions WHERE userId = ?";
+
+    let results = await connection.query(sql, [userId])
+        .catch((err) => {
+            logger.error(err);
+            throw new errorTypes.DatabaseError(err);
+        });
+
+    let affectedRows = results[0].affectedRows;
+
+    if (affectedRows <= 0) {
+        let errorMessage = "No sessions were deleted.";
+        logger.error("ERROR: " + errorMessage);
+        throw new errorTypes.AuthenticationError(errorMessage);
+    }
+}
 //#endregion
 
 /**
  * Verifies whether a given session is expired.
  * @param {*} sessionId The ID of the session to check.
  * @returns True if the session is expired, false otherwise.
+ * @throws AuthenticationError if the passed sessionId is invalid.
+ * @throws DatabaseError if the database is inaccessible when this function is called.
  */
-async function isExpired(sessionId) {
+async function isExpired(userId) {
     try {
-        let session = await getSession(sessionId);
+        let session = await getSessionByUserId(userId);
+        let expiresAt = session.closesAt;
+        let now = new Date();
 
-        return session.expiresAt < new Date();
+        return session.closesAt < now;
     } catch (error) {
         throw error;
     }
@@ -159,5 +246,12 @@ async function isExpired(sessionId) {
 
 module.exports = {
     initialize,
-    addSession
+    addSession,
+    getSession,
+    getSessionByUserId,
+    updateSession,
+    refreshSession,
+    deleteSession,
+    deleteSessionByUserId,
+    isExpired
 }
