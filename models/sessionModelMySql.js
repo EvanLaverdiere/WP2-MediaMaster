@@ -84,12 +84,12 @@ async function getSession(sessionId) {
 async function getSessionByUserId(userId) {
     const sql = "SELECT * FROM sessions WHERE userId = ?";
 
-    const [sessions, metadata] = await connection.query(sql, [userId]).catch((err) =>{
+    const [sessions, metadata] = await connection.query(sql, [userId]).catch((err) => {
         logger.error(err);
         throw new errorTypes.DatabaseError(err);
     });
 
-    if(sessions.length == 0){
+    if (sessions.length == 0) {
         let errorMessage = "No sessions found for the user ID " + userId + ".";
         logger.error("ERROR: " + errorMessage);
         throw new errorTypes.AuthenticationError(errorMessage);
@@ -175,6 +175,24 @@ async function deleteSession(sessionId) {
         throw new errorTypes.AuthenticationError(errorMessage);
     }
 }
+
+async function deleteSessionByUserId(userId) {
+    const sql = "DELETE FROM sessions WHERE userId = ?";
+
+    let results = await connection.query(sql, [userId])
+        .catch((err) => {
+            logger.error(err);
+            throw new errorTypes.DatabaseError(err);
+        });
+
+    let affectedRows = results[0].affectedRows;
+
+    if(affectedRows <= 0){
+        let errorMessage = "No sessions were deleted.";
+        logger.error("ERROR: " + errorMessage);
+        throw new errorTypes.AuthenticationError(errorMessage);
+    }
+}
 //#endregion
 
 /**
@@ -182,11 +200,13 @@ async function deleteSession(sessionId) {
  * @param {*} sessionId The ID of the session to check.
  * @returns True if the session is expired, false otherwise.
  */
-async function isExpired(sessionId) {
+async function isExpired(userId) {
     try {
-        let session = await getSession(sessionId);
+        let session = await getSessionByUserId(userId);
+        let expiresAt = session.closesAt;
+        let now = new Date();
 
-        return session.expiresAt < new Date();
+        return session.closesAt < now;
     } catch (error) {
         throw error;
     }
@@ -200,5 +220,6 @@ module.exports = {
     updateSession,
     refreshSession,
     deleteSession,
+    deleteSessionByUserId,
     isExpired
 }
