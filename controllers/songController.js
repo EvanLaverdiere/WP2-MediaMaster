@@ -5,6 +5,7 @@ const { json } = require('express/lib/response');
 const res = require('express/lib/response');
 const { request } = require('express');
 const { InvalidInputError, DatabaseError } = require('../models/errorModel.js');
+const { createTracker, updateTracker, manageTracker, manageSession } = require('./cookieController');
 const router = express.Router();
 const routeRoot = '/';
 let lightTheme;
@@ -39,7 +40,7 @@ async function add(req, res) {
 }
 router.post('/song', add)
 
-function showAddForm(req,res) {
+function showAddForm(req, res) {
     res.render('add.hbs', addFormDetails());
 }
 
@@ -113,7 +114,13 @@ async function getSong(req, res) {
 }
 router.get('/song', getSong);
 
-function showOneForm(req, res) {
+async function getOneForm(req, res) {
+    let tracker = manageTracker(req, "Bob");
+    let session = await manageSession(req);
+    if(session){
+        res.cookie("sessionId", session.sessionId, {expires: session.closesAt});
+    }
+    res.cookie("tracker", JSON.stringify(tracker));
     res.render('getOne.hbs', getFormDetails());
 }
 //#endregion
@@ -159,10 +166,30 @@ async function editSong(req, res) {
 }
 router.put('/song', editSong);
 
-
-function showEditForm(req,res) {
+async function editForm(req, res) {
+    // if(!req.cookies.tracker){
+    //     let tracker = createTracker("Bob", req);
+    //     res.cookie("tracker", JSON.stringify(tracker));
+    // }
+    // else{
+    //     let tracker = JSON.parse(req.cookies.tracker);
+    //     let updatedTracker = updateTracker(tracker, req);
+    //     if(updatedTracker != null){
+    //         res.cookie("tracker", JSON.stringify(updatedTracker));
+    //     }
+    // }
+    let tracker = manageTracker(req, "Bob");
+    let session = await manageSession(req);
+    if(session){
+        res.cookie("sessionId", session.sessionId, {expires: session.closesAt});
+    }
+    res.cookie("tracker", JSON.stringify(tracker));
     res.render('edit.hbs', editFormDetails());
 }
+
+// function showEditForm(res) {
+//     res.render('edit.hbs', editFormDetails());
+// }
 //#endregion
 
 //#region DELETE song
@@ -196,8 +223,26 @@ async function deleteOneSong(req, res) {
 
 router.delete('/song', deleteOneSong);
 
-function showDeleteForm(req, res) {
+async function deleteForm(req, res){
+    // if(!req.cookies.tracker){
+    //     let tracker = createTracker("Bob", req);
+    //     res.cookie("tracker", JSON.stringify(tracker));
+    // }
+    // else{
+    //     let tracker = JSON.parse(req.cookies.tracker);
+    //     let updatedTracker = updateTracker(tracker, req);
+    //     if(updatedTracker != null){
+    //         res.cookie("tracker", JSON.stringify(updatedTracker));
+    //     }
+    // }
+    let tracker = manageTracker(req, "Bob");
+    let session = await manageSession(req);
+    if(session){
+        res.cookie("sessionId", session.sessionId, {expires: session.closesAt});
+    }
+    res.cookie("tracker", JSON.stringify(tracker));
     res.render('delete.hbs', deleteFormDetails());
+
 }
 //#endregion
 
@@ -297,25 +342,25 @@ function deleteFormDetails(message, error, success, song) {
 
 //#endregion
 const userController = require('./userController')
-/** Show the appropriate form based on user choice */
-function showForm(request, response) {
-    let theme = request.cookies.theme;  if(theme=="light")lightTheme=true;else lightTheme=false;
 
+/** Show the appropriate form based on user choice */
+async function showForm(request, response) {
+    let theme = request.cookies.theme;  if(theme=="light")lightTheme=true;else lightTheme=false;
     switch (request.body.choice) {
         case 'add':
             showAddForm(request, response);
             break;
         case 'show':
-            showOneForm(request, response);
+            getOneForm(request, response);
             break;
         case 'list':
             response.redirect('/songs');
             break;
         case 'edit':
-            showEditForm(request, response);
+            await editForm(request, response);
             break;
         case 'delete':
-            showDeleteForm(request, response);
+            await deleteForm(request, response);
             break;
         case 'register':
             userController.showUserForm(request, response);
@@ -329,8 +374,10 @@ function showForm(request, response) {
         default:
             response.render('home.hbs');
     }
-} // no valid choice made
+}
+ // no valid choice made
 router.post('/form', showForm);
+
 module.exports = {
     router,
     routeRoot

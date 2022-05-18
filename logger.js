@@ -1,7 +1,7 @@
 const pino = require('pino')
 
 const logger = pino({
-    level: 'info',
+    level: 'debug',
 },
     pino.destination('logs/server-log')
 );

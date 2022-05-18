@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const routeRoot = '/';
 const model = require('../models/userModelMySql');
+const cookieController = require('./cookieController');
+const sessionModel = require('../models/sessionModelMySql');
 const errorTypes = require('../models/errorModel.js');
 const { use } = require('../app');
 let lightTheme;
@@ -129,12 +131,18 @@ async function getUser(request, response){
             colors =["Dark","Light"];
             lightTheme=false;
         } 
-        const usernameInput = request.query.username;
-        const passwordInput = request.query.password;
+        const usernameInput = request.body.username;
+        const passwordInput = request.body.password;
 
         const { username, password } = await model.getUser(usernameInput, passwordInput);
+        const userId = await model.getUserId(username);
+        const tracker = await cookieController.manageTracker(request, username);
+        const session = await sessionModel.addSession(userId);
 
         response.status(200);
+        response.cookie("userId", userId);
+        response.cookie("tracker", JSON.stringify(tracker));
+        response.cookie("sessionId", session.sessionId, {expires: session.closesAt, httpOnly: true}); 
         response.render('userProfile.hbs', {
             successMessage: true,
             message: "Successfully logged in!",
@@ -198,7 +206,8 @@ function showUserForm(request, response) {
         default:
             response.render('home.hbs');
     }
-} // no valid choice made
+}
+
 module.exports = {
     router,
     routeRoot,
