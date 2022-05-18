@@ -10,6 +10,7 @@ const cookieParser = require('cookie-parser');
 
 logger.info("Creating app");
 
+const methodOverride = require('method-override');
 
 const expressListRoutes = require('express-list-routes');
 
@@ -18,18 +19,12 @@ app.engine('hbs', engine({ extname: '.hbs' }));
 app.set('view engine', 'hbs');
 app.set('views', './views');
 
-
-
-
-const methodOverride = require('method-override');
-
-
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: true}));
 app.use(express.json());
 app.use(methodOverride(function (req, res) {
   if (req.body && typeof req.body === 'object' && '_method' in req.body) {
-    //look in urlencoded POST bodies and delete it
+    // look in urlencoded POST bodies and delete it
     const method = req.body._method;
     delete req.body._method;
     return method;

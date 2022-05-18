@@ -10,9 +10,14 @@ class Tracker{
 }
 
 function renderHome(req, res) {
+    let userId = req.cookies.userId;
+    let logged;
+    if (typeof (userId) != 'undefined')logged = true;
     res.render('home.hbs',
     {
-        icon: "images/favicon.ico"
+        icon: "images/favicon.ico",
+        logged: logged,
+        username:"changeMe"
     })
 }
 router.get('/home', renderHome)
@@ -26,6 +31,8 @@ function renderAbout(req, res) {
     res.render('aboutUs.hbs',{message})
 }
 router.get('/aboutUs', renderAbout)
+
+
 
 module.exports = {
     router,
