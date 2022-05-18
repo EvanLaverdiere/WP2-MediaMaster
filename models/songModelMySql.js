@@ -35,7 +35,6 @@ async function initialize(db, reset) {
         await connection.execute(sqlQuery)
             .then(logger.info("Songs table created/exists"))
             .catch((error) => { logger.error("Songs table was not created: " + error.message); throw new errorTypes.DatabaseError(error.message) });
-
     } catch (error) {
         throw error;
     }

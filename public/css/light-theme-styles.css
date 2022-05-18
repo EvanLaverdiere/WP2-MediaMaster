@@ -1,0 +1,123 @@
+body {
+    border-style: solid;
+    border-color: rgb(255, 255, 255);
+    background-color: rgba(255, 255, 255, 0.82);
+    color: #212529;
+    text-align: center;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+nav {
+    background-color: #ffffff !important;
+    border: 2px solid black !important;
+}
+
+#title {
+    margin: 1.5rem;
+}
+
+svg {
+    fill: purple !important;
+    stroke: black !important;
+}
+
+#noDeco {
+    color: inherit !important;
+    text-decoration: none;
+}
+
+#btnReplace {
+    color: black !important;
+    text-decoration: none;
+
+}
+
+.navbar-dark .navbar-brand {
+    color: purple !important;
+}
+
+/* rgb(221 218 218 / 82%) */
+legend {
+    margin-bottom: 5rem;
+}
+
+input,
+textarea,
+select {
+    background-color: rgb(252, 252, 252);
+    color: black !important;
+}
+
+.forms {
+    background-color: #ededed;
+    border: 5px solid #d4b3d7;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.btn-outline-light {
+    color: black !important;
+    border-color: #8b2182;
+}
+
+#titleWrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 5rem;
+}
+
+.formImg {
+    height: 400px;
+    margin-left: 2rem;
+    border-radius: 5px;
+}
+
+#formWrapper {
+    display: flex;
+    justify-content: center;
+    margin: 3rem;
+}
+
+#listAllTable,
+th,
+td {
+    border: #bf8ac7 solid;
+    border-radius: 2px;
+    border-collapse: collapse;
+
+}
+
+#tableDiv {
+    display: flex;
+    justify-content: center;
+    margin: 5rem;
+}
+
+#listAllTable {
+    width: 25%;
+}
+
+#footer {
+    margin-top: 2rem;
+    bottom: 0;
+    width: 100%;
+    height: 2.5rem;
+}
+
+#aboutUsDiv {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 5rem;
+}
+
+#aboutUsText {
+    width: 50%;
+    text-align: justify;
+}
+
+form i {
+    margin-left: -30px;
+    cursor: pointer;
+}

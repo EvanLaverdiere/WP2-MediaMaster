@@ -8,7 +8,6 @@ body {
 }
 
 #title{
-    margin: 1.5rem;
 }
 #noDeco{
     color:inherit !important;
@@ -37,11 +36,13 @@ input, textarea, select {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 4rem;
+    margin-top: 5rem;
 }
 .formImg{
     height:400px;
     margin-left: 2rem;
+    border-radius: 5px;
+
 }
 #formWrapper{
     display: flex;
