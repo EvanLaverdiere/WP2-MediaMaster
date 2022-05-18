@@ -12,7 +12,7 @@ var connection;
  * Initializes the database connection and creates if it does not exist the Songs table.
  * It also first initializes the user model connection.
  * Throws if there any errors while trying to execute the queries.
- * @param {Name of database} db 
+ * @param {Name of database} db  
  * @param {Mandatory boolean indicating if to do a reset of the table} reset 
  */
 async function initialize(db, reset) {
