@@ -29,7 +29,7 @@
 
             
             {{#if logged}}
-            <a href="/home" id="btnReplace" style="margin:1rem !important">{{username}}</a>
+            <button name="choice" type="submit" class="btn btn-link" id="btnReplace" style="margin:1rem !important" value="profile">{{username}}</button>
             <a href="/home" id="btnReplace" style="margin:1rem !important">Logout</a>
             {{else}}
             <button name="choice" type="submit" class="btn btn-link" id="btnReplace" style="margin:1rem !important" value="register">Register</button>
