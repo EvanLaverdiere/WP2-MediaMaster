@@ -5,27 +5,52 @@ const model = require('../models/userModelMySql');
 const cookieController = require('./cookieController');
 const sessionModel = require('../models/sessionModelMySql');
 const errorTypes = require('../models/errorModel.js');
-
+const { use } = require('../app');
+let lightTheme;
+let userName;
 //#region SHOW FORMS
 
  function showLoginForm(request, response) {
+
     const pageData = {
         message: false,
         endpoint: "/user",
         method: "post",
+        light: lightTheme
     }
     response.render('login.hbs', pageData);
 }
 
 function showRegisterForm(request, response) {
+
    const pageData = {
        message: false,
        endpoint: "/users",
        method: "post",
+       light: lightTheme
    }
    response.render('register.hbs', pageData);
 }
 
+function showProfile(request, response) {
+    let colors=[];
+    let theme = request.cookies.theme;  if(theme=="light"){
+        lightTheme=true;
+        colors =["Light","Dark"];
+    }
+    else{
+        colors =["Dark","Light"];
+        lightTheme=false;
+    } 
+
+    response.render('userProfile.hbs', {
+        username: userName,
+        colors: colors,
+        languages: ["English", "French"],
+        logged:true,
+        light: lightTheme
+    });
+ }
 //#endregion
 
 //#region ENDPOINTS
@@ -34,9 +59,10 @@ async function addUser(request, response) {
     try {
         const usernameInput = request.body.username;
         const passwordInput = request.body.password;
+        let theme = request.cookies.theme;  if(theme=="light")lightTheme=true;else lightTheme=false;
 
         const {username, password} = await model.addUser(usernameInput, passwordInput);
-
+        userName=username;
         response.status(200);
         response.render('userProfile.hbs', {
             successMessage: true,
@@ -45,7 +71,8 @@ async function addUser(request, response) {
             colors: ["Dark", "Light"],
             languages: ["English", "French"],
             logged:true,
-            username: username
+            username: username,
+            light: lightTheme
         });
     }
     catch (err) {
@@ -55,7 +82,8 @@ async function addUser(request, response) {
                 failureMessage: true,
                 message: "Failed to register: invalid input. " + err.message,
                 endpoint: "/users",
-                method: "post"
+                method: "post",
+                light: lightTheme
             });
         }
         else if (err instanceof errorTypes.UserAlreadyExistsError) {
@@ -64,7 +92,8 @@ async function addUser(request, response) {
                 failureMessage: true,
                 message: "Failed to register: " + err.message,
                 endpoint: "/users",
-                method: "post"
+                method: "post",
+                light: lightTheme
             });
         }
         else if (err instanceof errorTypes.DatabaseError) {
@@ -73,7 +102,8 @@ async function addUser(request, response) {
                 failureMessage: true,
                 message: "Failed to register: "+ err.message,
                 endpoint: "/users",
-                method: "post"
+                method: "post",
+                light: lightTheme
             });
         }
         else {
@@ -82,7 +112,8 @@ async function addUser(request, response) {
                 failureMessage: true,
                 message: "Failed to register: unknown cause. " + err.message,
                 endpoint: "/users",
-                method: "post"
+                method: "post",
+                light: lightTheme
             });
         }
     }
@@ -90,7 +121,16 @@ async function addUser(request, response) {
 router.post('/users', addUser);
 
 async function getUser(request, response){
+    let colors;
     try{
+        let theme = request.cookies.theme;  if(theme=="light"){
+            lightTheme=true;
+            colors =["Light","Dark"];
+        }
+        else{
+            colors =["Dark","Light"];
+            lightTheme=false;
+        } 
         const usernameInput = request.body.username;
         const passwordInput = request.body.password;
 
@@ -107,8 +147,9 @@ async function getUser(request, response){
             successMessage: true,
             message: "Successfully logged in!",
             username: username,
-            colors: ["Dark", "Light"],
-            languages: ["English", "French"]
+            colors: colors,
+            languages: ["English", "French"],
+            light: lightTheme
         });
         //TODO: response.render
     }
@@ -119,7 +160,8 @@ async function getUser(request, response){
                 failureMessage: true,
                 message: "Failed to login: " + err.message,
                 endpoint: "/user",
-                method: "post"
+                method: "post",
+                light: lightTheme
             });
         }
         else if (err instanceof errorTypes.DatabaseError) {
@@ -128,7 +170,8 @@ async function getUser(request, response){
                 failureMessage: true,
                 message: "Failed to login: " + err.message,
                 endpoint: "/user",
-                method: "post"
+                method: "post",
+                light: lightTheme
             });
         }
         else {
@@ -137,7 +180,8 @@ async function getUser(request, response){
                 failureMessage: true,
                 message: "Failed to login: unknown cause. " + err.message,
                 endpoint: "/user",
-                method: "post"
+                method: "post",
+                light: lightTheme
             });
         }
     }
@@ -146,12 +190,18 @@ router.post('/user', getUser);
 
 //#endregion
 function showUserForm(request, response) {
-    switch (request) {
+    let theme = request.cookies.theme;  
+    if(theme=="light")lightTheme=true;else lightTheme=false;
+
+    switch (request.body.choice) {
         case 'login':
             showLoginForm(request,response);
             break;
         case 'register':
             showRegisterForm(request,response);
+            break;
+        case 'profile':
+            showProfile(request,response);
             break;
         default:
             response.render('home.hbs');

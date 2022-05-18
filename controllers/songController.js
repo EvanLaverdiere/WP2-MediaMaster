@@ -8,6 +8,7 @@ const { InvalidInputError, DatabaseError } = require('../models/errorModel.js');
 const { createTracker, updateTracker, manageTracker, manageSession } = require('./cookieController');
 const router = express.Router();
 const routeRoot = '/';
+let lightTheme;
 
 //#region ADD Endpoint
 /**
@@ -21,12 +22,13 @@ const routeRoot = '/';
  */
 async function add(req, res) {
     let title = req.body.title; let artist = req.body.artist; let genre = req.body.genres;
-    let album = req.body.album; let userId = req.cookies.userId;
+    let album = req.body.album; let userId = req.cookies.userId; let theme = req.cookies.theme;
+    if(theme=="light")lightTheme=true;else lightTheme=false;
     try {
         var result = await model.addSong(title, artist, genre, album, userId);
         if (result == true) {
             let message = `Song [${title}] was successfully added`;
-            res.render('add.hbs', addFormDetails(message, undefined, true)); //TODO: send success message
+            res.render('add.hbs', addFormDetails(message, undefined, true)); 
         }
     }
     catch (error) {
@@ -55,16 +57,17 @@ function showAddForm(req, res) {
  */
 async function allSongs(req, res) {
     try {
+        let theme = req.cookies.theme;  if(theme=="light")lightTheme=true;else lightTheme=false;
         let userId = req.cookies.userId;
         // If cookie is not set then redirect to login page
         var song = await model.getAllSongs(userId);
-        res.render('all.hbs', { song, logged: true });
+        res.render('all.hbs', { song, logged: true, light: lightTheme});
     } catch (error) {
         let errorMessage;
         if (error instanceof DatabaseError) { res.status(500); errorMessage = "Error 500, The songs were not retrieved:"; } else { errorMessage = "" }
 
         errorMessage += error.message;
-        let obj = { showError: true, message: errorMessage }
+        let obj = { showError: true, message: errorMessage, light: lightTheme}
         res.render('home.hbs', obj);
     }
 }
@@ -78,6 +81,7 @@ async function getSong(req, res) {
     let targetTitle = req.query.title;
     let targetArtist = req.query.artist;
     let userId = req.cookies.userId;
+    let theme = req.cookies.theme;  if(theme=="light")lightTheme=true;else lightTheme=false;
 
     // try{
     //     let {title, artist, genre, album} = await model.getOneSong(userId, targetTitle, targetArtist);
@@ -131,6 +135,7 @@ async function editSong(req, res) {
     let newGenre = req.body.newGenre;
     let newAlbum = req.body.newAlbum;
     let userId = req.cookies.userId;
+    let theme = req.cookies.theme;  if(theme=="light")lightTheme=true;else lightTheme=false;
 
     try {
         let changedRows = await model.updateSong(userId, oldTitle, oldArtist, newTitle, newArtist, newGenre, newAlbum);
@@ -192,6 +197,7 @@ async function deleteOneSong(req, res) {
     let title = req.body.title;
     let artist = req.body.artist;
     let userId = req.cookies.userId;
+    let theme = req.cookies.theme;  if(theme=="light")lightTheme=true;else lightTheme=false;
 
     try {
         const deletedSong = await model.deleteSong(userId, title, artist);
@@ -258,7 +264,8 @@ function addFormDetails(message, error, success) {
         { field: "artist", pretty: "Artist", required: "required" },
         { field: "album", pretty: "Album" }],
         genres: model.allGenres(),
-        logged: true
+        logged: true,
+        light:lightTheme
     }
 }
 function getFormDetails(message, error, success, song) {
@@ -278,7 +285,8 @@ function getFormDetails(message, error, success, song) {
             { field: "title", pretty: "Title" },
             { field: "artist", pretty: "Artist" }
         ],
-        logged: true
+        logged: true,
+        light: lightTheme
     }
 }
 function editFormDetails(message, error, success, song) {
@@ -304,7 +312,8 @@ function editFormDetails(message, error, success, song) {
         ],
         // titles: model.getAllTitles(1),
         newGenre: model.allGenres(),
-        logged: true
+        logged: true,
+        light: lightTheme
     }
 
 }
@@ -325,7 +334,8 @@ function deleteFormDetails(message, error, success, song) {
             { field: "title", pretty: "Title" },
             { field: "artist", pretty: "Artist" }
         ],
-        logged: true
+        logged: true,
+        light: lightTheme
     }
 
 }
@@ -335,6 +345,7 @@ const userController = require('./userController')
 
 /** Show the appropriate form based on user choice */
 async function showForm(request, response) {
+    let theme = request.cookies.theme;  if(theme=="light")lightTheme=true;else lightTheme=false;
     switch (request.body.choice) {
         case 'add':
             showAddForm(request, response);
@@ -352,10 +363,13 @@ async function showForm(request, response) {
             await deleteForm(request, response);
             break;
         case 'register':
-            userController.showUserForm('register', response);
+            userController.showUserForm(request, response);
             break;
         case 'login':
-            userController.showUserForm('login', response);
+            userController.showUserForm(request, response);
+            break;
+        case 'profile':
+            userController.showUserForm(request, response);
             break;
         default:
             response.render('home.hbs');
