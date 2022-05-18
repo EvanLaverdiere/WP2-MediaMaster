@@ -346,34 +346,41 @@ const userController = require('./userController')
 /** Show the appropriate form based on user choice */
 async function showForm(request, response) {
     let theme = request.cookies.theme;  if(theme=="light")lightTheme=true;else lightTheme=false;
-    switch (request.body.choice) {
-        case 'add':
-            showAddForm(request, response);
-            break;
-        case 'show':
-            getOneForm(request, response);
-            break;
-        case 'list':
-            response.redirect('/songs');
-            break;
-        case 'edit':
-            await editForm(request, response);
-            break;
-        case 'delete':
-            await deleteForm(request, response);
-            break;
-        case 'register':
-            userController.showUserForm(request, response);
-            break;
-        case 'login':
-            userController.showUserForm(request, response);
-            break;
-        case 'profile':
-            userController.showUserForm(request, response);
-            break;
-        default:
-            response.render('home.hbs');
+    if(typeof request.cookies.userId === "undefined" && request.body.choice!=="login"){
+        request.body.choice='register';
+        userController.showUserForm(request, response);
     }
+    else{
+        switch (request.body.choice) {
+            case 'add':
+                showAddForm(request, response);
+                break;
+            case 'show':
+                getOneForm(request, response);
+                break;
+            case 'list':
+                response.redirect('/songs');
+                break;
+            case 'edit':
+                await editForm(request, response);
+                break;
+            case 'delete':
+                await deleteForm(request, response);
+                break;
+            case 'register':
+                userController.showUserForm(request, response);
+                break;
+            case 'login':
+                userController.showUserForm(request, response);
+                break;
+            case 'profile':
+                userController.showUserForm(request, response);
+                break;
+            default:
+                response.render('home.hbs');
+        }
+    }
+    
 }
  // no valid choice made
 router.post('/form', showForm);
