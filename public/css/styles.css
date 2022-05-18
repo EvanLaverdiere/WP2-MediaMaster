@@ -1,34 +1,50 @@
 body {
     border-style: solid;
-    border-color: rgba(127, 229, 255, 0.205);
-    background-color: #000000ec;
+    border-color: rgba(42, 43, 43, 0.205);
+    background-color: #141414ec;
     color: rgb(255, 255, 255);
     text-align: center;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
-.noDecoration{
-    color: #ad67aa !important;
-    text-decoration: none;
-    margin: 1rem;
-}
-
 #title{
-    margin: 1rem;
+    margin: 1.5rem;
 }
 #noDeco{
     color:inherit !important;
     text-decoration: none;
 }
+#btnReplace{
+color:#778eff !important;
+text-decoration: none;
+
+}
+legend{
+    margin-bottom: 5rem;
+}
+input, textarea, select {
+    background-color : rgb(77 78 84);
+    color : #fff;
+    }
+
+    .forms {
+        background-color: rgb(66 66 66);
+        border:5px solid rgb(17 105 155);
+        border-radius: 5px;
+        padding : 5px;
+        }
 #titleWrap{
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-top: 4rem;
 }
-
+.formImg{
+    height:400px;
+    margin-left: 2rem;
+}
 #formWrapper{
     display: flex;
-    height: 300px;
     justify-content: center;
     margin: 3rem;
 }
@@ -63,3 +79,7 @@ body {
     width: 50%;
     text-align: justify;
 }
+form i {
+    margin-left: -30px;
+    cursor: pointer;
+  }

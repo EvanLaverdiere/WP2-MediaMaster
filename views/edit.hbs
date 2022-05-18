@@ -56,10 +56,10 @@
     <div id="formWrapper">
         <form action="{{endpoint}}" method="{{method}}" class="forms" role="form" name="myForm"
             enctype="application/x-www-form-urlencoded">
-            <legend>{{legend}}</legend>
+            <legend style="margin-bottom:2rem; !important">{{legend}}</legend>
             <input type="hidden" name="_method" value="PUT">
             {{#each formfields}}
-            <label for="{{field}}">{{pretty}}</label><br>
+            <label for="{{field}}">{{pretty}}</label>
             {{!-- {{#if album}}
             <input type="text" name="{{field}}"><br> --}}
             {{!-- {{#if title}}
@@ -75,21 +75,21 @@
                 {{/each}}
             </select><br>
             {{else}} --}}
-            <input type="text" id="{{field}}" name="{{field}}" required><br>
+            <input type="text" id="{{field}}" name="{{field}}" required><br><br>
             {{!-- {{/if}} --}}
             {{/each}}
-            <label for="genre">Genres</label><br>
+            <label for="genre">Genres</label>
             <select name="newGenre">
                 {{#each newGenre}}
                 <option value="{{this}}">{{this}}</option>
                 {{/each}}
             </select><br>
 
-            <br>
+            
             <br><button type="submit" id="marginTop" class="btn btn-outline-light">Submit</button>
         </form>
 
-        <img src="https://images.pexels.com/photos/733767/pexels-photo-733767.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+        <img class="formImg" style="height:450px !important;" src="https://images.pexels.com/photos/733767/pexels-photo-733767.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
             alt="">
     </div>
 

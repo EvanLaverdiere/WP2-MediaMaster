@@ -54,8 +54,8 @@
             enctype="application/x-www-form-urlencoded">
             <legend>{{legend}}</legend>
             {{#each formfields}}
-            <label for="{{field}}">{{pretty}}</label><br>
-            <input type="text" name="{{field}}" required><br>
+            <label for="{{field}}">{{pretty}}</label>
+            <input type="text" name="{{field}}" required><br><br>
             {{!-- {{#if album}}
             <input type="text" name="{{field}}"><br>
             {{else}}
@@ -74,6 +74,6 @@
         </form>
 
         <img src="https://images.pexels.com/photos/733767/pexels-photo-733767.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-            alt="">
+            alt="" class="formImg">
     </div>
 </body>

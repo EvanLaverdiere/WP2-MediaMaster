@@ -9,11 +9,11 @@
     </svg>
 
     <div class="alert alert-success d-flex align-items-center justify-content-center" role="alert">
-        
+
         <svg class="bi flex-shrink-0 me-2" width="24" height="30" role="img" aria-label="Success:">
             <use xlink:href="#check-circle-fill" />
         </svg>
-        
+
         <div>
             <h3>{{message}}</h3>
         </div>
@@ -21,7 +21,7 @@
     </div>
     {{/if}}
 
-     {{#if failureMessage}}
+    {{#if failureMessage}}
     <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
         <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
             <path
@@ -30,7 +30,7 @@
     </svg>
 
     <div class="alert alert-danger d-flex align-items-center justify-content-center" role="alert">
-        
+
         <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
             <use xlink:href="#exclamation-triangle-fill" />
         </svg>
@@ -38,28 +38,36 @@
         <div>
             <h3>{{message}}</h3>
         </div>
-        
+
     </div>
     {{/if}}
 
     <div id="formWrapper">
-       
+
         <form action="{{endpoint}}" method="{{method}}" class="forms" role="form" name="myForm"
             enctype="application/x-www-form-urlencoded">
 
-            <legend>Enter your credentials to login</legend><br><br>
+            <legend onclick=" my()">Enter your credentials to login</legend><br><br>
 
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username"><br><br>
+            <p>
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username">
+                <i class="bi bi-eye-slash" style="visibility:hidden;"></i>{{!--  so they username and password are aligned --}}
+            </p>
 
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password"><br><br>
+
+            <p>
+                <label for="password">Password:</label>
+                <input type="password" name="password" id="password" />
+                <i class="bi bi-eye-slash" id="toggle" onclick="showPassword()"></i><br><br>
+            </p>
+
 
             <button type="submit" id="marginTop" class="btn btn-outline-light">Login</button>
 
         </form>
 
-        <img src="https://images.pexels.com/photos/733767/pexels-photo-733767.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+        <img class="formImg" src="https://images.pexels.com/photos/733767/pexels-photo-733767.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
             alt="">
 
     </div>
