@@ -17,7 +17,7 @@ nav {
 }
 
 svg {
-    fill: purple !important;
+    fill: #767676 !important;
     stroke: black !important;
 }
 
@@ -72,7 +72,9 @@ select {
     margin-left: 2rem;
     border-radius: 5px;
 }
+.bi bi-moon-fill{
 
+}
 #formWrapper {
     display: flex;
     justify-content: center;
@@ -114,10 +116,16 @@ td {
 
 #aboutUsText {
     width: 50%;
+    font-size:18px;
     text-align: justify;
 }
 
 form i {
     margin-left: -30px;
     cursor: pointer;
+}
+
+#moon{
+    fill:  #75757c !important;
+    stroke: black !important;
 }

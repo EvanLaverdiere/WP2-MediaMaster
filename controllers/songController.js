@@ -1,5 +1,6 @@
 const model = require('../models/songModelMySql.js')
-
+const userController = require('./userController')
+let user;
 const express = require('express');
 const { json } = require('express/lib/response');
 const res = require('express/lib/response');
@@ -9,6 +10,8 @@ const { createTracker, updateTracker, manageTracker, manageSession } = require('
 const router = express.Router();
 const routeRoot = '/';
 let lightTheme;
+let currentUserId; //TODO: Remove all dependencies and varaible
+let currentUser;
 
 //#region ADD Endpoint
 /**
@@ -21,9 +24,14 @@ let lightTheme;
  * @param {*} res 
  */
 async function add(req, res) {
-    let title = req.body.title; let artist = req.body.artist; let genre = req.body.genres;
-    let album = req.body.album; let userId = req.cookies.userId; let theme = req.cookies.theme;
-    if(theme=="light")lightTheme=true;else lightTheme=false;
+    let title = req.body.title; 
+    let artist = req.body.artist; 
+    let genre = req.body.genres;
+    let album = req.body.album; 
+    let userId = req.cookies.userId;
+    let theme = req.cookies.theme;
+
+    if (theme == "light") lightTheme = true; else lightTheme = false;
     try {
         var result = await model.addSong(title, artist, genre, album, userId);
         if (result == true) {
@@ -36,7 +44,7 @@ async function add(req, res) {
             }
             res.cookie("tracker", JSON.stringify(tracker));
 
-            res.render('add.hbs', addFormDetails(message, undefined, true)); //TODO: send success message
+            res.render('add.hbs', addFormDetails(message, undefined, true));
         }
     }
     catch (error) {
@@ -71,8 +79,7 @@ async function showAddForm(req, res) {
  */
 async function allSongs(req, res) {
     try {
-        let theme = req.cookies.theme;  if(theme=="light")lightTheme=true;else lightTheme=false;
-        let userId = req.cookies.userId;
+        let theme = req.cookies.theme; if (theme == "light") lightTheme = true; else lightTheme = false;
         // If cookie is not set then redirect to login page
         var song = await model.getAllSongs(userId);
 
@@ -83,13 +90,14 @@ async function allSongs(req, res) {
         }
         res.cookie("tracker", JSON.stringify(tracker));
     
-        res.render('all.hbs', { song, logged: true, light: lightTheme});
+        var song = await model.getAllSongs(currentUserId);
+        res.render('all.hbs', { icon: "images/favicon.ico", song, logged: true, light: lightTheme, username: currentUser });
     } catch (error) {
         let errorMessage;
         if (error instanceof DatabaseError) { res.status(500); errorMessage = "Error 500, The songs were not retrieved:"; } else { errorMessage = "" }
 
         errorMessage += error.message;
-        let obj = { showError: true, message: errorMessage, light: lightTheme}
+        let obj = { showError: true, message: errorMessage, light: lightTheme, logged: true, username: currentUser };
         res.render('home.hbs', obj);
     }
 }
@@ -102,13 +110,12 @@ router.get('/songs', allSongs)
 async function getSong(req, res) {
     let targetTitle = req.query.title;
     let targetArtist = req.query.artist;
-    let userId = req.cookies.userId;
-    let theme = req.cookies.theme;  if(theme=="light")lightTheme=true;else lightTheme=false;
+    let theme = req.cookies.theme; if (theme == "light") lightTheme = true; else lightTheme = false;
 
     // try{
     //     let {title, artist, genre, album} = await model.getOneSong(userId, targetTitle, targetArtist);
     try {
-        let { title, artist, genre, album } = await model.getOneSong(userId, targetTitle, targetArtist);
+        let { title, artist, genre, album } = await model.getOneSong(currentUserId, targetTitle, targetArtist);
         // RENDER NOT FINALIZED YET.
         let message = "Succesfully retrieved the song from your collection.";
         let song = {
@@ -147,8 +154,8 @@ router.get('/song', getSong);
 async function getOneForm(req, res) {
     let tracker = manageTracker(req);
     let session = await manageSession(req);
-    if(session){
-        res.cookie("sessionId", session.sessionId, {expires: session.closesAt});
+    if (session) {
+        res.cookie("sessionId", session.sessionId, { expires: session.closesAt });
     }
     res.cookie("tracker", JSON.stringify(tracker));
     res.render('getOne.hbs', getFormDetails());
@@ -164,11 +171,10 @@ async function editSong(req, res) {
     let newArtist = req.body.newArtist;
     let newGenre = req.body.newGenre;
     let newAlbum = req.body.newAlbum;
-    let userId = req.cookies.userId;
-    let theme = req.cookies.theme;  if(theme=="light")lightTheme=true;else lightTheme=false;
+    let theme = req.cookies.theme; if (theme == "light") lightTheme = true; else lightTheme = false;
 
     try {
-        let changedRows = await model.updateSong(userId, oldTitle, oldArtist, newTitle, newArtist, newGenre, newAlbum);
+        await model.updateSong(currentUserId, oldTitle, oldArtist, newTitle, newArtist, newGenre, newAlbum);
         let message = `Successfully replaced ${oldTitle} by ${oldArtist} with ${newTitle} by ${newArtist}`;
 
         let tracker = manageTracker(req);
@@ -218,8 +224,8 @@ async function editForm(req, res) {
     // }
     let tracker = manageTracker(req);
     let session = await manageSession(req);
-    if(session){
-        res.cookie("sessionId", session.sessionId, {expires: session.closesAt});
+    if (session) {
+        res.cookie("sessionId", session.sessionId, { expires: session.closesAt });
     }
     res.cookie("tracker", JSON.stringify(tracker));
     res.render('edit.hbs', editFormDetails());
@@ -234,8 +240,8 @@ async function editForm(req, res) {
 async function deleteOneSong(req, res) {
     let title = req.body.title;
     let artist = req.body.artist;
+    let theme = req.cookies.theme; if (theme == "light") lightTheme = true; else lightTheme = false;
     let userId = req.cookies.userId;
-    let theme = req.cookies.theme;  if(theme=="light")lightTheme=true;else lightTheme=false;
 
     try {
         const deletedSong = await model.deleteSong(userId, title, artist);
@@ -273,8 +279,8 @@ async function deleteForm(req, res){
 
     let tracker = manageTracker(req);
     let session = await manageSession(req);
-    if(session){
-        res.cookie("sessionId", session.sessionId, {expires: session.closesAt});
+    if (session) {
+        res.cookie("sessionId", session.sessionId, { expires: session.closesAt });
     }
     res.cookie("tracker", JSON.stringify(tracker));
     res.render('delete.hbs', deleteFormDetails());
@@ -290,6 +296,7 @@ function addFormDetails(message, error, success) {
     if (typeof error === 'undefined') error = false;
     if (typeof success != true) successMessage = false;
     return pageData = {
+        icon: "images/favicon.ico",
         message: message,
         success: success,
         error: error,
@@ -301,7 +308,8 @@ function addFormDetails(message, error, success) {
         { field: "album", pretty: "Album" }],
         genres: model.allGenres(),
         logged: true,
-        light:lightTheme
+        username: currentUser,
+        light: lightTheme
     }
 }
 function getFormDetails(message, error, success, song) {
@@ -310,6 +318,7 @@ function getFormDetails(message, error, success, song) {
     if (typeof success != true) successMessage = false;
 
     return pageData = {
+        icon: "images/favicon.ico",
         message: message,
         success: success,
         error: error,
@@ -322,6 +331,7 @@ function getFormDetails(message, error, success, song) {
             { field: "artist", pretty: "Artist" }
         ],
         logged: true,
+        username: currentUser,
         light: lightTheme
     }
 }
@@ -331,6 +341,7 @@ function editFormDetails(message, error, success, song) {
     if (typeof success != true) successMessage = false;
 
     return pageData = {
+        icon: "images/favicon.ico",
         message: message,
         success: success,
         error: error,
@@ -349,7 +360,8 @@ function editFormDetails(message, error, success, song) {
         // titles: model.getAllTitles(1),
         newGenre: model.allGenres(),
         logged: true,
-        light: lightTheme
+        light: lightTheme,
+        username: currentUser
     }
 
 }
@@ -359,6 +371,7 @@ function deleteFormDetails(message, error, success, song) {
     if (typeof success != true) successMessage = false;
 
     return pageData = {
+        icon: "images/favicon.ico",
         message: message,
         success: success,
         error: error,
@@ -371,50 +384,60 @@ function deleteFormDetails(message, error, success, song) {
             { field: "artist", pretty: "Artist" }
         ],
         logged: true,
+        username: currentUser,
         light: lightTheme
     }
 
 }
 
 //#endregion
-const userController = require('./userController')
 
 /** Show the appropriate form based on user choice */
 async function showForm(request, response) {
-    let theme = request.cookies.theme;  if(theme=="light")lightTheme=true;else lightTheme=false;
-    switch (request.body.choice) {
-        case 'add':
-            showAddForm(request, response);
-            break;
-        case 'show':
-            getOneForm(request, response);
-            break;
-        case 'list':
-            response.redirect('/songs');
-            break;
-        case 'edit':
-            await editForm(request, response);
-            break;
-        case 'delete':
-            await deleteForm(request, response);
-            break;
-        case 'register':
-            userController.showUserForm(request, response);
-            break;
-        case 'login':
-            userController.showUserForm(request, response);
-            break;
-        case 'profile':
-            userController.showUserForm(request, response);
-            break;
-        default:
-            response.render('home.hbs');
+    let theme = request.cookies.theme; if (theme == "light") lightTheme = true; else lightTheme = false;
+    if (typeof request.cookies.userId === "undefined" && request.body.choice !== "register" && request.body.choice !== "login") {
+        request.body.choice = 'login';
+        userController.showUserForm(request, response);
     }
+    else {
+        currentUserId = request.cookies.userId;
+        currentUser = request.cookies.username;
+        switch (request.body.choice) {
+            case 'add':
+                showAddForm(request, response);
+                break;
+            case 'show':
+                getOneForm(request, response);
+                break;
+            case 'list':
+                response.redirect('/songs');
+                break;
+            case 'edit':
+                await editForm(request, response);
+                break;
+            case 'delete':
+                await deleteForm(request, response);
+                break;
+            case 'register':
+                userController.showUserForm(request, response);
+                break;
+            case 'login':
+                userController.showUserForm(request, response);
+                break;
+            case 'profile':
+                userController.showUserForm(request, response);
+                break;
+            default:
+                response.render('home.hbs');
+        }
+    }
+
 }
- // no valid choice made
+// no valid choice made
 router.post('/form', showForm);
 
 module.exports = {
     router,
-    routeRoot
+    routeRoot,
+    user
 }
