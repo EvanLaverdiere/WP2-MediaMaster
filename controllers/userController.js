@@ -5,7 +5,7 @@ const model = require('../models/userModelMySql');
 const cookieController = require('./cookieController');
 const sessionModel = require('../models/sessionModelMySql');
 const errorTypes = require('../models/errorModel.js');
-const { use } = require('../app');
+// const { use } = require('../app');
 let lightTheme;
 let userName;
 let currentUser = "a";
