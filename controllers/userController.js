@@ -8,9 +8,10 @@ const errorTypes = require('../models/errorModel.js');
 const { use } = require('../app');
 let lightTheme;
 let userName;
+let currentUser = "a";
 //#region SHOW FORMS
 
- function showLoginForm(request, response) {
+function showLoginForm(request, response) {
 
     const pageData = {
         message: false,
@@ -23,34 +24,34 @@ let userName;
 
 function showRegisterForm(request, response) {
 
-   const pageData = {
-       message: false,
-       endpoint: "/users",
-       method: "post",
-       light: lightTheme
-   }
-   response.render('register.hbs', pageData);
+    const pageData = {
+        message: false,
+        endpoint: "/users",
+        method: "post",
+        light: lightTheme
+    }
+    response.render('register.hbs', pageData);
 }
 
 function showProfile(request, response) {
-    let colors=[];
-    let theme = request.cookies.theme;  if(theme=="light"){
-        lightTheme=true;
-        colors =["Light","Dark"];
+    let colors = [];
+    let theme = request.cookies.theme; if (theme == "light") {
+        lightTheme = true;
+        colors = ["Light", "Dark"];
     }
-    else{
-        colors =["Dark","Light"];
-        lightTheme=false;
-    } 
+    else {
+        colors = ["Dark", "Light"];
+        lightTheme = false;
+    }
 
     response.render('userProfile.hbs', {
         username: userName,
         colors: colors,
         languages: ["English", "French"],
-        logged:true,
+        logged: true,
         light: lightTheme
     });
- }
+}
 //#endregion
 
 //#region ENDPOINTS
@@ -59,18 +60,23 @@ async function addUser(request, response) {
     try {
         const usernameInput = request.body.username;
         const passwordInput = request.body.password;
-        let theme = request.cookies.theme;  if(theme=="light")lightTheme=true;else lightTheme=false;
-
-        const {username, password} = await model.addUser(usernameInput, passwordInput);
-        userName=username;
+        let colors;
+        let theme = request.cookies.theme; if (theme == "light") {
+            lightTheme = true;
+            colors = ["Light", "Dark"];
+        }
+        else {
+            colors = ["Dark", "Light"];
+            lightTheme = false;
+        }
+        const { username, password } = await model.addUser(usernameInput, passwordInput);
+        userName = username;
         response.status(200);
         response.render('userProfile.hbs', {
             successMessage: true,
             message: "Successfully registered user!",
             username: username,
-            colors: ["Dark", "Light"],
-            languages: ["English", "French"],
-            logged:true,
+            colors: colors,
             username: username,
             light: lightTheme
         });
@@ -100,7 +106,7 @@ async function addUser(request, response) {
             response.status(500);
             response.render('register.hbs', {
                 failureMessage: true,
-                message: "Failed to register: "+ err.message,
+                message: "Failed to register: " + err.message,
                 endpoint: "/users",
                 method: "post",
                 light: lightTheme
@@ -120,17 +126,17 @@ async function addUser(request, response) {
 }
 router.post('/users', addUser);
 
-async function getUser(request, response){
+async function getUser(request, response) {
     let colors;
-    try{
-        let theme = request.cookies.theme;  if(theme=="light"){
-            lightTheme=true;
-            colors =["Light","Dark"];
+    try {
+        let theme = request.cookies.theme; if (theme == "light") {
+            lightTheme = true;
+            colors = ["Light", "Dark"];
         }
-        else{
-            colors =["Dark","Light"];
-            lightTheme=false;
-        } 
+        else {
+            colors = ["Dark", "Light"];
+            lightTheme = false;
+        }
         const usernameInput = request.body.username;
         const passwordInput = request.body.password;
 
@@ -138,22 +144,21 @@ async function getUser(request, response){
         const userId = await model.getUserId(username);
         const tracker = await cookieController.manageTracker(request, username);
         const session = await sessionModel.addSession(userId);
-
         response.status(200);
         response.cookie("userId", userId);
+        response.cookie("username", username);
         response.cookie("tracker", JSON.stringify(tracker));
-        response.cookie("sessionId", session.sessionId, {expires: session.closesAt, httpOnly: true}); 
+        response.cookie("sessionId", session.sessionId, { expires: session.closesAt, httpOnly: true });
         response.render('userProfile.hbs', {
             successMessage: true,
             message: "Successfully logged in!",
             username: username,
             colors: colors,
-            languages: ["English", "French"],
-            light: lightTheme
+            light: lightTheme,
+            logged: true
         });
-        //TODO: response.render
     }
-    catch(err){
+    catch (err) {
         if (err instanceof errorTypes.AuthenticationError) {
             response.status(400);
             response.render('login.hbs', {
@@ -190,18 +195,18 @@ router.post('/user', getUser);
 
 //#endregion
 function showUserForm(request, response) {
-    let theme = request.cookies.theme;  
-    if(theme=="light")lightTheme=true;else lightTheme=false;
+    let theme = request.cookies.theme;
+    if (theme == "light") lightTheme = true; else lightTheme = false;
 
     switch (request.body.choice) {
         case 'login':
-            showLoginForm(request,response);
+            showLoginForm(request, response);
             break;
         case 'register':
-            showRegisterForm(request,response);
+            showRegisterForm(request, response);
             break;
         case 'profile':
-            showProfile(request,response);
+            showProfile(request, response);
             break;
         default:
             response.render('home.hbs');
@@ -211,5 +216,6 @@ function showUserForm(request, response) {
 module.exports = {
     router,
     routeRoot,
-    showUserForm
+    showUserForm,
+    currentUser
 }

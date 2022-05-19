@@ -39,3 +39,8 @@ function sunF(e) {
     e.preventDefault();
     location.reload();
 }
+
+function logout() {
+    document.cookie = "userId=1;expires=Thu, 18 Dec 2013 12:00:00 UTC";
+    document.cookie = "username=Bob;expires=Thu, 18 Dec 2013 12:00:00 UTC";
+}

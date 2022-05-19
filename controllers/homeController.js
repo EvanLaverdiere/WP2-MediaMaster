@@ -10,22 +10,27 @@ class Tracker{
 }
 
 function renderHome(req, res) {
-    let userId = req.cookies.userId;
+    let user = req.cookies.username;
     let logged;
-    if (typeof (userId) != 'undefined')logged = true;
+    if (typeof (user) != 'undefined')
+        logged = true;
     let theme = req.cookies.theme;  if(theme=="light")theme=true;else theme=false;
 
     res.render('home.hbs',
     {
         icon: "images/favicon.ico",
         logged: logged,
-        username:"changeMe",
-        light: theme
+        username:user,
+        light: theme,
     })
 }
 router.get('/home', renderHome)
 
 function renderAbout(req, res) {
+    let user = req.cookies.username;
+    let logged;
+    if (typeof (user) != 'undefined')
+        logged = true;
     let theme = req.cookies.theme;  if(theme=="light")theme=true;else theme=false;
 
     let message ="This website was created by Evan, Jeremy and Julian.\nWe are cegep students from John Abbot College and this is our Web Programming final project."
@@ -35,7 +40,10 @@ function renderAbout(req, res) {
     " And so, every user can create their account, providing a username and password.";
     res.render('aboutUs.hbs',{
         message,
-        theme: theme
+        theme: theme,
+        logged: logged,
+        username: user,
+        light: theme
     })
 }
 router.get('/aboutUs', renderAbout)
