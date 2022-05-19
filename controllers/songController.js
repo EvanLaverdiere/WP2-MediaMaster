@@ -63,7 +63,7 @@ async function allSongs(req, res) {
         let theme = req.cookies.theme; if (theme == "light") lightTheme = true; else lightTheme = false;
         // If cookie is not set then redirect to login page
         var song = await model.getAllSongs(currentUserId);
-        res.render('all.hbs', { song, logged: true, light: lightTheme, username: currentUser });
+        res.render('all.hbs', { icon: "images/favicon.ico", song, logged: true, light: lightTheme, username: currentUser });
     } catch (error) {
         let errorMessage;
         if (error instanceof DatabaseError) { res.status(500); errorMessage = "Error 500, The songs were not retrieved:"; } else { errorMessage = "" }
@@ -253,6 +253,7 @@ function addFormDetails(message, error, success) {
     if (typeof error === 'undefined') error = false;
     if (typeof success != true) successMessage = false;
     return pageData = {
+        icon: "images/favicon.ico",
         message: message,
         success: success,
         error: error,
@@ -274,6 +275,7 @@ function getFormDetails(message, error, success, song) {
     if (typeof success != true) successMessage = false;
 
     return pageData = {
+        icon: "images/favicon.ico",
         message: message,
         success: success,
         error: error,
@@ -296,6 +298,7 @@ function editFormDetails(message, error, success, song) {
     if (typeof success != true) successMessage = false;
 
     return pageData = {
+        icon: "images/favicon.ico",
         message: message,
         success: success,
         error: error,
@@ -325,6 +328,7 @@ function deleteFormDetails(message, error, success, song) {
     if (typeof success != true) successMessage = false;
 
     return pageData = {
+        icon: "images/favicon.ico",
         message: message,
         success: success,
         error: error,

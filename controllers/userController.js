@@ -12,25 +12,21 @@ let currentUser = "a";
 //#region SHOW FORMS
 
 function showLoginForm(request, response) {
-
-    const pageData = {
-        message: false,
-        endpoint: "/user",
-        method: "post",
-        light: lightTheme
-    }
-    response.render('login.hbs', pageData);
+    response.render('login.hbs', pageData('user'));
 }
 
 function showRegisterForm(request, response) {
+    response.render('register.hbs', pageData('users'));
+}
 
-    const pageData = {
+function pageData(endpoint) {
+    return {
+        icon: "images/favicon.ico",
         message: false,
-        endpoint: "/users",
+        endpoint: "/"+endpoint,
         method: "post",
         light: lightTheme
     }
-    response.render('register.hbs', pageData);
 }
 
 function showProfile(request, response) {
@@ -45,7 +41,8 @@ function showProfile(request, response) {
     }
 
     response.render('userProfile.hbs', {
-        username: userName,
+        icon: "images/favicon.ico",
+        username: request.cookies.username,
         colors: colors,
         languages: ["English", "French"],
         logged: true,
@@ -73,6 +70,7 @@ async function addUser(request, response) {
         userName = username;
         response.status(200);
         response.render('userProfile.hbs', {
+            icon: "images/favicon.ico",
             successMessage: true,
             message: "Successfully registered user!",
             username: username,
@@ -85,6 +83,7 @@ async function addUser(request, response) {
         if (err instanceof errorTypes.InvalidInputError) {
             response.status(400);
             response.render('register.hbs', {
+                icon: "images/favicon.ico",
                 failureMessage: true,
                 message: "Failed to register: invalid input. " + err.message,
                 endpoint: "/users",
@@ -95,6 +94,7 @@ async function addUser(request, response) {
         else if (err instanceof errorTypes.UserAlreadyExistsError) {
             response.status(400);
             response.render('register.hbs', {
+                icon: "images/favicon.ico",
                 failureMessage: true,
                 message: "Failed to register: " + err.message,
                 endpoint: "/users",
@@ -105,6 +105,7 @@ async function addUser(request, response) {
         else if (err instanceof errorTypes.DatabaseError) {
             response.status(500);
             response.render('register.hbs', {
+                icon: "images/favicon.ico",
                 failureMessage: true,
                 message: "Failed to register: " + err.message,
                 endpoint: "/users",
@@ -115,6 +116,7 @@ async function addUser(request, response) {
         else {
             response.status(500);
             response.render('register.hbs', {
+                icon: "images/favicon.ico",
                 failureMessage: true,
                 message: "Failed to register: unknown cause. " + err.message,
                 endpoint: "/users",
@@ -150,6 +152,7 @@ async function getUser(request, response) {
         response.cookie("tracker", JSON.stringify(tracker));
         response.cookie("sessionId", session.sessionId, { expires: session.closesAt, httpOnly: true });
         response.render('userProfile.hbs', {
+            icon: "images/favicon.ico",
             successMessage: true,
             message: "Successfully logged in!",
             username: username,
@@ -162,6 +165,7 @@ async function getUser(request, response) {
         if (err instanceof errorTypes.AuthenticationError) {
             response.status(400);
             response.render('login.hbs', {
+                icon: "images/favicon.ico",
                 failureMessage: true,
                 message: "Failed to login: " + err.message,
                 endpoint: "/user",
@@ -172,6 +176,7 @@ async function getUser(request, response) {
         else if (err instanceof errorTypes.DatabaseError) {
             response.status(500);
             response.render('login.hbs', {
+                icon: "images/favicon.ico",
                 failureMessage: true,
                 message: "Failed to login: " + err.message,
                 endpoint: "/user",
@@ -182,6 +187,7 @@ async function getUser(request, response) {
         else {
             response.status(500);
             response.render('login.hbs', {
+                icon: "images/favicon.ico",
                 failureMessage: true,
                 message: "Failed to login: unknown cause. " + err.message,
                 endpoint: "/user",

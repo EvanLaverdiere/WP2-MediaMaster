@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 const routeRoot = '/';
 const model = require('../models/songModelMySql')
-
+let i ="images/"
+const images=[i+"img2.jpg",i+"img3.jpg"];
 class Tracker{
     constructor(username){
         this.username = username
@@ -10,9 +11,8 @@ class Tracker{
 }
 
 function renderHome(req, res) {
-    let user = req.cookies.username;
     let logged;
-    if (typeof (user) != 'undefined')
+    if (typeof (req.cookies.username) != 'undefined')
         logged = true;
     let theme = req.cookies.theme;  if(theme=="light")theme=true;else theme=false;
 
@@ -20,16 +20,16 @@ function renderHome(req, res) {
     {
         icon: "images/favicon.ico",
         logged: logged,
-        username:user,
+        username:req.cookies.username,
         light: theme,
+        images:images
     })
 }
 router.get('/home', renderHome)
 
 function renderAbout(req, res) {
-    let user = req.cookies.username;
     let logged;
-    if (typeof (user) != 'undefined')
+    if (typeof (req.cookies.username) != 'undefined')
         logged = true;
     let theme = req.cookies.theme;  if(theme=="light")theme=true;else theme=false;
 
@@ -39,10 +39,11 @@ function renderAbout(req, res) {
     " So they can keep track of their music. In order to access to these functionalities, every user needs to be signed in in their account."+
     " And so, every user can create their account, providing a username and password.";
     res.render('aboutUs.hbs',{
+        icon: "images/favicon.ico",
         message,
         theme: theme,
         logged: logged,
-        username: user,
+        username: req.cookies.username,
         light: theme
     })
 }
