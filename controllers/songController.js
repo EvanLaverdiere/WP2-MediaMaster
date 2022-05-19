@@ -26,6 +26,14 @@ async function add(req, res) {
         var result = await model.addSong(title, artist, genre, album, userId);
         if (result == true) {
             let message = `Song [${title}] was successfully added`;
+
+            let tracker = manageTracker(req);
+            let session = await manageSession(req);
+            if(session){
+                res.cookie("sessionId", session.sessionId, {expires: session.closesAt});
+            }
+            res.cookie("tracker", JSON.stringify(tracker));
+
             res.render('add.hbs', addFormDetails(message, undefined, true)); //TODO: send success message
         }
     }
@@ -157,6 +165,14 @@ async function editSong(req, res) {
     try {
         let changedRows = await model.updateSong(userId, oldTitle, oldArtist, newTitle, newArtist, newGenre, newAlbum);
         let message = `Successfully replaced ${oldTitle} by ${oldArtist} with ${newTitle} by ${newArtist}`;
+
+        let tracker = manageTracker(req);
+        let session = await manageSession(req);
+        if(session){
+            res.cookie("sessionId", session.sessionId, {expires: session.closesAt});
+        }
+        res.cookie("tracker", JSON.stringify(tracker));
+
         res.render('edit.hbs', editFormDetails(message, false, true, {
             title: newTitle,
             artist: newArtist,
@@ -217,6 +233,14 @@ async function deleteOneSong(req, res) {
 
     try {
         const deletedSong = await model.deleteSong(userId, title, artist);
+
+        let tracker = manageTracker(req);
+        let session = await manageSession(req);
+        if(session){
+            res.cookie("sessionId", session.sessionId, {expires: session.closesAt});
+        }
+        res.cookie("tracker", JSON.stringify(tracker));
+
         res.render('delete.hbs', deleteFormDetails(`Successfully removed ${title} by ${artist} from your collection.`, false, true, deletedSong));
     } catch (error) {
         if (error instanceof InvalidInputError) {
@@ -240,17 +264,7 @@ async function deleteOneSong(req, res) {
 router.delete('/song', deleteOneSong);
 
 async function deleteForm(req, res){
-    // if(!req.cookies.tracker){
-    //     let tracker = createTracker("Bob", req);
-    //     res.cookie("tracker", JSON.stringify(tracker));
-    // }
-    // else{
-    //     let tracker = JSON.parse(req.cookies.tracker);
-    //     let updatedTracker = updateTracker(tracker, req);
-    //     if(updatedTracker != null){
-    //         res.cookie("tracker", JSON.stringify(updatedTracker));
-    //     }
-    // }
+
     let tracker = manageTracker(req);
     let session = await manageSession(req);
     if(session){
