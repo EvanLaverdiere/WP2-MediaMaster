@@ -38,7 +38,13 @@ async function add(req, res) {
 }
 router.post('/song', add)
 
-function showAddForm(req, res) {
+async function showAddForm(req, res) {
+    let tracker = manageTracker(req, "Bob");
+    let session = await manageSession(req);
+    if(session){
+        res.cookie("sessionId", session.sessionId, {expires: session.closesAt});
+    }
+    res.cookie("tracker", JSON.stringify(tracker));
     res.render('add.hbs', addFormDetails());
 }
 
@@ -58,6 +64,14 @@ async function allSongs(req, res) {
         let userId = req.cookies.userId;
         // If cookie is not set then redirect to login page
         var song = await model.getAllSongs(userId);
+
+        let tracker = manageTracker(req, "Bob");
+        let session = await manageSession(req);
+        if(session){
+            res.cookie("sessionId", session.sessionId, {expires: session.closesAt});
+        }
+        res.cookie("tracker", JSON.stringify(tracker));
+    
         res.render('all.hbs', { song, logged: true });
     } catch (error) {
         let errorMessage;
@@ -91,6 +105,14 @@ async function getSong(req, res) {
             genre: genre,
             album: album
         };
+
+        let tracker = manageTracker(req, "Bob");
+        let session = await manageSession(req);
+        if(session){
+            res.cookie("sessionId", session.sessionId, {expires: session.closesAt});
+        }
+        res.cookie("tracker", JSON.stringify(tracker));    
+
         res.render('getOne.hbs', getFormDetails(message, false, true, song));
     } catch (error) {
         if (error instanceof InvalidInputError) {
