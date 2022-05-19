@@ -11,3 +11,11 @@ function showPassword() {
     // toggle the icon
     this.classList.toggle("bi-eye");
 }
+
+function changeTheme() {
+    var x = document.getElementById("select").value;
+    x=x.toLowerCase();
+    alert(x)
+    document.cookie = "theme="+x+";";
+    location.reload();
+}

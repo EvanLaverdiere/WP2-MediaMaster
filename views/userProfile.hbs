@@ -24,18 +24,19 @@
     <p>Username: {{username}}</p>
 
     <label for="colors">Change theme: </label>
-    <select name="colors">
+    <select name="colors" id="select" onchange="changeTheme()">
         {{#each colors}}
         <option value="{{this}}">{{this}}</option>
         {{/each}}
     </select><br>
 
+    {{!-- Comment out language, because not sure if we'll have time for it
     <label for="languages">Change language displayed: </label>
-        <select name="languages">
+    <select name="languages">
         {{#each languages}}
         <option value="{{this}}">{{this}}</option>
         {{/each}}
-    </select><br><br>
+    </select><br><br> --}}
 
     <img src="https://images.pexels.com/photos/733767/pexels-photo-733767.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
         alt="">
