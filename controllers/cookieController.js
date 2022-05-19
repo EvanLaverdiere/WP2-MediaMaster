@@ -36,10 +36,11 @@ function createTracker(username, req){
  * @returns An object containing the page's URL and the time at which the request was received.
  */
 function getCurrentPage(req){
+    let method = req.method;
     let url = req.url;
     let timeArrived = new Date();
 
-    return {url, timeArrived};
+    return {method, url, timeArrived};
 }
 
 /**
