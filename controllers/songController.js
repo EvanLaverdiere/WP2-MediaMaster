@@ -39,7 +39,7 @@ async function add(req, res) {
 router.post('/song', add)
 
 async function showAddForm(req, res) {
-    let tracker = manageTracker(req, "Bob");
+    let tracker = manageTracker(req);
     let session = await manageSession(req);
     if(session){
         res.cookie("sessionId", session.sessionId, {expires: session.closesAt});
@@ -65,7 +65,7 @@ async function allSongs(req, res) {
         // If cookie is not set then redirect to login page
         var song = await model.getAllSongs(userId);
 
-        let tracker = manageTracker(req, "Bob");
+        let tracker = manageTracker(req);
         let session = await manageSession(req);
         if(session){
             res.cookie("sessionId", session.sessionId, {expires: session.closesAt});
@@ -106,7 +106,7 @@ async function getSong(req, res) {
             album: album
         };
 
-        let tracker = manageTracker(req, "Bob");
+        let tracker = manageTracker(req);
         let session = await manageSession(req);
         if(session){
             res.cookie("sessionId", session.sessionId, {expires: session.closesAt});
@@ -133,7 +133,7 @@ async function getSong(req, res) {
 router.get('/song', getSong);
 
 async function getOneForm(req, res) {
-    let tracker = manageTracker(req, "Bob");
+    let tracker = manageTracker(req);
     let session = await manageSession(req);
     if(session){
         res.cookie("sessionId", session.sessionId, {expires: session.closesAt});
@@ -195,7 +195,7 @@ async function editForm(req, res) {
     //         res.cookie("tracker", JSON.stringify(updatedTracker));
     //     }
     // }
-    let tracker = manageTracker(req, "Bob");
+    let tracker = manageTracker(req);
     let session = await manageSession(req);
     if(session){
         res.cookie("sessionId", session.sessionId, {expires: session.closesAt});
@@ -251,7 +251,7 @@ async function deleteForm(req, res){
     //         res.cookie("tracker", JSON.stringify(updatedTracker));
     //     }
     // }
-    let tracker = manageTracker(req, "Bob");
+    let tracker = manageTracker(req);
     let session = await manageSession(req);
     if(session){
         res.cookie("sessionId", session.sessionId, {expires: session.closesAt});
