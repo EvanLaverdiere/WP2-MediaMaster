@@ -159,6 +159,15 @@ async function getOneForm(req, res) {
 
 
 //#region EDIT song
+/**
+ * Tries to edit an existing song within the database, replacing its original values 
+ * with new ones based on parameters in the request's body and the userId cookie.
+ * Renders a view displaying the new values of the modified record if it was successfully updated.
+ * Renders a view displaying an appropriate error message if any of the passed parameters is invalid,
+ * or if the database is inaccessible. 
+ * @param {*} req The HTTP request. Its body must include parameters for oldTitle, oldArtist, newTitle, newArtist, newGenre, and (optionally) newAlbum. It must include a userId cookie.
+ * @param {*} res The HTTP response to be sent once the request has been processed.
+ */
 async function editSong(req, res) {
     let oldTitle = req.body.oldTitle;
     let oldArtist = req.body.oldArtist;
