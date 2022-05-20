@@ -85,7 +85,6 @@ test('[CONTROLLER] Getting a user: Success case', async () => {
         password: password
     });
 
-    //ASK TALIB HOW TO IMPLEMENT GETTING A USERNAME AND PASSWORD
     const testResponse = await testRequest.post("/user").send({
         username: username,
         password: password

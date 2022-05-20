@@ -71,7 +71,7 @@ test('[MODEL PART 3] Getting a user: Success case', async () => {
     const result = await model.getUser(username, password);
 
     expect(result.username.toLowerCase() == username.toLowerCase()).toBe(true);
-    expect(await bcrypt.compare(password, result.password)).toBe(true);
+    expect(result.password.toLowerCase() == password.toLowerCase()).toBe(true);
 })
 
 test('[MODEL PART 3] Getting a user: Failure case (AuthenticationError)', async () => {

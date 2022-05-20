@@ -99,7 +99,12 @@ td {
 #listAllTable {
     width: 25%;
 }
-
+.container{
+    display:flex;
+    margin-top: 5rem;
+    justify-content:center;
+    align-items: center;
+  }
 #footer {
     margin-top: 2rem;
     bottom: 0;
