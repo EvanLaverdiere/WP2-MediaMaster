@@ -235,12 +235,28 @@ router.post('/user', getUser);
 
 function isLightTheme(req) {
     if (req.cookies.theme == "light")
-        return true; 
-    else 
+        return true;
+    else
         return false;
 }
 
 //#endregion
+
+// #region Logout
+
+function logout(req, res) {
+    lightTheme = isLightTheme(req);
+    res.render('login.hbs', {
+            icon: "images/favicon.ico",
+            endpoint: "/user",
+            method: "post",
+            successMessage: true,
+            message: "Successfully logged out!",
+            light: lightTheme
+    })
+}
+
+// 
 
 /**
  * Loads register, login or user profile page based on the client request.
@@ -261,6 +277,9 @@ function showUserForm(request, response, notLoggedIn) {
         case 'profile':
             showProfile(request, response);
             break;
+        case 'logout':
+            logout(request, response);
+            break;
         default:
             response.render('home.hbs');
     }
@@ -269,5 +288,5 @@ function showUserForm(request, response, notLoggedIn) {
 module.exports = {
     router,
     routeRoot,
-    showUserForm,
+    showUserForm
 }

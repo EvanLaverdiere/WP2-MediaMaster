@@ -393,7 +393,8 @@ function isLightTheme(req) {
 
 /** Show the appropriate form based on user choice */
 async function showForm(request, response) {
-    if (typeof request.cookies.userId === "undefined" && request.body.choice !== "register" && request.body.choice !== "login") {
+    let choice = request.body.choice;
+    if (typeof request.cookies.userId === "undefined" && choice !== "register" && choice !== "login" && choice !== "logout") {
         request.body.choice = 'login';
         let notLoggedIn = true;
         userController.showUserForm(request, response, notLoggedIn);
@@ -422,6 +423,9 @@ async function showForm(request, response) {
                 userController.showUserForm(request, response);
                 break;
             case 'profile':
+                userController.showUserForm(request, response);
+                break;
+            case 'logout':
                 userController.showUserForm(request, response);
                 break;
             default:
