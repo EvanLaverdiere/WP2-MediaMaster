@@ -91,7 +91,7 @@ async function addUser(request, response) {
         const passwordInput = request.body.password;
         lightTheme = isLightTheme(request);
 
-        const { username, password } = await model.addUser(usernameInput, passwordInput);
+        await model.addUser(usernameInput, passwordInput);
         response.status(200);
 
         response.render('login.hbs', {

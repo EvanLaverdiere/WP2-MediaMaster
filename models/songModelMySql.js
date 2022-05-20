@@ -60,14 +60,13 @@ async function addSong(title, artist, genre, album, currentUserId) {
 
     validator.validateSong(title, artist, genre); //Throws specific error messages if invalid, it needs to get caught it controller
     if (typeof (album) == 'undefined') album = "";
-    if (typeof (currentUserId) == 'undefined') currentUserId =1; //Left so tests pass, but it needs to be changed along the tests
 
     await checkDuplicate(title, artist, genre, album);  //Throws if the song is already added in the db
 
     try {
 
         let query = "insert into Songs(title, artist, genre, album, userId) values(?, ?, ?, ?, ?);";
-        let results = await connection.execute(query, [title, artist, genre, album, currentUserId]);
+        await connection.execute(query, [title, artist, genre, album, currentUserId]);
         logger.info(`Song [${title}] was successfully added `);
         return true;
     } catch (error) {
@@ -85,8 +84,6 @@ async function addSong(title, artist, genre, album, currentUserId) {
  * @returns A list of the user's songs.
  */
 async function getAllSongs(currentUserId) {
-    if (typeof (currentUserId) == 'undefined') currentUserId =1; //Left so tests pass, but it needs to be changed along the tests
-
     let query = "select title, artist, genre, album from Songs where userId=" + connection.escape(currentUserId) + ";";
 
     try {
@@ -283,7 +280,7 @@ async function checkDuplicate(title, artist, genre, album, currentUserId) {
     let query = "select * from Songs where title = ? and artist = ? and genre = ? and album =? and userId=?;"
     let [rows, fields] = [];
     try {
-        [rows, fields] = await connection.query(query, [title, artist, genre, album,1]);
+        [rows, fields] = await connection.query(query, [title, artist, genre, album,currentUserId]);
 
     } catch (error) {
         logger.error(error.message);
