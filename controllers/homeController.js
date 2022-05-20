@@ -3,7 +3,7 @@ const router = express.Router();
 const routeRoot = '/';
 const model = require('../models/songModelMySql')
 let i ="images/"
-const images=[i+"img2.jpg",i+"img3.jpg"];
+const images=[i+"img2.jpg",i+"img3.jpg",i+"img1.jpg",i+"img4.jpg"];
 class Tracker{
     constructor(username){
         this.username = username
@@ -22,6 +22,7 @@ function renderHome(req, res) {
         logged: logged,
         username:req.cookies.username,
         light: theme,
+        first:"images/img0.jpg",
         images:images
     })
 }
