@@ -112,7 +112,11 @@
 
 
 <div class="description">
-    Endpoint reached after user submits the add form to add a song.It reads the input from the user through the body of the request.And tells the model to add a song (model will decide to add it or not).After, it will render the add form again in case the user wants to keep adding songs.If there is an error or if the operation was successful an message will be rendered along with the form.
+    Endpoint reached after user submits the add form to add a song.
+It reads the input from the user through the body of the request.
+And tells the model to add a song (model will decide to add it or not).
+After, it will render the add form again in case the user wants to keep adding songs.
+If there is an error or if the operation was successful an message will be rendered along with the form.
 </div>
 
 
@@ -421,7 +425,12 @@
 
 
 <div class="description">
-    Adds a song to the Songs table. It only gets added if a song with the exact same datails does not already exists.And, if the title is alphanumeric.The song corresponds (is tied with a userId) with a user from the users table.Throws if the title is not alphanumeric, if the song already exists.And, if there are any issues with the database/connection trying to execute the insert query.
+    Adds a song to the Songs table. 
+It only gets added if a song with the exact same datails does not already exists.
+And, if the title is alphanumeric.
+The song corresponds (is tied with a userId) with a user from the users table.
+Throws if the title is not alphanumeric, if the song already exists.
+And, if there are any issues with the database/connection trying to execute the insert query.
 </div>
 
 
@@ -660,7 +669,8 @@
 
 
 <div class="description">
-    Endpoint function for adding a user to the database.Called when the register form is submitted.
+    Endpoint function for adding a user to the database.
+Called when the register form is submitted.
 </div>
 
 
@@ -1002,7 +1012,10 @@
 
 
 <div class="description">
-    This function is called, after the endpoint /songs is reached.This function renders the all hbs view, sending in all the songsSo the view can display it as a table.If an error occurs, it renders home page with an error message
+    This function is called, after the endpoint /songs is reached.
+This function renders the all hbs view, sending in all the songs
+So the view can display it as a table.
+If an error occurs, it renders home page with an error message
 </div>
 
 
@@ -2057,7 +2070,9 @@
 
 
 <div class="description">
-    Tries to delete a single song from the database, based on title and artist parameters passed in the request's body and on the value of the userId cookie.Renders a view displaying information about the deleted song if successful.Renders a view displaying an appropriate error message if the song could not be deleted or if the database is inaccessible.
+    Tries to delete a single song from the database, based on title and artist parameters passed in the request's body and on the value of the userId cookie.
+Renders a view displaying information about the deleted song if successful.
+Renders a view displaying an appropriate error message if the song could not be deleted or if the database is inaccessible.
 </div>
 
 
@@ -2838,7 +2853,11 @@
 
 
 <div class="description">
-    Tries to edit an existing song within the database, replacing its original values with new ones based on parameters in the request's body and the userId cookie.Renders a view displaying the new values of the modified record if it was successfully updated.Renders a view displaying an appropriate error message if any of the passed parameters is invalid,or if the database is inaccessible.
+    Tries to edit an existing song within the database, replacing its original values 
+with new ones based on parameters in the request's body and the userId cookie.
+Renders a view displaying the new values of the modified record if it was successfully updated.
+Renders a view displaying an appropriate error message if any of the passed parameters is invalid,
+or if the database is inaccessible.
 </div>
 
 
@@ -2998,7 +3017,8 @@
 
 
 <div class="description">
-    If the url entered by the user is not a valid enpoint, -it will get to this endpoint and respond with a 404 error code
+    If the url entered by the user is not a valid enpoint, -
+it will get to this endpoint and respond with a 404 error code
 </div>
 
 
@@ -3158,7 +3178,8 @@
 
 
 <div class="description">
-    Retrieves all songs for certain user.Throws if there are any errors (db/connection) when trying to retrieve the songs.
+    Retrieves all songs for certain user.
+Throws if there are any errors (db/connection) when trying to retrieve the songs.
 </div>
 
 
@@ -4115,7 +4136,10 @@
 
 
 <div class="description">
-    Tries to retrieve a specified song from the database, based on query parameters specified by the user and the value of the user's userId cookie.Renders a view displaying the song's record if it was successfully retrieved.Renders a view containing an appropriate error message if the passed queries are invalid,or if the database is inaccessible.
+    Tries to retrieve a specified song from the database, based on query parameters specified by the user and the value of the user's userId cookie.
+Renders a view displaying the song's record if it was successfully retrieved.
+Renders a view containing an appropriate error message if the passed queries are invalid,
+or if the database is inaccessible.
 </div>
 
 
@@ -4275,7 +4299,8 @@
 
 
 <div class="description">
-    Endpoint function for getting a user from the database.Called when the login form is submitted.
+    Endpoint function for getting a user from the database.
+Called when the login form is submitted.
 </div>
 
 
@@ -4786,7 +4811,9 @@
 
 
 <div class="description">
-    Initializes the database connection and creates if it does not exist the Songs table.It also first initializes the user model connection.Throws if there any errors while trying to execute the queries.
+    Initializes the database connection and creates if it does not exist the Songs table.
+It also first initializes the user model connection.
+Throws if there any errors while trying to execute the queries.
 </div>
 
 
@@ -4946,7 +4973,9 @@
 
 
 <div class="description">
-    Initializes the connection to the indicated database dbname.   Injects database name so we can use this model for both  testing and main program without overwriting our main database.
+    Initializes the connection to the indicated database dbname.  
+ Injects database name so we can use this model for both 
+ testing and main program without overwriting our main database.
 </div>
 
 
@@ -5287,7 +5316,9 @@
 
 
 <div class="description">
-    Updates the sessionId cookie assigned to an HTTP request by retrieving information from the Sessions table.If the sessionId cookie is not present, due to being expired, function will delete the corresponding sessionrecord from the database.
+    Updates the sessionId cookie assigned to an HTTP request by retrieving information from the Sessions table.
+If the sessionId cookie is not present, due to being expired, function will delete the corresponding session
+record from the database.
 </div>
 
 
