@@ -10,8 +10,6 @@ const { createTracker, updateTracker, manageTracker, manageSession } = require('
 const router = express.Router();
 const routeRoot = '/';
 let lightTheme;
-let currentUserId; //TODO: Remove all dependencies and varaible
-let currentUser;
 
 //#region ADD Endpoint
 /**
@@ -28,9 +26,7 @@ async function add(req, res) {
     let artist = req.body.artist; 
     let genre = req.body.genres;
     let album = req.body.album; 
-    let theme = req.cookies.theme;
 
-    if (theme == "light") lightTheme = true; else lightTheme = false;
     try {
         var result = await model.addSong(title, artist, genre, album, req.cookies.userId);
         if (result == true) {
@@ -43,14 +39,14 @@ async function add(req, res) {
             }
             res.cookie("tracker", JSON.stringify(tracker));
 
-            res.render('add.hbs', addFormDetails(message, undefined, true));
+            res.render('add.hbs', addFormDetails(message, undefined, true, req));
         }
     }
     catch (error) {
         let errorMessage;
         if (error instanceof InvalidInputError) { res.status(400); errorMessage = "Error 400"; }
         if (error instanceof DatabaseError) { res.status(500); errorMessage = "Error 500 "; } else { errorMessage = "" }
-        res.render('add.hbs', addFormDetails(errorMessage + error.message, true))
+        res.render('add.hbs', addFormDetails(errorMessage + error.message, true, undefined, req))
     }
 }
 router.post('/song', add)
@@ -62,7 +58,7 @@ async function showAddForm(req, res) {
         res.cookie("sessionId", session.sessionId, {expires: session.closesAt});
     }
     res.cookie("tracker", JSON.stringify(tracker));
-    res.render('add.hbs', addFormDetails());
+    res.render('add.hbs', addFormDetails(undefined, undefined, undefined, req));
 }
 
 //#endregion
@@ -78,16 +74,9 @@ async function showAddForm(req, res) {
  */
 async function allSongs(req, res) {
     try {
-        let userId = req.cookies.userId;
-        let theme = req.cookies.theme; 
+        lightTheme=isLightTheme(req);
 
-        if (theme == "light") 
-            lightTheme = true; 
-        else 
-            lightTheme = false;
-
-        // If cookie is not set then redirect to login page
-        var song = await model.getAllSongs(userId);
+        var song = await model.getAllSongs(req.cookies.userId);
 
         let tracker = manageTracker(req);
         let session = await manageSession(req);
@@ -96,14 +85,13 @@ async function allSongs(req, res) {
         }
         res.cookie("tracker", JSON.stringify(tracker));
     
-        var song = await model.getAllSongs(currentUserId);
-        res.render('all.hbs', { icon: "images/favicon.ico", song, logged: true, light: lightTheme, username: currentUser });
+        res.render('all.hbs', { icon: "images/favicon.ico", song, logged: true, light: lightTheme, username: req.cookies.username });
     } catch (error) {
         let errorMessage;
         if (error instanceof DatabaseError) { res.status(500); errorMessage = "Error 500, The songs were not retrieved:"; } else { errorMessage = "" }
 
         errorMessage += error.message;
-        let obj = { showError: true, message: errorMessage, light: lightTheme, logged: true, username: currentUser };
+        let obj = { showError: true, message: errorMessage, light: lightTheme, logged: true, username: req.cookies.username };
         res.render('home.hbs', obj);
     }
 }
@@ -116,14 +104,12 @@ router.get('/songs', allSongs)
 async function getSong(req, res) {
     let targetTitle = req.query.title;
     let targetArtist = req.query.artist;
-    let userId = req.cookies.userId;
-    let theme = req.cookies.theme; if (theme == "light") lightTheme = true; else lightTheme = false;
 
     // try{
     //     let {title, artist, genre, album} = await model.getOneSong(userId, targetTitle, targetArtist);
     try {
-        let { title, artist, genre, album } = await model.getOneSong(userId, targetTitle, targetArtist);
-        // RENDER NOT FINALIZED YET.
+        let { title, artist, genre, album } = await model.getOneSong( req.cookies.userId, targetTitle, targetArtist);
+
         let message = "Succesfully retrieved the song from your collection.";
         let song = {
             title: title,
@@ -139,22 +125,17 @@ async function getSong(req, res) {
         }
         res.cookie("tracker", JSON.stringify(tracker));    
 
-        res.render('getOne.hbs', getFormDetails(message, false, true, song));
+        res.render('getOne.hbs', getFormDetails(message, false, true, song, req));
     } catch (error) {
         if (error instanceof InvalidInputError) {
             res.status(404);
-            // RENDER NOT FINALIZED YET.
-
-            res.render('getOne.hbs', getFormDetails("404 Error: " + error.message, true, false));
+            res.render('getOne.hbs', getFormDetails("404 Error: " + error.message, true, false, req));
         }
         else if (error instanceof DatabaseError) {
-            // RENDER NOT FINALIZED YET.
-
             res.status(500);
-            res.render('getOne.hbs', getFormDetails("500 Error: " + error.message, true, false));
+            res.render('getOne.hbs', getFormDetails("500 Error: " + error.message, true, false, req));
         }
     }
-
 }
 router.get('/song', getSong);
 
@@ -165,7 +146,7 @@ async function getOneForm(req, res) {
         res.cookie("sessionId", session.sessionId, { expires: session.closesAt });
     }
     res.cookie("tracker", JSON.stringify(tracker));
-    res.render('getOne.hbs', getFormDetails());
+    res.render('getOne.hbs', getFormDetails(undefined, undefined, undefined, undefined, req));
 }
 //#endregion
 
@@ -178,11 +159,9 @@ async function editSong(req, res) {
     let newArtist = req.body.newArtist;
     let newGenre = req.body.newGenre;
     let newAlbum = req.body.newAlbum;
-    let userId = req.cookies.userId;
-    let theme = req.cookies.theme; if (theme == "light") lightTheme = true; else lightTheme = false;
 
     try {
-        await model.updateSong(userId, oldTitle, oldArtist, newTitle, newArtist, newGenre, newAlbum);
+        await model.updateSong(req.cookies.userId, oldTitle, oldArtist, newTitle, newArtist, newGenre, newAlbum);
         let message = `Successfully replaced ${oldTitle} by ${oldArtist} with ${newTitle} by ${newArtist}`;
 
         let tracker = manageTracker(req);
@@ -195,23 +174,24 @@ async function editSong(req, res) {
         res.render('edit.hbs', editFormDetails(message, false, true, {
             title: newTitle,
             artist: newArtist,
+            
             genre: newGenre,
             album: newAlbum
-        }));
+        }, req));
     } catch (error) {
         if (error instanceof InvalidInputError) {
             res.status(404);
             // RENDER NOT FINALIZED YET.
             let message = `404 Error: Could not update ${oldTitle} by ${oldArtist}: ` + error.message;
 
-            res.render('edit.hbs', editFormDetails(message, true));
+            res.render('edit.hbs', editFormDetails(message, true, undefined, undefined, req));
         }
         else if (error instanceof DatabaseError) {
             // RENDER NOT FINALIZED YET.
 
             res.status(500);
             let message = "500 Error: Problem accessing database: " + error.message;
-            res.render('edit.hbs', editFormDetails(message, true));
+            res.render('edit.hbs', editFormDetails(message, true, undefined, undefined, req));
         }
 
     }
@@ -236,7 +216,7 @@ async function editForm(req, res) {
         res.cookie("sessionId", session.sessionId, { expires: session.closesAt });
     }
     res.cookie("tracker", JSON.stringify(tracker));
-    res.render('edit.hbs', editFormDetails());
+    res.render('edit.hbs', editFormDetails(undefined, undefined, undefined, undefined, req));
 }
 
 // function showEditForm(res) {
@@ -248,11 +228,10 @@ async function editForm(req, res) {
 async function deleteOneSong(req, res) {
     let title = req.body.title;
     let artist = req.body.artist;
-    let theme = req.cookies.theme; if (theme == "light") lightTheme = true; else lightTheme = false;
-    let userId = req.cookies.userId;
+    lightTheme=isLightTheme(req);
 
     try {
-        const deletedSong = await model.deleteSong(userId, title, artist);
+        const deletedSong = await model.deleteSong(req.cookies.userId, title, artist);
 
         let tracker = manageTracker(req);
         let session = await manageSession(req);
@@ -261,23 +240,22 @@ async function deleteOneSong(req, res) {
         }
         res.cookie("tracker", JSON.stringify(tracker));
 
-        res.render('delete.hbs', deleteFormDetails(`Successfully removed ${title} by ${artist} from your collection.`, false, true, deletedSong));
+        res.render('delete.hbs', deleteFormDetails(`Successfully removed ${title} by ${artist} from your collection.`, false, true, deletedSong, req));
     } catch (error) {
         if (error instanceof InvalidInputError) {
             res.status(404);
             // RENDER NOT FINALIZED YET.
             let message = `404 Error: Could not delete ${title} by ${artist}: ` + error.message;
 
-            res.render('delete.hbs', deleteFormDetails(message, true));
+            res.render('delete.hbs', deleteFormDetails(message, true, undefined, undefined, req));
         }
         else if (error instanceof DatabaseError) {
             // RENDER NOT FINALIZED YET.
 
             res.status(500);
             let message = "500 Error: Problem accessing database: " + error.message;
-            res.render('delete.hbs', deleteFormDetails(message, true));
+            res.render('delete.hbs', deleteFormDetails(message, true, undefined, undefined, req));
         }
-
     }
 }
 
@@ -291,18 +269,19 @@ async function deleteForm(req, res){
         res.cookie("sessionId", session.sessionId, { expires: session.closesAt });
     }
     res.cookie("tracker", JSON.stringify(tracker));
-    res.render('delete.hbs', deleteFormDetails());
+    res.render('delete.hbs', deleteFormDetails(undefined, undefined, undefined, undefined, req));
 
 }
 //#endregion
 
 //#region Form Details
-function addFormDetails(message, error, success) {
+function addFormDetails(message, error, success, request) {
     // if user got to this point they should be logged in
     if (typeof (userId) != 'undefined') logged = true;
     if (typeof message === 'undefined') message = false;
     if (typeof error === 'undefined') error = false;
     if (typeof success != true) successMessage = false;
+    lightTheme=isLightTheme(request);
     return pageData = {
         icon: "images/favicon.ico",
         message: message,
@@ -316,14 +295,15 @@ function addFormDetails(message, error, success) {
         { field: "album", pretty: "Album" }],
         genres: model.allGenres(),
         logged: true,
-        username: currentUser,
+        username: request.cookies.username,
         light: lightTheme
     }
 }
-function getFormDetails(message, error, success, song) {
+function getFormDetails(message, error, success, song, request) {
     if (typeof message === 'undefined') message = false;
     if (typeof error === 'undefined') error = false;
     if (typeof success != true) successMessage = false;
+    lightTheme=isLightTheme(request);
 
     return pageData = {
         icon: "images/favicon.ico",
@@ -339,14 +319,15 @@ function getFormDetails(message, error, success, song) {
             { field: "artist", pretty: "Artist" }
         ],
         logged: true,
-        username: currentUser,
+        username: request.cookies.username,
         light: lightTheme
     }
 }
-function editFormDetails(message, error, success, song) {
+function editFormDetails(message, error, success, song, request) {
     if (typeof message === 'undefined') message = false;
     if (typeof error === 'undefined') error = false;
     if (typeof success != true) successMessage = false;
+    lightTheme=isLightTheme(request);
 
     return pageData = {
         icon: "images/favicon.ico",
@@ -369,14 +350,15 @@ function editFormDetails(message, error, success, song) {
         newGenre: model.allGenres(),
         logged: true,
         light: lightTheme,
-        username: currentUser
+        username: request.cookies.username
     }
 
 }
-function deleteFormDetails(message, error, success, song) {
+function deleteFormDetails(message, error, success, song, request) {
     if (typeof message === 'undefined') message = false;
     if (typeof error === 'undefined') error = false;
     if (typeof success != true) successMessage = false;
+    lightTheme=isLightTheme(request);
 
     return pageData = {
         icon: "images/favicon.ico",
@@ -392,7 +374,7 @@ function deleteFormDetails(message, error, success, song) {
             { field: "artist", pretty: "Artist" }
         ],
         logged: true,
-        username: currentUser,
+        username: request.cookies.username,
         light: lightTheme
     }
 
@@ -400,17 +382,21 @@ function deleteFormDetails(message, error, success, song) {
 
 //#endregion
 
+function isLightTheme(req) {
+    if (req.cookies.theme == "light")
+        return true; 
+    else 
+        return false;
+}
+
 /** Show the appropriate form based on user choice */
 async function showForm(request, response) {
-    let theme = request.cookies.theme; if (theme == "light") lightTheme = true; else lightTheme = false;
     if (typeof request.cookies.userId === "undefined" && request.body.choice !== "register" && request.body.choice !== "login") {
         request.body.choice = 'login';
         let notLoggedIn = true;
         userController.showUserForm(request, response, notLoggedIn);
     }
     else {
-        currentUserId = request.cookies.userId;
-        currentUser = request.cookies.username;
         switch (request.body.choice) {
             case 'add':
                 showAddForm(request, response);
@@ -442,7 +428,6 @@ async function showForm(request, response) {
     }
 
 }
-// no valid choice made
 router.post('/form', showForm);
 
 module.exports = {
