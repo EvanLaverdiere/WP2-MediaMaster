@@ -128,6 +128,8 @@ async function getUser(username, password) {
  * Get a specific user id from a user.
  * @param {int} username Username of user. Must exist in the database.
  * @returns The id of the user.
+ * @throws AuthenticationError if the passed userId isn't in the database.
+ * @throws DatabaseError if the database is inaccessible.
  */
 async function getUserId(username) {
     let sql = "SELECT userId FROM users WHERE username = ?";
