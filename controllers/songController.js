@@ -229,6 +229,13 @@ async function editForm(req, res) {
 //#endregion
 
 //#region DELETE song
+/**
+ * Tries to delete a single song from the database, based on title and artist parameters passed in the request's body and on the value of the userId cookie.
+ * Renders a view displaying information about the deleted song if successful.
+ * Renders a view displaying an appropriate error message if the song could not be deleted or if the database is inaccessible.
+ * @param {*} req The HTTP request. Its body must include parameters for title and artist.
+ * @param {*} res The HTTP response to be sent once the request has been processed.
+ */
 async function deleteOneSong(req, res) {
     let title = req.body.title;
     let artist = req.body.artist;
