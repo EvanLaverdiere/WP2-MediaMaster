@@ -57,13 +57,13 @@ function pageData(endpoint, notLoggedIn) {
  */
 function showProfile(request, response) {
     let colors = [];
-    let theme = request.cookies.theme; if (theme == "light") {
+    if (isLightTheme(request)) {
         lightTheme = true;
         colors = ["Light", "Dark"];
     }
     else {
-        colors = ["Dark", "Light"];
         lightTheme = false;
+        colors = ["Dark", "Light"];
     }
 
     response.render('userProfile.hbs', {
@@ -89,17 +89,7 @@ async function addUser(request, response) {
     try {
         const usernameInput = request.body.username;
         const passwordInput = request.body.password;
-        let colors;
-        let theme = request.cookies.theme; 
-
-        if (theme == "light") {
-            lightTheme = true;
-            colors = ["Light", "Dark"];
-        }
-        else {
-            colors = ["Dark", "Light"];
-            lightTheme = false;
-        }
+        lightTheme = isLightTheme(request);
 
         const { username, password } = await model.addUser(usernameInput, passwordInput);
         response.status(200);
@@ -169,18 +159,16 @@ router.post('/users', addUser);
  * @param {*} response The response from the server.
  */
 async function getUser(request, response) {
-    let colors;
-
     try {
-        let theme = request.cookies.theme; 
+        let colors;
 
-        if (theme == "light") {
+        if (isLightTheme(request)) {
             lightTheme = true;
             colors = ["Light", "Dark"];
         }
         else {
-            colors = ["Dark", "Light"];
             lightTheme = false;
+            colors = ["Dark", "Light"];
         }
 
         const usernameInput = request.body.username;
@@ -245,6 +233,13 @@ async function getUser(request, response) {
 }
 router.post('/user', getUser);
 
+function isLightTheme(req) {
+    if (req.cookies.theme == "light")
+        return true; 
+    else 
+        return false;
+}
+
 //#endregion
 
 /**
@@ -254,8 +249,7 @@ router.post('/user', getUser);
  * @param {boolean} notLoggedIn A flag indicating if the user is logged in or not.
  */
 function showUserForm(request, response, notLoggedIn) {
-    let theme = request.cookies.theme;
-    if (theme == "light") lightTheme = true; else lightTheme = false;
+    lightTheme = isLightTheme(request);
 
     switch (request.body.choice) {
         case 'login':
