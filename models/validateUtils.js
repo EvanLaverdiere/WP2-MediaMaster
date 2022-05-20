@@ -52,8 +52,8 @@ function validateSong(title, artist, genre) {
 
 /**
  * Checks if the user exists in the database.
- * @param {*} username Username of user. Cannot be null.
- * @param {*} password Password of user. Cannot be null. Must be at least 7 characters long.
+ * @param {string} username Username of user. Cannot be null.
+ * @param {string} password Password of user. Cannot be null. Must be at least 7 characters long.
  * @param {*} connection Connection to the database.
  * @returns True if the user's fields are valid, false otherwise.
  */
@@ -107,7 +107,7 @@ function validatePassword(password) {
 
 /**
  * Verifies that the user doesn't already exist in the database
- * @param {*} username Username of user. Must be unique.
+ * @param {string} username Username of user. Must be unique.
  * @param {*} connection Connection to database.
  * @returns True if the username is unique, false otherwise.
  */
