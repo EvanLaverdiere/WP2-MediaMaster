@@ -104,7 +104,7 @@
     
 
     
-    <h4 class="name" id="addSession"><span class="type-signature">(async) </span>addSession<span class="signature">(userId)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="addSong"><span class="type-signature">(async) </span>addSong<span class="signature">(title, artist, genre, album, currentUserId)</span><span class="type-signature"></span></h4>
     
 
     
@@ -112,7 +112,585 @@
 
 
 <div class="description">
-    Creates a new session that will expire in 25 minutes. Adds it to the database.
+    Adds a song to the Songs table. It only gets added if a song with the exact same datails does not already exists.And, if the title is alphanumeric.The song corresponds (is tied with a userId) with a user from the users table.Throws if the title is not alphanumeric, if the song already exists.And, if there are any issues with the database/connection trying to execute the insert query.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>title</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Mandatory</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>artist</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Mandatory</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>genre</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Mandatory</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>album</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Optional</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>currentUserId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Mandatory</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="songModelMySql.js.html">songModelMySql.js</a>, <a href="songModelMySql.js.html#line59">line 59</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    A boolean indicating if the operation was successful
+</div>
+
+
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="checkDuplicate"><span class="type-signature">(async) </span>checkDuplicate<span class="signature">(title, artist, genre, album, currentUserId)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Verifies that a passed song does not already exist in the specified user's collection. Throws an error if the song already exists.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>title</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The song's title.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>artist</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The artist who performed the song.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>genre</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The song's genre.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>album</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The song's album.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>currentUserId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The ID of the current user.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="songModelMySql.js.html">songModelMySql.js</a>, <a href="songModelMySql.js.html#line293">line 293</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Throws:</h5>
+<ul>
+        <li>
+
+    <div class="param-desc">
+    
+        DatabaseError if the database could not be accessed.
+    
+    </div>
+
+</li>
+    
+        <li>
+
+    <div class="param-desc">
+    
+        InvalidInputError if the passed data is an exact match for an existing song.
+    
+    </div>
+
+</li>
+    </ul>
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="closeConnection"><span class="type-signature"></span>closeConnection<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Close the database connection.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="songModelMySql.js.html">songModelMySql.js</a>, <a href="songModelMySql.js.html#line272">line 272</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="deleteSong"><span class="type-signature">(async) </span>deleteSong<span class="signature">(userId, title, artist)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Deletes a song from the database.
 </div>
 
 
@@ -164,140 +742,14 @@
 
             
 
-            <td class="description last">The ID of the user to whom this session belongs.</td>
+            <td class="description last">The ID of the song's owner.</td>
         </tr>
 
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sessionModelMySql.js.html">sessionModelMySql.js</a>, <a href="sessionModelMySql.js.html#line37">line 37</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Throws:</h5>
-
-        
-
-    <div class="param-desc">
-    
-        DatabaseError if the database is inaccessible when this function is called.
-    
-    </div>
-
-
-    
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="deleteSession"><span class="type-signature">(async) </span>deleteSession<span class="signature">(sessionId)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Deletes a session by passed session ID. To be used when a sessionId cookie exists.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
     
 
         <tr>
             
-                <td class="name"><code>sessionId</code></td>
+                <td class="name"><code>title</code></td>
             
 
             <td class="type">
@@ -313,7 +765,30 @@
 
             
 
-            <td class="description last">The ID of the session to be deleted.</td>
+            <td class="description last">The title of the song to be deleted.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>artist</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The artist who performed the song.</td>
         </tr>
 
     
@@ -354,7 +829,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sessionModelMySql.js.html">sessionModelMySql.js</a>, <a href="sessionModelMySql.js.html#line186">line 186</a>
+        <a href="songModelMySql.js.html">songModelMySql.js</a>, <a href="songModelMySql.js.html#line206">line 206</a>
     </li></ul></dd>
     
 
@@ -383,7 +858,7 @@
 
     <div class="param-desc">
     
-        AuthenticationError If the function failed to delete any sessions from the database.
+        InvalidInputError if the song to be deleted doesn't exist.
     
     </div>
 
@@ -401,6 +876,16 @@
     </ul>
 
 
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    An object representing the deleted song.
+</div>
+
+
+
+    
 
 
 
@@ -412,7 +897,7 @@
     
 
     
-    <h4 class="name" id="deleteSessionByUserId"><span class="type-signature">(async) </span>deleteSessionByUserId<span class="signature">(userId)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="dropTable"><span class="type-signature">(async) </span>dropTable<span class="signature">()</span><span class="type-signature"></span></h4>
     
 
     
@@ -420,7 +905,242 @@
 
 
 <div class="description">
-    Deletes a session by its corresponding user ID. To be used when no sessionId cookie exists, having expired.
+    Drops the Songs table from the database.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="songModelMySql.js.html">songModelMySql.js</a>, <a href="songModelMySql.js.html#line241">line 241</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="getAllSongs"><span class="type-signature">(async) </span>getAllSongs<span class="signature">(currentUserId)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Retrieves all songs for certain user.Throws if there are any errors (db/connection) when trying to retrieve the songs.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>currentUserId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Mandatory</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="songModelMySql.js.html">songModelMySql.js</a>, <a href="songModelMySql.js.html#line86">line 86</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    A list of the user's songs.
+</div>
+
+
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="getOneSong"><span class="type-signature">(async) </span>getOneSong<span class="signature">(userId, title, artist)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Retrieve a song belonging to the specified user, based on passed title and artist.
 </div>
 
 
@@ -472,7 +1192,53 @@
 
             
 
-            <td class="description last">The user ID of the session. In normal circumstances, a user will only have one session open at a time.</td>
+            <td class="description last">The user's ID.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>title</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The title of the desired song.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>artist</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The artist who wrote the song.</td>
         </tr>
 
     
@@ -513,7 +1279,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sessionModelMySql.js.html">sessionModelMySql.js</a>, <a href="sessionModelMySql.js.html#line209">line 209</a>
+        <a href="songModelMySql.js.html">songModelMySql.js</a>, <a href="songModelMySql.js.html#line108">line 108</a>
     </li></ul></dd>
     
 
@@ -538,16 +1304,6 @@
 
 <h5>Throws:</h5>
 <ul>
-        <li>
-
-    <div class="param-desc">
-    
-        AuthenticationError If the function failed to delete any sessions from the database.
-    
-    </div>
-
-</li>
-    
         <li>
 
     <div class="param-desc">
@@ -557,9 +1313,29 @@
     </div>
 
 </li>
+    
+        <li>
+
+    <div class="param-desc">
+    
+        InvalidInputError if the passed song does not exist.
+    
+    </div>
+
+</li>
     </ul>
 
 
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    An object representing the retrieved song.
+</div>
+
+
+
+    
 
 
 
@@ -571,7 +1347,7 @@
     
 
     
-    <h4 class="name" id="getSession"><span class="type-signature">(async) </span>getSession<span class="signature">(sessionId)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="initialize"><span class="type-signature">(async) </span>initialize<span class="signature">(db, reset)</span><span class="type-signature"></span></h4>
     
 
     
@@ -579,7 +1355,7 @@
 
 
 <div class="description">
-    Retrieves an existing session from the database.
+    Initializes the database connection and creates if it does not exist the Songs table.It also first initializes the user model connection.Throws if there any errors while trying to execute the queries.
 </div>
 
 
@@ -615,13 +1391,13 @@
 
         <tr>
             
-                <td class="name"><code>sessionId</code></td>
+                <td class="name"><code>db</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">*</span>
+<span class="param-type">string</span>
 
 
             
@@ -631,7 +1407,30 @@
 
             
 
-            <td class="description last">The ID of the session.</td>
+            <td class="description last">Name of database</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>reset</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Mandatory boolean indicating if to do a reset of the table</td>
         </tr>
 
     
@@ -672,7 +1471,144 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sessionModelMySql.js.html">sessionModelMySql.js</a>, <a href="sessionModelMySql.js.html#line67">line 67</a>
+        <a href="songModelMySql.js.html">songModelMySql.js</a>, <a href="songModelMySql.js.html#line18">line 18</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="setConnection"><span class="type-signature">(async) </span>setConnection<span class="signature">(db)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Establishes a connection to the specified database.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>db</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The name of the database.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="songModelMySql.js.html">songModelMySql.js</a>, <a href="songModelMySql.js.html#line253">line 253</a>
     </li></ul></dd>
     
 
@@ -696,39 +1632,19 @@
 
 
 <h5>Throws:</h5>
-<ul>
-        <li>
-
-    <div class="param-desc">
-    
-        AuthenticationError if the passed sessionId is invalid.
-    
-    </div>
-
-</li>
-    
-        <li>
-
-    <div class="param-desc">
-    
-        DatabaseError if the database is inaccessible when this function is called.
-    
-    </div>
-
-</li>
-    </ul>
-
-
-<h5>Returns:</h5>
 
         
-<div class="param-desc">
-    An object representing the session.
-</div>
 
+    <div class="param-desc">
+    
+        DatabaseError if the connection could not be established.
+    
+    </div>
 
 
     
+
+
 
 
 
@@ -740,7 +1656,7 @@
     
 
     
-    <h4 class="name" id="getSessionByUserId"><span class="type-signature">(async) </span>getSessionByUserId<span class="signature">(userId)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="updateSong"><span class="type-signature">(async) </span>updateSong<span class="signature">(userId, oldTitle, oldArtist, newTitle, newArtist, newGenre, newAlbum)</span><span class="type-signature"></span></h4>
     
 
     
@@ -748,7 +1664,7 @@
 
 
 <div class="description">
-    Retrieves an existing session from the database by the passed user ID.
+    Update an existing song with new values.
 </div>
 
 
@@ -800,7 +1716,145 @@
 
             
 
-            <td class="description last">The session's associated user ID.</td>
+            <td class="description last">The ID of the song's owner.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>oldTitle</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The song's original title.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>oldArtist</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The song's original artist.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>newTitle</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The replacement title.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>newArtist</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The replacement artist.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>newGenre</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The replacement genre.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>newAlbum</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The replacement album.</td>
         </tr>
 
     
@@ -841,368 +1895,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sessionModelMySql.js.html">sessionModelMySql.js</a>, <a href="sessionModelMySql.js.html#line95">line 95</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Throws:</h5>
-<ul>
-        <li>
-
-    <div class="param-desc">
-    
-        AuthenticationError if the passed sessionId is invalid.
-    
-    </div>
-
-</li>
-    
-        <li>
-
-    <div class="param-desc">
-    
-        DatabaseError if the database is inaccessible when this function is called.
-    
-    </div>
-
-</li>
-    </ul>
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    An object representing the session.
-</div>
-
-
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="isExpired"><span class="type-signature">(async) </span>isExpired<span class="signature">(sessionId)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Verifies whether a given session is expired.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>sessionId</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">*</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The ID of the session to check.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sessionModelMySql.js.html">sessionModelMySql.js</a>, <a href="sessionModelMySql.js.html#line235">line 235</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Throws:</h5>
-<ul>
-        <li>
-
-    <div class="param-desc">
-    
-        AuthenticationError if the passed sessionId is invalid.
-    
-    </div>
-
-</li>
-    
-        <li>
-
-    <div class="param-desc">
-    
-        DatabaseError if the database is inaccessible when this function is called.
-    
-    </div>
-
-</li>
-    </ul>
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    True if the session is expired, false otherwise.
-</div>
-
-
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="refreshSession"><span class="type-signature">(async) </span>refreshSession<span class="signature">(userId, sessionId)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Refresh a session by replacing its original value with a new one.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>userId</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">*</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The User ID associated with the session.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>sessionId</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">*</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The session's ID.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sessionModelMySql.js.html">sessionModelMySql.js</a>, <a href="sessionModelMySql.js.html#line160">line 160</a>
+        <a href="songModelMySql.js.html">songModelMySql.js</a>, <a href="songModelMySql.js.html#line153">line 153</a>
     </li></ul></dd>
     
 
@@ -1227,163 +1920,6 @@
 
 
 
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    The refreshed session.
-</div>
-
-
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="updateSession"><span class="type-signature">(async) </span>updateSession<span class="signature">(sessionId)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Refreshes an existing session, extending its duration.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>sessionId</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">*</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The session's ID.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sessionModelMySql.js.html">sessionModelMySql.js</a>, <a href="sessionModelMySql.js.html#line120">line 120</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    The updated session.
-</div>
-
-
-
-    
 
 
 
@@ -1405,13 +1941,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#addSession">addSession</a></li><li><a href="global.html#deleteSession">deleteSession</a></li><li><a href="global.html#deleteSessionByUserId">deleteSessionByUserId</a></li><li><a href="global.html#getSession">getSession</a></li><li><a href="global.html#getSessionByUserId">getSessionByUserId</a></li><li><a href="global.html#isExpired">isExpired</a></li><li><a href="global.html#refreshSession">refreshSession</a></li><li><a href="global.html#updateSession">updateSession</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#addSong">addSong</a></li><li><a href="global.html#checkDuplicate">checkDuplicate</a></li><li><a href="global.html#closeConnection">closeConnection</a></li><li><a href="global.html#deleteSong">deleteSong</a></li><li><a href="global.html#dropTable">dropTable</a></li><li><a href="global.html#getAllSongs">getAllSongs</a></li><li><a href="global.html#getOneSong">getOneSong</a></li><li><a href="global.html#initialize">initialize</a></li><li><a href="global.html#setConnection">setConnection</a></li><li><a href="global.html#updateSong">updateSong</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Thu May 19 2022 23:51:18 GMT-0400 (Eastern Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Fri May 20 2022 07:05:27 GMT-0400 (Eastern Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>

@@ -163,21 +163,14 @@ async function updateSong(userId, oldTitle, oldArtist, newTitle, newArtist, newG
     // Extract the song's id from the retrieved record to simplify the upcoming SQL Update query.
     let oldId = oldSong.id;
 
-    // let sql = "UPDATE Songs SET title = ?, artist = ?, genre = ?";
     let sql;
 
     if (newAlbum) {
-        // sql += ", album = \'" + connection.escape(newAlbum) + "\' "; // Update the album if the user specified a new value. Otherwise, leave it as-is.
         sql = "UPDATE Songs SET title = ?, artist = ?, genre = ?, album = ? WHERE id = ?";
     }
     else{
         sql = "UPDATE Songs SET title = ?, artist = ?, genre = ? WHERE id = ?";
     }
-
-    // sql += "WHERE id = " + oldId;
-    // "LIMIT 1";
-
-    // let sql = "UPDATE Songs SET title = ?, artist = ?, genre = ?"
 
     const results = await connection.query(sql, [newTitle, newArtist, newGenre, newAlbum, oldId])
         .catch((err) => {
@@ -211,9 +204,7 @@ async function updateSong(userId, oldTitle, oldArtist, newTitle, newArtist, newG
  * @throws DatabaseError if the database is inaccessible when called.
  */
 async function deleteSong(userId, title, artist) {
-    // To-Do: Validate passed userId.
-
-    // To-Do: Verify that the song to be deleted actually exists in the database. Throw an exception if it doesn't.
+    // Verify that the song to be deleted actually exists in the database. Throw an exception if it doesn't.
     const song = await getOneSong(userId, title, artist)
         .catch((err) => { throw err });
 
@@ -229,19 +220,24 @@ async function deleteSong(userId, title, artist) {
             throw new errorTypes.DatabaseError(err);
         });
 
+    // Query will return an object containing the number of affected rows.
     let affectedRows = results[0].affectedRows;
     if (affectedRows <= 0) {
+        // If no rows were affected, nothing was deleted. Throw an error.
         let errorMessage = "No records were deleted.";
         logger.error(errorMessage);
-        // To-Do: Throw appropriate error.
         throw new errorTypes.InvalidInputError(errorMessage);
     }
 
+    // Otherwise, log that the deletion was carried out successfully and return the representation of the deleted song.
     logger.info("Deletion successful.");
     return song;
 }
 //#endregion
 
+/**
+ * Drops the Songs table from the database.
+ */
 async function dropTable() {
     const clearAll = "drop table if exists Songs;";
     await connection.execute(clearAll)
@@ -249,6 +245,11 @@ async function dropTable() {
         .catch((error) => { logger.error(error.message); })
 }
 
+/**
+ * Establishes a connection to the specified database.
+ * @param {*} db The name of the database.
+ * @throws DatabaseError if the connection could not be established.
+ */
 async function setConnection(db) {
 
     connection = await mysql.createConnection({
@@ -265,6 +266,9 @@ async function setConnection(db) {
 
 }
 
+/**
+ * Close the database connection.
+ */
 function closeConnection() {
     if (typeof connection != 'undefined') {
         connection.close();
@@ -276,6 +280,16 @@ function getConnection() {
 }
 
 
+/**
+ * Verifies that a passed song does not already exist in the specified user's collection. Throws an error if the song already exists.
+ * @param {*} title The song's title.
+ * @param {*} artist The artist who performed the song.
+ * @param {*} genre The song's genre.
+ * @param {*} album The song's album.
+ * @param {*} currentUserId The ID of the current user.
+ * @throws DatabaseError if the database could not be accessed.
+ * @throws InvalidInputError if the passed data is an exact match for an existing song.
+ */
 async function checkDuplicate(title, artist, genre, album, currentUserId) {
     let query = "select * from Songs where title = ? and artist = ? and genre = ? and album =? and userId=?;"
     let [rows, fields] = [];
