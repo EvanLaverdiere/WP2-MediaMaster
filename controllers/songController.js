@@ -79,6 +79,8 @@ async function showAddForm(req, res) {
  */
 async function allSongs(req, res) {
     try {
+        let userId = req.cookies.userId;
+        
         let theme = req.cookies.theme; if (theme == "light") lightTheme = true; else lightTheme = false;
         // If cookie is not set then redirect to login page
         var song = await model.getAllSongs(userId);
@@ -110,12 +112,13 @@ router.get('/songs', allSongs)
 async function getSong(req, res) {
     let targetTitle = req.query.title;
     let targetArtist = req.query.artist;
+    let userId = req.cookies.userId;
     let theme = req.cookies.theme; if (theme == "light") lightTheme = true; else lightTheme = false;
 
     // try{
     //     let {title, artist, genre, album} = await model.getOneSong(userId, targetTitle, targetArtist);
     try {
-        let { title, artist, genre, album } = await model.getOneSong(currentUserId, targetTitle, targetArtist);
+        let { title, artist, genre, album } = await model.getOneSong(userId, targetTitle, targetArtist);
         // RENDER NOT FINALIZED YET.
         let message = "Succesfully retrieved the song from your collection.";
         let song = {
@@ -171,10 +174,11 @@ async function editSong(req, res) {
     let newArtist = req.body.newArtist;
     let newGenre = req.body.newGenre;
     let newAlbum = req.body.newAlbum;
+    let userId = req.cookies.userId;
     let theme = req.cookies.theme; if (theme == "light") lightTheme = true; else lightTheme = false;
 
     try {
-        await model.updateSong(currentUserId, oldTitle, oldArtist, newTitle, newArtist, newGenre, newAlbum);
+        await model.updateSong(userId, oldTitle, oldArtist, newTitle, newArtist, newGenre, newAlbum);
         let message = `Successfully replaced ${oldTitle} by ${oldArtist} with ${newTitle} by ${newArtist}`;
 
         let tracker = manageTracker(req);
