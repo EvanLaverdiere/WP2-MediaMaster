@@ -100,13 +100,18 @@ router.get('/songs', allSongs)
 
 
 //#region GET song
-
+/**
+ * Tries to retrieve a specified song from the database, based on query parameters specified by the user and the value of the user's userId cookie.
+ * Renders a view displaying the song's record if it was successfully retrieved.
+ * Renders a view containing an appropriate error message if the passed queries are invalid,
+ * or if the database is inaccessible.
+ * @param {*} req The HTTP request. Must include a query string with parameters for title and artist, and must include a cookie for userId.
+ * @param {*} res The HTTP response to be sent once the request has been processed.
+ */
 async function getSong(req, res) {
     let targetTitle = req.query.title;
     let targetArtist = req.query.artist;
 
-    // try{
-    //     let {title, artist, genre, album} = await model.getOneSong(userId, targetTitle, targetArtist);
     try {
         let { title, artist, genre, album } = await model.getOneSong( req.cookies.userId, targetTitle, targetArtist);
 
@@ -201,17 +206,7 @@ async function editSong(req, res) {
 router.put('/song', editSong);
 
 async function editForm(req, res) {
-    // if(!req.cookies.tracker){
-    //     let tracker = createTracker("Bob", req);
-    //     res.cookie("tracker", JSON.stringify(tracker));
-    // }
-    // else{
-    //     let tracker = JSON.parse(req.cookies.tracker);
-    //     let updatedTracker = updateTracker(tracker, req);
-    //     if(updatedTracker != null){
-    //         res.cookie("tracker", JSON.stringify(updatedTracker));
-    //     }
-    // }
+
     let tracker = manageTracker(req);
     let session = await manageSession(req);
     if (session) {
@@ -221,9 +216,7 @@ async function editForm(req, res) {
     res.render('edit.hbs', editFormDetails(undefined, undefined, undefined, undefined, req));
 }
 
-// function showEditForm(res) {
-//     res.render('edit.hbs', editFormDetails());
-// }
+
 //#endregion
 
 //#region DELETE song
