@@ -68,7 +68,7 @@ async function authenticateUser(username, password, connection) {
         if(result[0].length == 0)
             throw new errorTypes.AuthenticationError("User not found in database");
 
-        if(await !bcrypt.compare(password, result[0][0].password))
+        if(!await bcrypt.compare(password, result[0][0].password))
             throw new errorTypes.AuthenticationError("Password is incorrect.");
 
         return { "username": result[0][0].username, "password": password };
