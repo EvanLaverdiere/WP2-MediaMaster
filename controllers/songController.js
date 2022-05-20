@@ -52,6 +52,11 @@ async function add(req, res) {
 }
 router.post('/song', add)
 
+/**
+ * Renders the form which lets a user add a song to their collection. Called by ShowForm().
+ * @param {*} req 
+ * @param {*} res 
+ */
 async function showAddForm(req, res) {
     let tracker = manageTracker(req);
     let session = await manageSession(req);
@@ -147,6 +152,11 @@ async function getSong(req, res) {
 }
 router.get('/song', getSong);
 
+/**
+ * Renders the form which lets the user retrieve a song from their collection. Called by ShowForm().
+ * @param {*} req 
+ * @param {*} res 
+ */
 async function getOneForm(req, res) {
     let tracker = manageTracker(req);
     let session = await manageSession(req);
@@ -215,6 +225,11 @@ async function editSong(req, res) {
 }
 router.put('/song', editSong);
 
+/**
+ * Renders a form which lets the user edit an existing song within their collection. Called by ShowForm().
+ * @param {*} req 
+ * @param {*} res 
+ */
 async function editForm(req, res) {
 
     let tracker = manageTracker(req);
@@ -273,6 +288,11 @@ async function deleteOneSong(req, res) {
 
 router.delete('/song', deleteOneSong);
 
+/**
+ * Renders a form which lets the user delete a song from their collection. Called by ShowForm().
+ * @param {*} req 
+ * @param {*} res 
+ */
 async function deleteForm(req, res){
 
     let tracker = manageTracker(req);
