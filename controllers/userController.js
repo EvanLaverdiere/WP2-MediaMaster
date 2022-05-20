@@ -7,8 +7,6 @@ const sessionModel = require('../models/sessionModelMySql');
 const errorTypes = require('../models/errorModel.js');
 // const { use } = require('../app');
 let lightTheme;
-let userName;
-let currentUser = "a";
 //#region SHOW FORMS
 
 function showLoginForm(request, response, notLoggedIn) {
@@ -66,7 +64,6 @@ async function addUser(request, response) {
         lightTheme = isLightTheme(request);
 
         const { username, password } = await model.addUser(usernameInput, passwordInput);
-        userName = username;
         response.status(200);
 
         response.render('login.hbs', {
@@ -229,6 +226,5 @@ function showUserForm(request, response, notLoggedIn) {
 module.exports = {
     router,
     routeRoot,
-    showUserForm,
-    currentUser
+    showUserForm
 }
