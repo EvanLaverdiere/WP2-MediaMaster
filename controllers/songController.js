@@ -120,12 +120,14 @@ async function getSong(req, res) {
 
         let tracker = manageTracker(req);
         let session = await manageSession(req);
+        
         if(session){
             res.cookie("sessionId", session.sessionId, {expires: session.closesAt});
         }
+        
         res.cookie("tracker", JSON.stringify(tracker));    
-
         res.render('getOne.hbs', getFormDetails(message, false, true, song, req));
+
     } catch (error) {
         if (error instanceof InvalidInputError) {
             res.status(404);
