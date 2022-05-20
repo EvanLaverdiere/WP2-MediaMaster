@@ -80,8 +80,9 @@ async function addSong(title, artist, genre, album, currentUserId) {
 /**
  * Retrieves all songs for certain user.
  * Throws if there are any errors (db/connection) when trying to retrieve the songs.
- * @param {Mandatory} currentUserId 
+ * @param {Mandatory} currentUserId The ID of the current user.
  * @returns A list of the user's songs.
+ * @throws DatabaseError if the database is inaccessible.
  */
 async function getAllSongs(currentUserId) {
     let query = "select title, artist, genre, album from Songs where userId=" + connection.escape(currentUserId) + ";";
