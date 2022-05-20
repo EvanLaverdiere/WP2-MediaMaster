@@ -79,9 +79,14 @@ async function showAddForm(req, res) {
  */
 async function allSongs(req, res) {
     try {
-        let theme = req.cookies.theme; if (theme == "light") lightTheme = true; else lightTheme = false;
+        let theme = req.cookies.theme; 
+        if (theme == "light") 
+            lightTheme = true; 
+        else 
+            lightTheme = false;
+
         // If cookie is not set then redirect to login page
-        var song = await model.getAllSongs(userId);
+        var song = await model.getAllSongs(req.cookies.userId);
 
         let tracker = manageTracker(req);
         let session = await manageSession(req);
@@ -397,7 +402,8 @@ async function showForm(request, response) {
     let theme = request.cookies.theme; if (theme == "light") lightTheme = true; else lightTheme = false;
     if (typeof request.cookies.userId === "undefined" && request.body.choice !== "register" && request.body.choice !== "login") {
         request.body.choice = 'login';
-        userController.showUserForm(request, response);
+        let notLoggedIn = true;
+        userController.showUserForm(request, response, notLoggedIn);
     }
     else {
         currentUserId = request.cookies.userId;
