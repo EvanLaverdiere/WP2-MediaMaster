@@ -56,6 +56,10 @@ input, textarea, select {
     border-collapse: collapse;
 
 }
+#imgSize{
+    width: 70% !important;
+    height: 70% !important;
+}
 
 #tableDiv{
     display: flex;
