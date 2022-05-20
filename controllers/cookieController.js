@@ -108,31 +108,42 @@ function manageTracker(req, username){
     return tracker;
 }
 
+/**
+ * Updates the sessionId cookie assigned to an HTTP request by retrieving information from the Sessions table.
+ * If the sessionId cookie is not present, due to being expired, function will delete the corresponding session
+ * record from the database.
+ * @param {*} req The HTTP request to be checked for a sessionId cookie.
+ * @returns The refreshed session if successful, or null otherwise.
+ */
 async function manageSession(req){
     try {
+        // Get the sessionId and userId cookies from the HTTP request.
         let sessionId = req.cookies.sessionId;
         let userId = req.cookies.userId;
 
         let userSession;
+        // Does the sessionId cookie exist?
         if(sessionId){
-            userSession = await sessionModel.getSession(sessionId);
+            userSession = await sessionModel.getSession(sessionId); // If so, get the corresponding session.
         }
         else{
-            userSession = await sessionModel.getSessionByUserId(userId);
+            userSession = await sessionModel.getSessionByUserId(userId); // If not, it must be expired. Get the session by userId instead.
         }
-        // let userSession = await sessionModel.getSession(sessionId);
     
+        // Has the session expired?
         if(await sessionModel.isExpired(userId)){
+            // If so, delete the corresponding session from the database.
             await sessionModel.deleteSessionByUserId(userId);
             return null;
         }
         else{
+            // Otherwise, update the existing session and return it.
             userSession = await sessionModel.refreshSession(userId, sessionId);
         }
         return userSession;
     } catch (error) {
         logger.error(error);
-        return null;
+        return null; // Return null if anything goes wrong.
     }    
 }
 
