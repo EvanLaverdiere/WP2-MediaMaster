@@ -104,7 +104,7 @@
     
 
     
-    <h4 class="name" id="addUser"><span class="type-signature">(async) </span>addUser<span class="signature">(username, password)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="add"><span class="type-signature">(async) </span>add<span class="signature">(req, res)</span><span class="type-signature"></span></h4>
     
 
     
@@ -112,7 +112,7 @@
 
 
 <div class="description">
-    Creates/Registers a user with a username and password.
+    Endpoint reached after user submits the add form to add a song.It reads the input from the user through the body of the request.And tells the model to add a song (model will decide to add it or not).After, it will render the add form again in case the user wants to keep adding songs.If there is an error or if the operation was successful an message will be rendered along with the form.
 </div>
 
 
@@ -148,13 +148,13 @@
 
         <tr>
             
-                <td class="name"><code>username</code></td>
+                <td class="name"><code>req</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">*</span>
 
 
             
@@ -164,20 +164,20 @@
 
             
 
-            <td class="description last">Username of user. Must not already exist in the database.</td>
+            <td class="description last"></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>password</code></td>
+                <td class="name"><code>res</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">*</span>
 
 
             
@@ -187,7 +187,7 @@
 
             
 
-            <td class="description last">Password of user. Must have a minimum length of 7.</td>
+            <td class="description last"></td>
         </tr>
 
     
@@ -228,117 +228,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="userModelMySql.js.html">userModelMySql.js</a>, <a href="userModelMySql.js.html#line69">line 69</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Throws:</h5>
-
-        
-
-    <div class="param-desc">
-    
-        InvalidInputError, DBConnectionError
-    
-    </div>
-
-
-    
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    The username and the hashed password.
-</div>
-
-
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="getConnection"><span class="type-signature"></span>getConnection<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Connects to a database provided by the user.
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="userModelMySql.js.html">userModelMySql.js</a>, <a href="userModelMySql.js.html#line14">line 14</a>
+        <a href="songController.js.html">songController.js</a>, <a href="songController.js.html#line24">line 24</a>
     </li></ul></dd>
     
 
@@ -363,16 +253,6 @@
 
 
 
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    The connection to the database.
-</div>
-
-
-
-    
 
 
 
@@ -384,7 +264,7 @@
     
 
     
-    <h4 class="name" id="getUser"><span class="type-signature">(async) </span>getUser<span class="signature">(username, password)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="allSongs"><span class="type-signature">(async) </span>allSongs<span class="signature">(req, res)</span><span class="type-signature"></span></h4>
     
 
     
@@ -392,7 +272,7 @@
 
 
 <div class="description">
-    Gets a user from the database if the credentials match.
+    This function is called, after the endpoint /songs is reached.This function renders the all hbs view, sending in all the songsSo the view can display it as a table.If an error occurs, it renders home page with an error message
 </div>
 
 
@@ -428,13 +308,13 @@
 
         <tr>
             
-                <td class="name"><code>username</code></td>
+                <td class="name"><code>req</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">*</span>
 
 
             
@@ -444,20 +324,20 @@
 
             
 
-            <td class="description last">Username of user. Must exist in the database.</td>
+            <td class="description last"></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>password</code></td>
+                <td class="name"><code>res</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">*</span>
 
 
             
@@ -467,7 +347,7 @@
 
             
 
-            <td class="description last">Password of user. Must match with the user's password in the database.</td>
+            <td class="description last"></td>
         </tr>
 
     
@@ -508,7 +388,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="userModelMySql.js.html">userModelMySql.js</a>, <a href="userModelMySql.js.html#line107">line 107</a>
+        <a href="songController.js.html">songController.js</a>, <a href="songController.js.html#line76">line 76</a>
     </li></ul></dd>
     
 
@@ -531,30 +411,8 @@
 
 
 
-<h5>Throws:</h5>
-
-        
-
-    <div class="param-desc">
-    
-        AuthenticationError, DBConnectionError
-    
-    </div>
 
 
-    
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    The username and the password.
-</div>
-
-
-
-    
 
 
 
@@ -566,7 +424,7 @@
     
 
     
-    <h4 class="name" id="getUserId"><span class="type-signature">(async) </span>getUserId<span class="signature">(username)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="deleteOneSong"><span class="type-signature">(async) </span>deleteOneSong<span class="signature">(req, res)</span><span class="type-signature"></span></h4>
     
 
     
@@ -574,7 +432,7 @@
 
 
 <div class="description">
-    Get a specific user id from a user.
+    Tries to delete a single song from the database, based on title and artist parameters passed in the request's body and on the value of the userId cookie.Renders a view displaying information about the deleted song if successful.Renders a view displaying an appropriate error message if the song could not be deleted or if the database is inaccessible.
 </div>
 
 
@@ -610,13 +468,13 @@
 
         <tr>
             
-                <td class="name"><code>username</code></td>
+                <td class="name"><code>req</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">int</span>
+<span class="param-type">*</span>
 
 
             
@@ -626,7 +484,30 @@
 
             
 
-            <td class="description last">Username of user. Must exist in the database.</td>
+            <td class="description last">The HTTP request. Its body must include parameters for title and artist.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>res</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The HTTP response to be sent once the request has been processed.</td>
         </tr>
 
     
@@ -667,7 +548,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="userModelMySql.js.html">userModelMySql.js</a>, <a href="userModelMySql.js.html#line132">line 132</a>
+        <a href="songController.js.html">songController.js</a>, <a href="songController.js.html#line240">line 240</a>
     </li></ul></dd>
     
 
@@ -692,16 +573,6 @@
 
 
 
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    The id of the user.
-</div>
-
-
-
-    
 
 
 
@@ -713,7 +584,7 @@
     
 
     
-    <h4 class="name" id="initialize"><span class="type-signature">(async) </span>initialize<span class="signature">(dbname, reset)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="editSong"><span class="type-signature">(async) </span>editSong<span class="signature">(req, res)</span><span class="type-signature"></span></h4>
     
 
     
@@ -721,7 +592,7 @@
 
 
 <div class="description">
-    Initializes the connection to the indicated database dbname.   Injects database name so we can use this model for both  testing and main program without overwriting our main database.
+    Tries to edit an existing song within the database, replacing its original values with new ones based on parameters in the request's body and the userId cookie.Renders a view displaying the new values of the modified record if it was successfully updated.Renders a view displaying an appropriate error message if any of the passed parameters is invalid,or if the database is inaccessible.
 </div>
 
 
@@ -757,13 +628,13 @@
 
         <tr>
             
-                <td class="name"><code>dbname</code></td>
+                <td class="name"><code>req</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">*</span>
 
 
             
@@ -773,20 +644,20 @@
 
             
 
-            <td class="description last">The name of the database.</td>
+            <td class="description last">The HTTP request. Its body must include parameters for oldTitle, oldArtist, newTitle, newArtist, newGenre, and (optionally) newAlbum. It must include a userId cookie.</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>reset</code></td>
+                <td class="name"><code>res</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">boolean</span>
+<span class="param-type">*</span>
 
 
             
@@ -796,7 +667,7 @@
 
             
 
-            <td class="description last">If reset is true, then all existing data in the database is erased and a fresh table created.</td>
+            <td class="description last">The HTTP response to be sent once the request has been processed.</td>
         </tr>
 
     
@@ -837,7 +708,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="userModelMySql.js.html">userModelMySql.js</a>, <a href="userModelMySql.js.html#line27">line 27</a>
+        <a href="songController.js.html">songController.js</a>, <a href="songController.js.html#line172">line 172</a>
     </li></ul></dd>
     
 
@@ -860,18 +731,254 @@
 
 
 
-<h5>Throws:</h5>
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="getSong"><span class="type-signature">(async) </span>getSong<span class="signature">(req, res)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Tries to retrieve a specified song from the database, based on query parameters specified by the user and the value of the user's userId cookie.Renders a view displaying the song's record if it was successfully retrieved.Renders a view containing an appropriate error message if the passed queries are invalid,or if the database is inaccessible.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
 
         
 
-    <div class="param-desc">
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
     
-        DBConnectionError is there are any issues.
-    
-    </div>
+
+        <tr>
+            
+                <td class="name"><code>req</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
 
 
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The HTTP request. Must include a query string with parameters for title and artist, and must include a cookie for userId.</td>
+        </tr>
+
     
+
+        <tr>
+            
+                <td class="name"><code>res</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The HTTP response to be sent once the request has been processed.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="songController.js.html">songController.js</a>, <a href="songController.js.html#line112">line 112</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="showForm"><span class="type-signature">(async) </span>showForm<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Show the appropriate form based on user choice
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="songController.js.html">songController.js</a>, <a href="songController.js.html#line405">line 405</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -895,13 +1002,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#addUser">addUser</a></li><li><a href="global.html#getConnection">getConnection</a></li><li><a href="global.html#getUser">getUser</a></li><li><a href="global.html#getUserId">getUserId</a></li><li><a href="global.html#initialize">initialize</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#add">add</a></li><li><a href="global.html#allSongs">allSongs</a></li><li><a href="global.html#deleteOneSong">deleteOneSong</a></li><li><a href="global.html#editSong">editSong</a></li><li><a href="global.html#getSong">getSong</a></li><li><a href="global.html#showForm">showForm</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Fri May 20 2022 07:09:02 GMT-0400 (Eastern Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Fri May 20 2022 07:13:15 GMT-0400 (Eastern Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>
