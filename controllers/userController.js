@@ -70,7 +70,6 @@ function showProfile(request, response) {
         icon: "images/favicon.ico",
         username: request.cookies.username,
         colors: colors,
-        languages: ["English", "French"],
         logged: true,
         light: lightTheme
     });
@@ -154,7 +153,9 @@ router.post('/users', addUser);
 
 /**
  * Endpoint function for getting a user from the database.
- * Called when the login form is submitted.
+ * Called when the login form is submitted. 
+ * If user was successfully logged, it sets the appropiate cookies
+ * (userId, tracker, username, sessionId). And renders the user's profile.
  * @param {*} request The request from the client.
  * @param {*} response The response from the server.
  */
@@ -233,6 +234,11 @@ async function getUser(request, response) {
 }
 router.post('/user', getUser);
 
+/**
+ * Checks whether or not the theme cookie is light.
+ * @param {*} req The request from the client.
+ * @returns True if the theme cookie is "light", false otherwise
+ */
 function isLightTheme(req) {
     if (req.cookies.theme == "light")
         return true;
@@ -244,6 +250,12 @@ function isLightTheme(req) {
 
 // #region Logout
 
+/**
+ * Renders the login form, in case the user wants to login on another account.
+ * The cookies are removed from a external script.
+ * @param {Mandatory} req 
+ * @param {Mandatory} res 
+ */
 function logout(req, res) {
     lightTheme = isLightTheme(req);
     res.render('login.hbs', {
@@ -255,8 +267,6 @@ function logout(req, res) {
             light: lightTheme
     })
 }
-
-// 
 
 /**
  * Loads register, login or user profile page based on the client request.

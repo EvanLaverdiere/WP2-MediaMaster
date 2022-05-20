@@ -41,6 +41,8 @@ function sunF(e) {
 }
 
 function logout() {
-    document.cookie = "userId=1;expires=Thu, 18 Dec 2013 12:00:00 UTC";
-    document.cookie = "username=Bob;expires=Thu, 18 Dec 2013 12:00:00 UTC";
+    document.cookie = "userId=;expires=Thu, 18 Dec 2013 12:00:00 UTC";
+    document.cookie = "username=;expires=Thu, 18 Dec 2013 12:00:00 UTC";
+    document.cookie = "tracker=;expires=Thu, 18 Dec 2013 12:00:00 UTC";
+    document.cookie = "sesionId=;expires=Thu, 18 Dec 2013 12:00:00 UTC";
 }
