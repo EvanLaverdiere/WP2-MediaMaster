@@ -41,7 +41,7 @@ async function initialize(dbname, reset) {
 
             const dropSessions = "DROP TABLE IF EXISTS sessions;";
             await connection.execute(dropSessions);
-            
+
             const dropUsers = "DROP TABLE IF EXISTS users;";
             await connection.execute(dropUsers);
             // logger.info("Table song dropped");
@@ -74,7 +74,7 @@ async function addUser(username, password) {
 
     //validate the username: make sure its unique (doesn't already exist)
     let validatedUsername = await validate.validateUniqueUser(username, connection);
-    if(!validatedUsername)
+    if (!validatedUsername)
         throw new errorTypes.UserAlreadyExistsError("User already exists.");
 
     //hash the password
@@ -101,26 +101,24 @@ async function addUser(username, password) {
  * Gets a user from the database if the credentials match.
  * @param {string} username Username of user. Must exist in the database.
  * @param {string} password Password of user. Must match with the user's password in the database.
+ * @returns The username and the password.
+ * @throws AuthenticationError, DBConnectionError
  */
 async function getUser(username, password) {
 
-    //check if username and password match in db
-    let validated = await validate.authenticateUser(username, password, connection);
-    if (!validated)
-        throw new errorTypes.AuthenticationError("Username and/or password are invalid.");
-
-    //command to get user from database
-    let sqlQuery = "SELECT username, password FROM users WHERE username = "
-        + connection.escape(username);
-
     try {
-        //execute the command
-        const [rows, fields] = await connection.execute(sqlQuery);
-        logger.info("User " + username + " successfully found!");
+        //check if username and password match in db
+        let validateUser = await validate.authenticateUser(username, password, connection);
+        if (validateUser.username != username || validateUser.password != password)
+            throw new errorTypes.AuthenticationError("Username and/or password are invalid.");
 
-        return { "username": rows[0].username, "password": rows[0].password };
+        return { "username": validateUser.username, "password": validateUser.password };
     }
+
     catch (error) {
+        if(error instanceof errorTypes.AuthenticationError)
+            throw error;
+
         logger.error(error);
         throw new errorTypes.DatabaseError("Something wrong happened in the database.");
     }
@@ -131,16 +129,16 @@ async function getUser(username, password) {
  * @param {int} username Username of user. Must exist in the database.
  * @returns The id of the user.
  */
-async function getUserId(username){
+async function getUserId(username) {
     let sql = "SELECT userId FROM users WHERE username = ?";
 
     let [records, metadata] = await connection.query(sql, [username])
-    .catch((err) => {
-        logger.error(err);
-        throw new errorTypes.DatabaseError(err);
-    });
+        .catch((err) => {
+            logger.error(err);
+            throw new errorTypes.DatabaseError(err);
+        });
 
-    if(records.length == 0){
+    if (records.length == 0) {
         let errorMessage = "No such user exists.";
         logger.error(errorMessage);
         throw new errorTypes.AuthenticationError(errorMessage);
