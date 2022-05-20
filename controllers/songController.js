@@ -28,12 +28,11 @@ async function add(req, res) {
     let artist = req.body.artist; 
     let genre = req.body.genres;
     let album = req.body.album; 
-    let userId = req.cookies.userId;
     let theme = req.cookies.theme;
 
     if (theme == "light") lightTheme = true; else lightTheme = false;
     try {
-        var result = await model.addSong(title, artist, genre, album, userId);
+        var result = await model.addSong(title, artist, genre, album, req.cookies.userId);
         if (result == true) {
             let message = `Song [${title}] was successfully added`;
 
