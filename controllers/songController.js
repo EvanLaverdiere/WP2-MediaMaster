@@ -22,10 +22,10 @@ let lightTheme;
  * @param {*} res 
  */
 async function add(req, res) {
-    let title = req.body.title; 
-    let artist = req.body.artist; 
+    let title = req.body.title;
+    let artist = req.body.artist;
     let genre = req.body.genres;
-    let album = req.body.album; 
+    let album = req.body.album;
 
     try {
         var result = await model.addSong(title, artist, genre, album, req.cookies.userId);
@@ -35,8 +35,8 @@ async function add(req, res) {
 
             let tracker = manageTracker(req);
             let session = await manageSession(req);
-            if(session){
-                res.cookie("sessionId", session.sessionId, {expires: session.closesAt});
+            if (session) {
+                res.cookie("sessionId", session.sessionId, { expires: session.closesAt });
             }
             res.cookie("tracker", JSON.stringify(tracker));
 
@@ -60,8 +60,8 @@ router.post('/song', add)
 async function showAddForm(req, res) {
     let tracker = manageTracker(req);
     let session = await manageSession(req);
-    if(session){
-        res.cookie("sessionId", session.sessionId, {expires: session.closesAt});
+    if (session) {
+        res.cookie("sessionId", session.sessionId, { expires: session.closesAt });
     }
     res.cookie("tracker", JSON.stringify(tracker));
     res.render('add.hbs', addFormDetails(undefined, undefined, undefined, req));
@@ -80,17 +80,17 @@ async function showAddForm(req, res) {
  */
 async function allSongs(req, res) {
     try {
-        lightTheme=isLightTheme(req);
+        lightTheme = isLightTheme(req);
 
         var song = await model.getAllSongs(req.cookies.userId);
 
         let tracker = manageTracker(req);
         let session = await manageSession(req);
-        if(session){
-            res.cookie("sessionId", session.sessionId, {expires: session.closesAt});
+        if (session) {
+            res.cookie("sessionId", session.sessionId, { expires: session.closesAt });
         }
         res.cookie("tracker", JSON.stringify(tracker));
-    
+
         res.render('all.hbs', { icon: "images/favicon.ico", song, logged: true, light: lightTheme, username: req.cookies.username });
     } catch (error) {
         let errorMessage;
@@ -119,7 +119,7 @@ async function getSong(req, res) {
     let targetArtist = req.query.artist;
 
     try {
-        let { title, artist, genre, album } = await model.getOneSong( req.cookies.userId, targetTitle, targetArtist);
+        let { title, artist, genre, album } = await model.getOneSong(req.cookies.userId, targetTitle, targetArtist);
 
         let message = "Succesfully retrieved the song from your collection.";
         let song = {
@@ -131,12 +131,12 @@ async function getSong(req, res) {
 
         let tracker = manageTracker(req);
         let session = await manageSession(req);
-        
-        if(session){
-            res.cookie("sessionId", session.sessionId, {expires: session.closesAt});
+
+        if (session) {
+            res.cookie("sessionId", session.sessionId, { expires: session.closesAt });
         }
 
-        res.cookie("tracker", JSON.stringify(tracker));    
+        res.cookie("tracker", JSON.stringify(tracker));
         res.render('getOne.hbs', getFormDetails(message, false, true, song, req));
 
     } catch (error) {
@@ -193,29 +193,25 @@ async function editSong(req, res) {
 
         let tracker = manageTracker(req);
         let session = await manageSession(req);
-        if(session){
-            res.cookie("sessionId", session.sessionId, {expires: session.closesAt});
+        if (session) {
+            res.cookie("sessionId", session.sessionId, { expires: session.closesAt });
         }
         res.cookie("tracker", JSON.stringify(tracker));
 
         res.render('edit.hbs', editFormDetails(message, false, true, {
             title: newTitle,
             artist: newArtist,
-            
+
             genre: newGenre,
             album: newAlbum
         }, req));
     } catch (error) {
         if (error instanceof InvalidInputError) {
             res.status(404);
-            // RENDER NOT FINALIZED YET.
             let message = `404 Error: Could not update ${oldTitle} by ${oldArtist}: ` + error.message;
-
             res.render('edit.hbs', editFormDetails(message, true, undefined, undefined, req));
         }
         else if (error instanceof DatabaseError) {
-            // RENDER NOT FINALIZED YET.
-
             res.status(500);
             let message = "500 Error: Problem accessing database: " + error.message;
             res.render('edit.hbs', editFormDetails(message, true, undefined, undefined, req));
@@ -255,15 +251,15 @@ async function editForm(req, res) {
 async function deleteOneSong(req, res) {
     let title = req.body.title;
     let artist = req.body.artist;
-    lightTheme=isLightTheme(req);
+    lightTheme = isLightTheme(req);
 
     try {
         const deletedSong = await model.deleteSong(req.cookies.userId, title, artist);
 
         let tracker = manageTracker(req);
         let session = await manageSession(req);
-        if(session){
-            res.cookie("sessionId", session.sessionId, {expires: session.closesAt});
+        if (session) {
+            res.cookie("sessionId", session.sessionId, { expires: session.closesAt });
         }
         res.cookie("tracker", JSON.stringify(tracker));
 
@@ -271,14 +267,10 @@ async function deleteOneSong(req, res) {
     } catch (error) {
         if (error instanceof InvalidInputError) {
             res.status(404);
-            // RENDER NOT FINALIZED YET.
             let message = `404 Error: Could not delete ${title} by ${artist}: ` + error.message;
-
             res.render('delete.hbs', deleteFormDetails(message, true, undefined, undefined, req));
         }
         else if (error instanceof DatabaseError) {
-            // RENDER NOT FINALIZED YET.
-
             res.status(500);
             let message = "500 Error: Problem accessing database: " + error.message;
             res.render('delete.hbs', deleteFormDetails(message, true, undefined, undefined, req));
@@ -293,7 +285,7 @@ router.delete('/song', deleteOneSong);
  * @param {*} req 
  * @param {*} res 
  */
-async function deleteForm(req, res){
+async function deleteForm(req, res) {
 
     let tracker = manageTracker(req);
     let session = await manageSession(req);
@@ -313,7 +305,7 @@ function addFormDetails(message, error, success, request) {
     if (typeof message === 'undefined') message = false;
     if (typeof error === 'undefined') error = false;
     if (typeof success != true) successMessage = false;
-    lightTheme=isLightTheme(request);
+    lightTheme = isLightTheme(request);
     return pageData = {
         icon: "images/favicon.ico",
         message: message,
@@ -335,7 +327,7 @@ function getFormDetails(message, error, success, song, request) {
     if (typeof message === 'undefined') message = false;
     if (typeof error === 'undefined') error = false;
     if (typeof success != true) successMessage = false;
-    lightTheme=isLightTheme(request);
+    lightTheme = isLightTheme(request);
 
     return pageData = {
         icon: "images/favicon.ico",
@@ -359,7 +351,7 @@ function editFormDetails(message, error, success, song, request) {
     if (typeof message === 'undefined') message = false;
     if (typeof error === 'undefined') error = false;
     if (typeof success != true) successMessage = false;
-    lightTheme=isLightTheme(request);
+    lightTheme = isLightTheme(request);
 
     return pageData = {
         icon: "images/favicon.ico",
@@ -390,7 +382,7 @@ function deleteFormDetails(message, error, success, song, request) {
     if (typeof message === 'undefined') message = false;
     if (typeof error === 'undefined') error = false;
     if (typeof success != true) successMessage = false;
-    lightTheme=isLightTheme(request);
+    lightTheme = isLightTheme(request);
 
     return pageData = {
         icon: "images/favicon.ico",
@@ -416,8 +408,8 @@ function deleteFormDetails(message, error, success, song, request) {
 
 function isLightTheme(req) {
     if (req.cookies.theme == "light")
-        return true; 
-    else 
+        return true;
+    else
         return false;
 }
 
