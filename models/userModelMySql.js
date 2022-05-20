@@ -1,11 +1,11 @@
 const mysql = require('mysql2/promise');
 const validate = require('./validateUtils.js');
 const logger = require('../logger');
-const bcrypt = require('bcrypt'); //TODO: Document that you've added bcrypt module.
+const bcrypt = require('bcrypt');
 const errorTypes = require('./errorModel.js');
 
 var connection;
-const saltRounds = 10;
+const saltRounds = 10; //used for encrypting passwords
 
 /**
  * Connects to a database provided by the user.
@@ -34,7 +34,7 @@ async function initialize(dbname, reset) {
             database: dbname
         });
 
-        // Drop table if reset is true
+        // Drop tables if reset is true
         if (reset) {
             const dropSongs = "DROP TABLE IF EXISTS Songs;";
             await connection.execute(dropSongs);
@@ -61,8 +61,8 @@ async function initialize(dbname, reset) {
 
 /**
  * Creates/Registers a user with a username and password.
- * @param {*} username Username of user. Must not already exist in the database.
- * @param {*} password Password of user. Must have a minimum length of 7.
+ * @param {string} username Username of user. Must not already exist in the database.
+ * @param {string} password Password of user. Must have a minimum length of 7.
  * @returns The username and the hashed password.
  * @throws InvalidInputError, DBConnectionError
  */
@@ -84,10 +84,11 @@ async function addUser(username, password) {
     const sqlCommand = 'INSERT INTO users(username, password) VALUES ('
         + connection.escape(username) + ', ' + connection.escape(hashedPassword) + ')';
 
-    //execute command
     try {
+        //execute command
         await connection.execute(sqlCommand);
         logger.info("User " + username + " successfully registered!");
+
         return { "username": username, "password": hashedPassword }
     }
     catch (error) {
@@ -98,22 +99,25 @@ async function addUser(username, password) {
 
 /**
  * Gets a user from the database if the credentials match.
- * @param {*} username Username of user. Must exist in the database.
- * @param {*} password Password of user. Must match with the user's password in the database.
+ * @param {string} username Username of user. Must exist in the database.
+ * @param {string} password Password of user. Must match with the user's password in the database.
  */
 async function getUser(username, password) {
-    let validated = await validate.authenticateUser(username, password, connection);
 
     //check if username and password match in db
+    let validated = await validate.authenticateUser(username, password, connection);
     if (!validated)
         throw new errorTypes.AuthenticationError("Username and/or password are invalid.");
 
+    //command to get user from database
     let sqlQuery = "SELECT username, password FROM users WHERE username = "
         + connection.escape(username);
 
     try {
+        //execute the command
         const [rows, fields] = await connection.execute(sqlQuery);
         logger.info("User " + username + " successfully found!");
+
         return { "username": rows[0].username, "password": rows[0].password };
     }
     catch (error) {
@@ -122,6 +126,11 @@ async function getUser(username, password) {
     }
 }
 
+/**
+ * Get a specific user id from a user.
+ * @param {int} username Username of user. Must exist in the database.
+ * @returns The id of the user.
+ */
 async function getUserId(username){
     let sql = "SELECT userId FROM users WHERE username = ?";
 

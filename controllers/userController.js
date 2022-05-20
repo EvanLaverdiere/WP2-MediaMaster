@@ -5,18 +5,35 @@ const model = require('../models/userModelMySql');
 const cookieController = require('./cookieController');
 const sessionModel = require('../models/sessionModelMySql');
 const errorTypes = require('../models/errorModel.js');
-// const { use } = require('../app');
 let lightTheme;
+
 //#region SHOW FORMS
 
+/**
+ * Renders the login page.
+ * @param {*} request The request from the client.
+ * @param {*} response The response from the server.
+ * @param {*} notLoggedIn A flag indicating if the user is logged in or not.
+ */
 function showLoginForm(request, response, notLoggedIn) {
     response.render('login.hbs', pageData('user', notLoggedIn));
 }
 
+/**
+ * Renders the register page.
+ * @param {*} request The request from the client.
+ * @param {*} response The response from the server.
+ */
 function showRegisterForm(request, response) {
     response.render('register.hbs', pageData('users'));
 }
 
+/**
+ * Helper function for sending page data when loading a page.
+ * @param {string} endpoint Where the form page will be submitted.
+ * @param {boolean} notLoggedIn A flag indicating if the user is logged in or not.
+ * @returns 
+ */
 function pageData(endpoint, notLoggedIn) {
     let message;
 
@@ -33,6 +50,11 @@ function pageData(endpoint, notLoggedIn) {
     }
 }
 
+/**
+ * Renders the user profile page.
+ * @param {*} request The request from the client.
+ * @param {*} response The response from the server.
+ */
 function showProfile(request, response) {
     let colors = [];
     if (isLightTheme(request)) {
@@ -57,6 +79,12 @@ function showProfile(request, response) {
 
 //#region ENDPOINTS
 
+/**
+ * Endpoint function for adding a user to the database.
+ * Called when the register form is submitted.
+ * @param {*} request The request from the client.
+ * @param {*} response The response from the server.
+ */
 async function addUser(request, response) {
     try {
         const usernameInput = request.body.username;
@@ -124,6 +152,12 @@ async function addUser(request, response) {
 }
 router.post('/users', addUser);
 
+/**
+ * Endpoint function for getting a user from the database.
+ * Called when the login form is submitted.
+ * @param {*} request The request from the client.
+ * @param {*} response The response from the server.
+ */
 async function getUser(request, response) {
     try {
         let colors;
@@ -136,6 +170,7 @@ async function getUser(request, response) {
             lightTheme = false;
             colors = ["Dark", "Light"];
         }
+
         const usernameInput = request.body.username;
         const passwordInput = request.body.password;
 
@@ -143,6 +178,7 @@ async function getUser(request, response) {
         const userId = await model.getUserId(username);
         const tracker = await cookieController.manageTracker(request, username);
         const session = await sessionModel.addSession(userId);
+
         response.status(200);
         response.cookie("userId", userId);
         response.cookie("username", username);
@@ -205,6 +241,13 @@ function isLightTheme(req) {
 }
 
 //#endregion
+
+/**
+ * Loads register, login or user profile page based on the client request.
+ * @param {*} request The request from the client.
+ * @param {*} response The response from the server.
+ * @param {boolean} notLoggedIn A flag indicating if the user is logged in or not.
+ */
 function showUserForm(request, response, notLoggedIn) {
     lightTheme = isLightTheme(request);
 
