@@ -29,6 +29,7 @@ async function add(req, res) {
 
     try {
         var result = await model.addSong(title, artist, genre, album, req.cookies.userId);
+
         if (result == true) {
             let message = `Song [${title}] was successfully added`;
 
