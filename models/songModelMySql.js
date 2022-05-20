@@ -49,11 +49,11 @@ async function initialize(db, reset) {
  * The song corresponds (is tied with a userId) with a user from the users table.
  * Throws if the title is not alphanumeric, if the song already exists.
  * And, if there are any issues with the database/connection trying to execute the insert query.
- * @param {Mandatory} title 
- * @param {Mandatory} artist 
- * @param {Mandatory} genre 
- * @param {Optional} album 
- * @param {Mandatory} currentUserId 
+ * @param {Mandatory} title The song's title.
+ * @param {Mandatory} artist The artist who performed the song.
+ * @param {Mandatory} genre The song's genre.
+ * @param {Optional} album The song's album.
+ * @param {Mandatory} currentUserId The ID of the user to whom this song belongs.
  * @returns A boolean indicating if the operation was successful
  */
 async function addSong(title, artist, genre, album, currentUserId) {
