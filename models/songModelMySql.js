@@ -320,16 +320,8 @@ let allGenres = () => ["Alternative",
     "World"
 ];
 
-async function getAllTitles(userId) {
-    try {
-        let sql = "SELECT title FROM Songs WHERE userId = " + userId;
-        let results = await connection.query(sql);
-        return results[0];
-    } catch (error) {
-        // Fail gracefully.
-    }
-}
 
-module.exports = { initialize, addSong, getAllSongs, getOneSong, updateSong, deleteSong, closeConnection, getConnection, allGenres, getAllTitles }
+
+module.exports = { initialize, addSong, getAllSongs, getOneSong, updateSong, deleteSong, closeConnection, getConnection, allGenres }
 
 
