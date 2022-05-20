@@ -10,6 +10,11 @@ class Tracker{
     }
 }
 
+/**
+ * Displays the site's home page.
+ * @param {*} req 
+ * @param {*} res 
+ */
 function renderHome(req, res) {
     let logged;
     if (typeof (req.cookies.username) != 'undefined')
@@ -28,6 +33,11 @@ function renderHome(req, res) {
 }
 router.get('/home', renderHome)
 
+/**
+ * Displays the About Us page.
+ * @param {*} req 
+ * @param {*} res 
+ */
 function renderAbout(req, res) {
     let logged;
     if (typeof (req.cookies.username) != 'undefined')

@@ -112,11 +112,7 @@
 
 
 <div class="description">
-    Endpoint reached after user submits the add form to add a song.
-It reads the input from the user through the body of the request.
-And tells the model to add a song (model will decide to add it or not).
-After, it will render the add form again in case the user wants to keep adding songs.
-If there is an error or if the operation was successful an message will be rendered along with the form.
+    Endpoint reached after user submits the add form to add a song.It reads the input from the user through the body of the request.And tells the model to add a song (model will decide to add it or not).After, it will render the add form again in case the user wants to keep adding songs.If there is an error or if the operation was successful an message will be rendered along with the form.
 </div>
 
 
@@ -425,12 +421,7 @@ If there is an error or if the operation was successful an message will be rende
 
 
 <div class="description">
-    Adds a song to the Songs table. 
-It only gets added if a song with the exact same datails does not already exists.
-And, if the title is alphanumeric.
-The song corresponds (is tied with a userId) with a user from the users table.
-Throws if the title is not alphanumeric, if the song already exists.
-And, if there are any issues with the database/connection trying to execute the insert query.
+    Adds a song to the Songs table. It only gets added if a song with the exact same datails does not already exists.And, if the title is alphanumeric.The song corresponds (is tied with a userId) with a user from the users table.Throws if the title is not alphanumeric, if the song already exists.And, if there are any issues with the database/connection trying to execute the insert query.
 </div>
 
 
@@ -669,8 +660,7 @@ And, if there are any issues with the database/connection trying to execute the 
 
 
 <div class="description">
-    Endpoint function for adding a user to the database.
-Called when the register form is submitted.
+    Endpoint function for adding a user to the database.Called when the register form is submitted.
 </div>
 
 
@@ -1012,10 +1002,7 @@ Called when the register form is submitted.
 
 
 <div class="description">
-    This function is called, after the endpoint /songs is reached.
-This function renders the all hbs view, sending in all the songs
-So the view can display it as a table.
-If an error occurs, it renders home page with an error message
+    This function is called, after the endpoint /songs is reached.This function renders the all hbs view, sending in all the songsSo the view can display it as a table.If an error occurs, it renders home page with an error message
 </div>
 
 
@@ -2070,9 +2057,7 @@ If an error occurs, it renders home page with an error message
 
 
 <div class="description">
-    Tries to delete a single song from the database, based on title and artist parameters passed in the request's body and on the value of the userId cookie.
-Renders a view displaying information about the deleted song if successful.
-Renders a view displaying an appropriate error message if the song could not be deleted or if the database is inaccessible.
+    Tries to delete a single song from the database, based on title and artist parameters passed in the request's body and on the value of the userId cookie.Renders a view displaying information about the deleted song if successful.Renders a view displaying an appropriate error message if the song could not be deleted or if the database is inaccessible.
 </div>
 
 
@@ -2853,11 +2838,7 @@ Renders a view displaying an appropriate error message if the song could not be 
 
 
 <div class="description">
-    Tries to edit an existing song within the database, replacing its original values 
-with new ones based on parameters in the request's body and the userId cookie.
-Renders a view displaying the new values of the modified record if it was successfully updated.
-Renders a view displaying an appropriate error message if any of the passed parameters is invalid,
-or if the database is inaccessible.
+    Tries to edit an existing song within the database, replacing its original values with new ones based on parameters in the request's body and the userId cookie.Renders a view displaying the new values of the modified record if it was successfully updated.Renders a view displaying an appropriate error message if any of the passed parameters is invalid,or if the database is inaccessible.
 </div>
 
 
@@ -3017,8 +2998,7 @@ or if the database is inaccessible.
 
 
 <div class="description">
-    If the url entered by the user is not a valid enpoint, -
-it will get to this endpoint and respond with a 404 error code
+    If the url entered by the user is not a valid enpoint, -it will get to this endpoint and respond with a 404 error code
 </div>
 
 
@@ -3178,8 +3158,7 @@ it will get to this endpoint and respond with a 404 error code
 
 
 <div class="description">
-    Retrieves all songs for certain user.
-Throws if there are any errors (db/connection) when trying to retrieve the songs.
+    Retrieves all songs for certain user.Throws if there are any errors (db/connection) when trying to retrieve the songs.
 </div>
 
 
@@ -4136,10 +4115,7 @@ Throws if there are any errors (db/connection) when trying to retrieve the songs
 
 
 <div class="description">
-    Tries to retrieve a specified song from the database, based on query parameters specified by the user and the value of the user's userId cookie.
-Renders a view displaying the song's record if it was successfully retrieved.
-Renders a view containing an appropriate error message if the passed queries are invalid,
-or if the database is inaccessible.
+    Tries to retrieve a specified song from the database, based on query parameters specified by the user and the value of the user's userId cookie.Renders a view displaying the song's record if it was successfully retrieved.Renders a view containing an appropriate error message if the passed queries are invalid,or if the database is inaccessible.
 </div>
 
 
@@ -4299,8 +4275,7 @@ or if the database is inaccessible.
 
 
 <div class="description">
-    Endpoint function for getting a user from the database.
-Called when the login form is submitted.
+    Endpoint function for getting a user from the database.Called when the login form is submitted.
 </div>
 
 
@@ -4811,9 +4786,7 @@ Called when the login form is submitted.
 
 
 <div class="description">
-    Initializes the database connection and creates if it does not exist the Songs table.
-It also first initializes the user model connection.
-Throws if there any errors while trying to execute the queries.
+    Initializes the database connection and creates if it does not exist the Songs table.It also first initializes the user model connection.Throws if there any errors while trying to execute the queries.
 </div>
 
 
@@ -4973,9 +4946,7 @@ Throws if there any errors while trying to execute the queries.
 
 
 <div class="description">
-    Initializes the connection to the indicated database dbname.  
- Injects database name so we can use this model for both 
- testing and main program without overwriting our main database.
+    Initializes the connection to the indicated database dbname.   Injects database name so we can use this model for both  testing and main program without overwriting our main database.
 </div>
 
 
@@ -5316,9 +5287,7 @@ Throws if there any errors while trying to execute the queries.
 
 
 <div class="description">
-    Updates the sessionId cookie assigned to an HTTP request by retrieving information from the Sessions table.
-If the sessionId cookie is not present, due to being expired, function will delete the corresponding session
-record from the database.
+    Updates the sessionId cookie assigned to an HTTP request by retrieving information from the Sessions table.If the sessionId cookie is not present, due to being expired, function will delete the corresponding sessionrecord from the database.
 </div>
 
 
@@ -5956,6 +5925,326 @@ record from the database.
 
 
     
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="renderAbout"><span class="type-signature"></span>renderAbout<span class="signature">(req, res)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Displays the About Us page.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>req</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>res</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="controllers_homeController.js.html">controllers/homeController.js</a>, <a href="controllers_homeController.js.html#line41">line 41</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="renderHome"><span class="type-signature"></span>renderHome<span class="signature">(req, res)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Displays the site's home page.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>req</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>res</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="controllers_homeController.js.html">controllers/homeController.js</a>, <a href="controllers_homeController.js.html#line18">line 18</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -8512,13 +8801,13 @@ record from the database.
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Tracker.html">Tracker</a></li></ul><h3>Global</h3><ul><li><a href="global.html#add">add</a></li><li><a href="global.html#addSession">addSession</a></li><li><a href="global.html#addSong">addSong</a></li><li><a href="global.html#addUser">addUser</a></li><li><a href="global.html#allSongs">allSongs</a></li><li><a href="global.html#authenticateUser">authenticateUser</a></li><li><a href="global.html#checkDuplicate">checkDuplicate</a></li><li><a href="global.html#closeConnection">closeConnection</a></li><li><a href="global.html#createTracker">createTracker</a></li><li><a href="global.html#deleteOneSong">deleteOneSong</a></li><li><a href="global.html#deleteSession">deleteSession</a></li><li><a href="global.html#deleteSessionByUserId">deleteSessionByUserId</a></li><li><a href="global.html#deleteSong">deleteSong</a></li><li><a href="global.html#dropTable">dropTable</a></li><li><a href="global.html#editSong">editSong</a></li><li><a href="global.html#errorResponse">errorResponse</a></li><li><a href="global.html#getAllSongs">getAllSongs</a></li><li><a href="global.html#getConnection">getConnection</a></li><li><a href="global.html#getCurrentPage">getCurrentPage</a></li><li><a href="global.html#getOneSong">getOneSong</a></li><li><a href="global.html#getSession">getSession</a></li><li><a href="global.html#getSessionByUserId">getSessionByUserId</a></li><li><a href="global.html#getSong">getSong</a></li><li><a href="global.html#getUser">getUser</a></li><li><a href="global.html#getUserId">getUserId</a></li><li><a href="global.html#initialize">initialize</a></li><li><a href="global.html#isExpired">isExpired</a></li><li><a href="global.html#manageSession">manageSession</a></li><li><a href="global.html#manageTracker">manageTracker</a></li><li><a href="global.html#pageData">pageData</a></li><li><a href="global.html#refreshSession">refreshSession</a></li><li><a href="global.html#setConnection">setConnection</a></li><li><a href="global.html#showForm">showForm</a></li><li><a href="global.html#showLoginForm">showLoginForm</a></li><li><a href="global.html#showProfile">showProfile</a></li><li><a href="global.html#showRegisterForm">showRegisterForm</a></li><li><a href="global.html#showUserForm">showUserForm</a></li><li><a href="global.html#updateSession">updateSession</a></li><li><a href="global.html#updateSong">updateSong</a></li><li><a href="global.html#updateTracker">updateTracker</a></li><li><a href="global.html#validatePassword">validatePassword</a></li><li><a href="global.html#validateSong">validateSong</a></li><li><a href="global.html#validateUniqueUser">validateUniqueUser</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Tracker.html">Tracker</a></li></ul><h3>Global</h3><ul><li><a href="global.html#add">add</a></li><li><a href="global.html#addSession">addSession</a></li><li><a href="global.html#addSong">addSong</a></li><li><a href="global.html#addUser">addUser</a></li><li><a href="global.html#allSongs">allSongs</a></li><li><a href="global.html#authenticateUser">authenticateUser</a></li><li><a href="global.html#checkDuplicate">checkDuplicate</a></li><li><a href="global.html#closeConnection">closeConnection</a></li><li><a href="global.html#createTracker">createTracker</a></li><li><a href="global.html#deleteOneSong">deleteOneSong</a></li><li><a href="global.html#deleteSession">deleteSession</a></li><li><a href="global.html#deleteSessionByUserId">deleteSessionByUserId</a></li><li><a href="global.html#deleteSong">deleteSong</a></li><li><a href="global.html#dropTable">dropTable</a></li><li><a href="global.html#editSong">editSong</a></li><li><a href="global.html#errorResponse">errorResponse</a></li><li><a href="global.html#getAllSongs">getAllSongs</a></li><li><a href="global.html#getConnection">getConnection</a></li><li><a href="global.html#getCurrentPage">getCurrentPage</a></li><li><a href="global.html#getOneSong">getOneSong</a></li><li><a href="global.html#getSession">getSession</a></li><li><a href="global.html#getSessionByUserId">getSessionByUserId</a></li><li><a href="global.html#getSong">getSong</a></li><li><a href="global.html#getUser">getUser</a></li><li><a href="global.html#getUserId">getUserId</a></li><li><a href="global.html#initialize">initialize</a></li><li><a href="global.html#isExpired">isExpired</a></li><li><a href="global.html#manageSession">manageSession</a></li><li><a href="global.html#manageTracker">manageTracker</a></li><li><a href="global.html#pageData">pageData</a></li><li><a href="global.html#refreshSession">refreshSession</a></li><li><a href="global.html#renderAbout">renderAbout</a></li><li><a href="global.html#renderHome">renderHome</a></li><li><a href="global.html#setConnection">setConnection</a></li><li><a href="global.html#showForm">showForm</a></li><li><a href="global.html#showLoginForm">showLoginForm</a></li><li><a href="global.html#showProfile">showProfile</a></li><li><a href="global.html#showRegisterForm">showRegisterForm</a></li><li><a href="global.html#showUserForm">showUserForm</a></li><li><a href="global.html#updateSession">updateSession</a></li><li><a href="global.html#updateSong">updateSong</a></li><li><a href="global.html#updateTracker">updateTracker</a></li><li><a href="global.html#validatePassword">validatePassword</a></li><li><a href="global.html#validateSong">validateSong</a></li><li><a href="global.html#validateUniqueUser">validateUniqueUser</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Fri May 20 2022 08:11:02 GMT-0400 (Eastern Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Fri May 20 2022 08:24:50 GMT-0400 (Eastern Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>

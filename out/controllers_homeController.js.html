@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: controllers/errorController.js</title>
+    <title>JSDoc: Source: controllers/homeController.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: controllers/errorController.js</h1>
+    <h1 class="page-title">Source: controllers/homeController.js</h1>
 
     
 
@@ -26,28 +26,73 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>const { request } = require('express');
-const express = require('express');
+            <pre class="prettyprint source linenums"><code>const express = require('express');
 const router = express.Router();
 const routeRoot = '/';
+const model = require('../models/songModelMySql')
+let i ="images/"
+const images=[i+"img2.jpg",i+"img3.jpg",i+"img1.jpg",i+"img4.jpg"];
+class Tracker{
+    constructor(username){
+        this.username = username
+    }
+}
 
 /**
- * If the url entered by the user is not a valid enpoint, -
- * it will get to this endpoint and respond with a 404 error code
- * @param {response} req 
- * @param {request} res 
+ * Displays the site's home page.
+ * @param {*} req 
+ * @param {*} res 
  */
-function errorResponse(req,res) {
-    res.statusCode=404;
-    res.render('error.hbs',
-        {
-            message:"Error 404 Not Found: The site you were trying to visit could not be found"
-        })
+function renderHome(req, res) {
+    let logged;
+    if (typeof (req.cookies.username) != 'undefined')
+        logged = true;
+    let theme = req.cookies.theme;  if(theme=="light")theme=true;else theme=false;
+
+    res.render('home.hbs',
+    {
+        icon: "images/favicon.ico",
+        logged: logged,
+        username:req.cookies.username,
+        light: theme,
+        first:"images/img0.jpg",
+        images:images
+    })
 }
-router.all('*',errorResponse);
+router.get('/home', renderHome)
+
+/**
+ * Displays the About Us page.
+ * @param {*} req 
+ * @param {*} res 
+ */
+function renderAbout(req, res) {
+    let logged;
+    if (typeof (req.cookies.username) != 'undefined')
+        logged = true;
+    let theme = req.cookies.theme;  if(theme=="light")theme=true;else theme=false;
+
+    let message ="This website was created by Evan, Jeremy and Julian.\nWe are cegep students from John Abbot College and this is our Web Programming final project."
+    +" We created Media Master since we wanted to create a website that allow users "+
+    "to have their own song collections. In which they can store, delete, update and view songs from their collection."+
+    " So they can keep track of their music. In order to access to these functionalities, every user needs to be signed in in their account."+
+    " And so, every user can create their account, providing a username and password.";
+    res.render('aboutUs.hbs',{
+        icon: "images/favicon.ico",
+        message,
+        theme: theme,
+        logged: logged,
+        username: req.cookies.username,
+        light: theme
+    })
+}
+router.get('/aboutUs', renderAbout)
+
+
+
 module.exports = {
- router,
- routeRoot
+    router,
+    routeRoot
 }
 </code></pre>
         </article>
