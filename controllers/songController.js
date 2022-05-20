@@ -124,18 +124,18 @@ async function getSong(req, res) {
         if(session){
             res.cookie("sessionId", session.sessionId, {expires: session.closesAt});
         }
-        
+
         res.cookie("tracker", JSON.stringify(tracker));    
         res.render('getOne.hbs', getFormDetails(message, false, true, song, req));
 
     } catch (error) {
         if (error instanceof InvalidInputError) {
             res.status(404);
-            res.render('getOne.hbs', getFormDetails("404 Error: " + error.message, true, false, req));
+            res.render('getOne.hbs', getFormDetails("404 Error: " + error.message, true, false, undefined, req));
         }
         else if (error instanceof DatabaseError) {
             res.status(500);
-            res.render('getOne.hbs', getFormDetails("500 Error: " + error.message, true, false, req));
+            res.render('getOne.hbs', getFormDetails("500 Error: " + error.message, true, false, undefined, req));
         }
     }
 }
