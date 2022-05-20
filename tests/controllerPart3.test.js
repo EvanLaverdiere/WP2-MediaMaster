@@ -88,7 +88,7 @@ test('[CONTROLLER] Getting a user: Success case', async () => {
     const testResponse = await testRequest.post("/user").send({
         username: username,
         password: password
-    }).set("Cookie", "userId=1");
+    });
 
     expect(testResponse.status).toBe(200);
 });
