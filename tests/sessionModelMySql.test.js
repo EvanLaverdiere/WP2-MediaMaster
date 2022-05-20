@@ -107,14 +107,14 @@ test("getSession() 404 failure case test", async () => {
 
     const session = await sessionModel.addSession(1);
 
-    const badSessionId= "blah";
+    const badSessionId = "blah";
 
-    await expect(async ()=>{
+    await expect(async () => {
         await sessionModel.getSession(badSessionId);
     }).rejects.toThrow(errorTypes.AuthenticationError);
 })
 
-test("getSession() 500 failure case test", async () =>{
+test("getSession() 500 failure case test", async () => {
     const { username, password } = generateUserData();
 
     await usersModel.addUser(username, password);
@@ -127,7 +127,67 @@ test("getSession() 500 failure case test", async () =>{
 
     await conn.close();
 
-    await expect(async ()=>{
+    await expect(async () => {
         await sessionModel.getSession(sessionId);
     }).rejects.toThrow(errorTypes.DatabaseError);
+})
+
+test("getSessionById() success case test", async () => {
+    const { username, password } = generateUserData();
+
+    await usersModel.addUser(username, password);
+
+    const session = await sessionModel.addSession(1);
+
+    const sessionId = session.sessionId;
+
+    const retrievedSession = await sessionModel.getSessionByUserId(1);
+
+    const retrievedId = retrievedSession.sessionId;
+
+    expect(sessionId === retrievedId).toBe(true);
+
+    const conn = songsModel.getConnection();
+
+    const sql = `SELECT * FROM sessions WHERE userId = 1`;
+
+    const [records, metadata] = await conn.query(sql);
+
+    expect(Array.isArray(records)).toBe(true);
+
+    expect(records.length).toBe(1);
+
+    expect(sessionId === records[0].sessionId).toBe(true);
+})
+
+test("getSessionByUserId() 404 failure case test", async () => {
+    const { username, password } = generateUserData();
+
+    await usersModel.addUser(username, password);
+
+    const session = await sessionModel.addSession(1);
+
+    const badUserId = 99;
+
+    await expect(async () => {
+        await sessionModel.getSessionByUserId(badUserId);
+    }).rejects.toThrow(errorTypes.AuthenticationError);
+
+})
+
+test("getSessionByUserId() 500 failure case test", async () => {
+    const { username, password } = generateUserData();
+
+    await usersModel.addUser(username, password);
+
+    const session = await sessionModel.addSession(1);
+
+    const conn = songsModel.getConnection();
+
+    await conn.close();
+
+    await expect(async () => {
+        await sessionModel.getSessionByUserId(1);
+    }).rejects.toThrow(errorTypes.DatabaseError);
+
 })
