@@ -196,7 +196,7 @@ async function updateSong(userId, oldTitle, oldArtist, newTitle, newArtist, newG
 
     // If one row was changed, then the Update operation was carried out successfully.
     logger.info("Update successful.");
-    // return changedRows;
+    return changedRows;
 }
 //#endregion
 
