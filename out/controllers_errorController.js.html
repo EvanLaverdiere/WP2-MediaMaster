@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: controllers/errorController.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,41 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: controllers/errorController.js</h1>
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const { request } = require('express');
+const express = require('express');
+const router = express.Router();
+const routeRoot = '/';
 
-
-    <h3> </h3>
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
+/**
+ * If the url entered by the user is not a valid enpoint, -
+ * it will get to this endpoint and respond with a 404 error code
+ * @param {response} req 
+ * @param {request} res 
+ */
+function errorResponse(req,res) {
+    res.statusCode=404;
+    res.render('error.hbs',
+        {
+            message:"Error 404 Not Found: The site you were trying to visit could not be found"
+        })
+}
+router.all('*',errorResponse);
+module.exports = {
+ router,
+ routeRoot
+}
+</code></pre>
+        </article>
+    </section>
 
 
 
