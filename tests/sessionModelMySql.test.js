@@ -69,7 +69,7 @@ test("addSession() failure case", async () => {
 
     const badUserId = 2;
 
-    await expect(async ()=>{
+    await expect(async () => {
         await sessionModel.addSession(badUserId);
     }).rejects.toThrow(errorTypes.DatabaseError);
 })
@@ -86,4 +86,48 @@ test("getSession() success case", async () => {
     const retrievedSession = await sessionModel.getSession(sessionId);
 
     expect(sessionId === retrievedSession.sessionId).toBe(true);
+
+    const conn = songsModel.getConnection();
+
+    const sql = `SELECT * FROM sessions WHERE sessionId = \'${sessionId}\'`;
+
+    const [records, metadata] = await conn.query(sql);
+
+    expect(Array.isArray(records)).toBe(true);
+
+    expect(records.length).toBe(1);
+
+    expect(sessionId === records[0].sessionId).toBe(true);
+})
+
+test("getSession() 404 failure case test", async () => {
+    const { username, password } = generateUserData();
+
+    await usersModel.addUser(username, password);
+
+    const session = await sessionModel.addSession(1);
+
+    const badSessionId= "blah";
+
+    await expect(async ()=>{
+        await sessionModel.getSession(badSessionId);
+    }).rejects.toThrow(errorTypes.AuthenticationError);
+})
+
+test("getSession() 500 failure case test", async () =>{
+    const { username, password } = generateUserData();
+
+    await usersModel.addUser(username, password);
+
+    const session = await sessionModel.addSession(1);
+
+    const sessionId = session.sessionId;
+
+    const conn = songsModel.getConnection();
+
+    await conn.close();
+
+    await expect(async ()=>{
+        await sessionModel.getSession(sessionId);
+    }).rejects.toThrow(errorTypes.DatabaseError);
 })
