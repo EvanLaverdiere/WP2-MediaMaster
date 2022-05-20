@@ -100,13 +100,18 @@ router.get('/songs', allSongs)
 
 
 //#region GET song
-
+/**
+ * Tries to retrieve a specified song from the database, based on query parameters specified by the user and the value of the user's userId cookie.
+ * Renders a view displaying the song's record if it was successfully retrieved.
+ * Renders a view containing an appropriate error message if the passed queries are invalid,
+ * or if the database is inaccessible.
+ * @param {*} req The HTTP request. Must include a query string with parameters for title and artist, and must include a cookie for userId.
+ * @param {*} res The HTTP response to be sent once the request has been processed.
+ */
 async function getSong(req, res) {
     let targetTitle = req.query.title;
     let targetArtist = req.query.artist;
 
-    // try{
-    //     let {title, artist, genre, album} = await model.getOneSong(userId, targetTitle, targetArtist);
     try {
         let { title, artist, genre, album } = await model.getOneSong( req.cookies.userId, targetTitle, targetArtist);
 
@@ -154,6 +159,15 @@ async function getOneForm(req, res) {
 
 
 //#region EDIT song
+/**
+ * Tries to edit an existing song within the database, replacing its original values 
+ * with new ones based on parameters in the request's body and the userId cookie.
+ * Renders a view displaying the new values of the modified record if it was successfully updated.
+ * Renders a view displaying an appropriate error message if any of the passed parameters is invalid,
+ * or if the database is inaccessible. 
+ * @param {*} req The HTTP request. Its body must include parameters for oldTitle, oldArtist, newTitle, newArtist, newGenre, and (optionally) newAlbum. It must include a userId cookie.
+ * @param {*} res The HTTP response to be sent once the request has been processed.
+ */
 async function editSong(req, res) {
     let oldTitle = req.body.oldTitle;
     let oldArtist = req.body.oldArtist;
@@ -201,17 +215,7 @@ async function editSong(req, res) {
 router.put('/song', editSong);
 
 async function editForm(req, res) {
-    // if(!req.cookies.tracker){
-    //     let tracker = createTracker("Bob", req);
-    //     res.cookie("tracker", JSON.stringify(tracker));
-    // }
-    // else{
-    //     let tracker = JSON.parse(req.cookies.tracker);
-    //     let updatedTracker = updateTracker(tracker, req);
-    //     if(updatedTracker != null){
-    //         res.cookie("tracker", JSON.stringify(updatedTracker));
-    //     }
-    // }
+
     let tracker = manageTracker(req);
     let session = await manageSession(req);
     if (session) {
@@ -221,12 +225,17 @@ async function editForm(req, res) {
     res.render('edit.hbs', editFormDetails(undefined, undefined, undefined, undefined, req));
 }
 
-// function showEditForm(res) {
-//     res.render('edit.hbs', editFormDetails());
-// }
+
 //#endregion
 
 //#region DELETE song
+/**
+ * Tries to delete a single song from the database, based on title and artist parameters passed in the request's body and on the value of the userId cookie.
+ * Renders a view displaying information about the deleted song if successful.
+ * Renders a view displaying an appropriate error message if the song could not be deleted or if the database is inaccessible.
+ * @param {*} req The HTTP request. Its body must include parameters for title and artist.
+ * @param {*} res The HTTP response to be sent once the request has been processed.
+ */
 async function deleteOneSong(req, res) {
     let title = req.body.title;
     let artist = req.body.artist;
