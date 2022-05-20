@@ -1,17 +1,25 @@
 const app = require('../app');
 const supertest = require('supertest');
-const testRequest = supertest(app);
+var testRequest;
 
 const dbName = "mediamaster_db_test";
 const songsModel = require('../models/songModelMySql');
 const usersModel = require('../models/userModelMySql');
+const sessionModel = require('../models/sessionModelMySql');
 var connection;
 let songData;
 
 beforeEach(async () => {
     await songsModel.initialize(dbName, true);
-    await usersModel.addUser("Paco", "Paquito123");
     connection = songsModel.getConnection();
+    await sessionModel.initialize(dbName, true, connection);
+    testRequest = supertest.agent(app);
+    await testRequest.post('/users').send({
+        username:"Paco",
+        password:"Paquito123"});
+    await testRequest.post('/user').send({
+        username:"Paco",
+        password:"Paquito123"});
     songData = [
         { title: "Remember everything", artist: "Five Finger Death Punch", genre: "Rock", album: "" },
         { title: "I Apologize", artist: "Five Finger Death Punch", genre: "Rock", album: "" },
@@ -78,14 +86,14 @@ test("Controller - POST - Failure - Closed Connection", async () => {
 
 test("Controller: GET /songs success case", async () => {
     let song = generateRandomSongSlice();
-    await songsModel.addSong(song.title, song.artist, song.genre, song.album);
+    await songsModel.addSong(song.title, song.artist, song.genre, song.album, 1);
     response = await testRequest.get('/songs');
     await expect(response.status).toBe(200);
 });
 
 test("Controller: GET /songs failure case - Closed Connection ", async () => {
     let song = generateRandomSongSlice();
-    await songsModel.addSong(song.title, song.artist, song.genre, song.album);
+    await songsModel.addSong(song.title, song.artist, song.genre, song.album, 1);
     songsModel.getConnection().close()
     response = await testRequest.get('/songs');
     await expect(response.status).toBe(500);
