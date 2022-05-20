@@ -217,12 +217,12 @@ test("refreshSession() 404 failure case test", async () => {
 
     const badSessionId = 99;
 
-    await expect(async ()=>{
+    await expect(async () => {
         await sessionModel.refreshSession(1, badSessionId);
     }).rejects.toThrow(errorTypes.AuthenticationError);
 })
 
-test("refreshSession() 500 failure case test", async()=>{
+test("refreshSession() 500 failure case test", async () => {
     const { username, password } = generateUserData();
 
     await usersModel.addUser(username, password);
@@ -235,13 +235,13 @@ test("refreshSession() 500 failure case test", async()=>{
 
     await conn.close();
 
-    await expect(async ()=>{
+    await expect(async () => {
         await sessionModel.refreshSession(1, sessionId);
     }).rejects.toThrow(errorTypes.DatabaseError);
 
 })
 
-test("deleteSession success case test", async ()=>{
+test("deleteSession success case test", async () => {
     const { username, password } = generateUserData();
 
     await usersModel.addUser(username, password);
@@ -261,4 +261,36 @@ test("deleteSession success case test", async ()=>{
     expect(Array.isArray(records)).toBe(true);
 
     expect(records.length).toBe(0);
+})
+
+test("deleteSession 404 failure case test", async () => {
+    const { username, password } = generateUserData();
+
+    await usersModel.addUser(username, password);
+
+    const session = await sessionModel.addSession(1);
+
+    const badSessionId = "blargg";
+
+    await expect(async () => {
+        await sessionModel.deleteSession(badSessionId);
+    }).rejects.toThrow(errorTypes.AuthenticationError);
+})
+
+test("deleteSession 500 failure case test", async () => {
+    const { username, password } = generateUserData();
+
+    await usersModel.addUser(username, password);
+
+    const session = await sessionModel.addSession(1);
+
+    const sessionId = session.sessionId;
+
+    const conn = songsModel.getConnection();
+
+    await conn.close();
+
+    await expect(async () =>{
+        await sessionModel.deleteSession(sessionId);
+    }).rejects.toThrow(errorTypes.DatabaseError);
 })
