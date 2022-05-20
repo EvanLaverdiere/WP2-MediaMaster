@@ -11,21 +11,27 @@ let userName;
 let currentUser = "a";
 //#region SHOW FORMS
 
-function showLoginForm(request, response) {
-    response.render('login.hbs', pageData('user'));
+function showLoginForm(request, response, notLoggedIn) {
+    response.render('login.hbs', pageData('user', notLoggedIn));
 }
 
 function showRegisterForm(request, response) {
     response.render('register.hbs', pageData('users'));
 }
 
-function pageData(endpoint) {
+function pageData(endpoint, notLoggedIn) {
+    let message;
+
+    if (notLoggedIn)
+        message = "You need to be logged in to access these forms.";
+
     return {
         icon: "images/favicon.ico",
-        message: false,
-        endpoint: "/"+endpoint,
+        endpoint: "/" + endpoint,
+        message: message,
         method: "post",
-        light: lightTheme
+        light: lightTheme,
+        failureMessage: notLoggedIn,
     }
 }
 
@@ -58,7 +64,9 @@ async function addUser(request, response) {
         const usernameInput = request.body.username;
         const passwordInput = request.body.password;
         let colors;
-        let theme = request.cookies.theme; if (theme == "light") {
+        let theme = request.cookies.theme; 
+
+        if (theme == "light") {
             lightTheme = true;
             colors = ["Light", "Dark"];
         }
@@ -66,16 +74,17 @@ async function addUser(request, response) {
             colors = ["Dark", "Light"];
             lightTheme = false;
         }
+
         const { username, password } = await model.addUser(usernameInput, passwordInput);
         userName = username;
         response.status(200);
-        response.render('userProfile.hbs', {
+
+        response.render('login.hbs', {
             icon: "images/favicon.ico",
+            endpoint: "/user",
+            method: "post",
             successMessage: true,
             message: "Successfully registered user!",
-            username: username,
-            colors: colors,
-            username: username,
             light: lightTheme
         });
     }
@@ -151,6 +160,7 @@ async function getUser(request, response) {
         response.cookie("username", username);
         response.cookie("tracker", JSON.stringify(tracker));
         response.cookie("sessionId", session.sessionId, { expires: session.closesAt, httpOnly: true });
+
         response.render('userProfile.hbs', {
             icon: "images/favicon.ico",
             successMessage: true,
@@ -200,13 +210,13 @@ async function getUser(request, response) {
 router.post('/user', getUser);
 
 //#endregion
-function showUserForm(request, response) {
+function showUserForm(request, response, notLoggedIn) {
     let theme = request.cookies.theme;
     if (theme == "light") lightTheme = true; else lightTheme = false;
 
     switch (request.body.choice) {
         case 'login':
-            showLoginForm(request, response);
+            showLoginForm(request, response, notLoggedIn);
             break;
         case 'register':
             showRegisterForm(request, response);
