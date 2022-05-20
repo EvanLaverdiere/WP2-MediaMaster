@@ -4,12 +4,11 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "jest --verbose ./tests --runInBand --detectOpenHandles",
+    "test": "jest --verbose ./tests --runInBand",
     "start": "node server.js"
   },
   "repository": {
-    "type": "git",
-    "url": "git+https://github.com/EvanLaverdiere/WP2-MediaMaster.git"
+    "type": "git"
   },
   "author": "",
   "license": "ISC",
