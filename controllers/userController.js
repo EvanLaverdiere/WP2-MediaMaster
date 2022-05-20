@@ -233,6 +233,11 @@ async function getUser(request, response) {
 }
 router.post('/user', getUser);
 
+/**
+ * Checks whether or not the theme cookie is light.
+ * @param {*} req The request from the client.
+ * @returns True if the theme cookie is "light", false otherwise
+ */
 function isLightTheme(req) {
     if (req.cookies.theme == "light")
         return true;
@@ -244,6 +249,11 @@ function isLightTheme(req) {
 
 // #region Logout
 
+/**
+ * Logs a user out from the website.
+ * @param {*} req The request from the client.
+ * @param {*} res The response from the server.
+ */
 function logout(req, res) {
     lightTheme = isLightTheme(req);
     res.render('login.hbs', {
