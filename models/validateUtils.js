@@ -52,15 +52,15 @@ function validateSong(title, artist, genre) {
 
 /**
  * Checks if the user exists in the database.
- * @param {*} username Username of user. Cannot be null.
- * @param {*} password Password of user. Cannot be null. Must be at least 7 characters long.
+ * @param {string} username Username of user. Cannot be null.
+ * @param {string} password Password of user. Cannot be null. Must be at least 7 characters long.
  * @param {*} connection Connection to the database.
- * @returns True if the user's fields are valid, false otherwise.
+ * @returns The username and password.
  */
 async function authenticateUser(username, password, connection) {
 
     try {
-        const sqlQuery = "SELECT username FROM users WHERE username = "
+        const sqlQuery = "SELECT username, password FROM users WHERE username = "
         + connection.escape(username);
 
         const result = await connection.execute(sqlQuery);
@@ -68,26 +68,17 @@ async function authenticateUser(username, password, connection) {
         if(result[0].length == 0)
             throw new errorTypes.AuthenticationError("User not found in database");
 
-        //create sql query to check db if username already exists in database
-        const sqlQuery2 = "SELECT password FROM users WHERE username = "
-            + connection.escape(username);
+        if(!await bcrypt.compare(password, result[0][0].password))
+            throw new errorTypes.AuthenticationError("Password is incorrect.");
 
-        //execute query
-        const result2 = await connection.execute(sqlQuery2);
-
-        //encrypt the user's input first then compare it with database password
-        if(await bcrypt.compare(password, result2[0][0].password)){
-            return true;
-        }
-
-        return false;
+        return { "username": result[0][0].username, "password": password };
     }
     catch(err){
-        if(err instanceof errorTypes.AuthenticationError)
-            throw err;
-
         logger.error(err);
         console.log(err);
+
+        if(err instanceof errorTypes.AuthenticationError)
+            throw err;
         
         throw new errorTypes.DatabaseError("Something wrong happened in the database.");
     }
@@ -107,7 +98,7 @@ function validatePassword(password) {
 
 /**
  * Verifies that the user doesn't already exist in the database
- * @param {*} username Username of user. Must be unique.
+ * @param {string} username Username of user. Must be unique.
  * @param {*} connection Connection to database.
  * @returns True if the username is unique, false otherwise.
  */

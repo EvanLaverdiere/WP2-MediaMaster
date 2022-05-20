@@ -1,11 +1,11 @@
 const mysql = require('mysql2/promise');
 const validate = require('./validateUtils.js');
 const logger = require('../logger');
-const bcrypt = require('bcrypt'); //TODO: Document that you've added bcrypt module.
+const bcrypt = require('bcrypt');
 const errorTypes = require('./errorModel.js');
 
 var connection;
-const saltRounds = 10;
+const saltRounds = 10; //used for encrypting passwords
 
 /**
  * Connects to a database provided by the user.
@@ -34,14 +34,14 @@ async function initialize(dbname, reset) {
             database: dbname
         });
 
-        // Drop table if reset is true
+        // Drop tables if reset is true
         if (reset) {
             const dropSongs = "DROP TABLE IF EXISTS Songs;";
             await connection.execute(dropSongs);
 
             const dropSessions = "DROP TABLE IF EXISTS sessions;";
             await connection.execute(dropSessions);
-            
+
             const dropUsers = "DROP TABLE IF EXISTS users;";
             await connection.execute(dropUsers);
             // logger.info("Table song dropped");
@@ -61,8 +61,8 @@ async function initialize(dbname, reset) {
 
 /**
  * Creates/Registers a user with a username and password.
- * @param {*} username Username of user. Must not already exist in the database.
- * @param {*} password Password of user. Must have a minimum length of 7.
+ * @param {string} username Username of user. Must not already exist in the database.
+ * @param {string} password Password of user. Must have a minimum length of 7.
  * @returns The username and the hashed password.
  * @throws InvalidInputError, DBConnectionError
  */
@@ -74,7 +74,7 @@ async function addUser(username, password) {
 
     //validate the username: make sure its unique (doesn't already exist)
     let validatedUsername = await validate.validateUniqueUser(username, connection);
-    if(!validatedUsername)
+    if (!validatedUsername)
         throw new errorTypes.UserAlreadyExistsError("User already exists.");
 
     //hash the password
@@ -84,10 +84,11 @@ async function addUser(username, password) {
     const sqlCommand = 'INSERT INTO users(username, password) VALUES ('
         + connection.escape(username) + ', ' + connection.escape(hashedPassword) + ')';
 
-    //execute command
     try {
+        //execute command
         await connection.execute(sqlCommand);
         logger.info("User " + username + " successfully registered!");
+
         return { "username": username, "password": hashedPassword }
     }
     catch (error) {
@@ -98,40 +99,48 @@ async function addUser(username, password) {
 
 /**
  * Gets a user from the database if the credentials match.
- * @param {*} username Username of user. Must exist in the database.
- * @param {*} password Password of user. Must match with the user's password in the database.
+ * @param {string} username Username of user. Must exist in the database.
+ * @param {string} password Password of user. Must match with the user's password in the database.
+ * @returns The username and the password.
+ * @throws AuthenticationError, DBConnectionError
  */
 async function getUser(username, password) {
-    let validated = await validate.authenticateUser(username, password, connection);
-
-    //check if username and password match in db
-    if (!validated)
-        throw new errorTypes.AuthenticationError("Username and/or password are invalid.");
-
-    let sqlQuery = "SELECT username, password FROM users WHERE username = "
-        + connection.escape(username);
 
     try {
-        const [rows, fields] = await connection.execute(sqlQuery);
-        logger.info("User " + username + " successfully found!");
-        return { "username": rows[0].username, "password": rows[0].password };
+        //check if username and password match in db
+        let validateUser = await validate.authenticateUser(username, password, connection);
+        if (validateUser.username != username || validateUser.password != password)
+            throw new errorTypes.AuthenticationError("Username and/or password are invalid.");
+
+        return { "username": validateUser.username, "password": validateUser.password };
     }
+
     catch (error) {
+        if(error instanceof errorTypes.AuthenticationError)
+            throw error;
+
         logger.error(error);
         throw new errorTypes.DatabaseError("Something wrong happened in the database.");
     }
 }
 
-async function getUserId(username){
+/**
+ * Get a specific user id from a user.
+ * @param {*} username Username of user. Must exist in the database.
+ * @returns The id of the user.
+ * @throws AuthenticationError if the passed username isn't in the database.
+ * @throws DatabaseError if the database is inaccessible.
+ */
+async function getUserId(username) {
     let sql = "SELECT userId FROM users WHERE username = ?";
 
     let [records, metadata] = await connection.query(sql, [username])
-    .catch((err) => {
-        logger.error(err);
-        throw new errorTypes.DatabaseError(err);
-    });
+        .catch((err) => {
+            logger.error(err);
+            throw new errorTypes.DatabaseError(err);
+        });
 
-    if(records.length == 0){
+    if (records.length == 0) {
         let errorMessage = "No such user exists.";
         logger.error(errorMessage);
         throw new errorTypes.AuthenticationError(errorMessage);

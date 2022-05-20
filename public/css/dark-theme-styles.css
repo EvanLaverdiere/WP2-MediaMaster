@@ -8,6 +8,7 @@ body {
 }
 
 #title{
+    margin: 1.5rem;
 }
 #noDeco{
     color:inherit !important;
@@ -55,6 +56,11 @@ input, textarea, select {
     border-collapse: collapse;
 
 }
+#imgSize{
+    width: 70% !important;
+    height: 70% !important;
+}
+
 #tableDiv{
     display: flex;
     justify-content:center;
@@ -62,6 +68,11 @@ input, textarea, select {
 }
 #listAllTable{
     width:25%;
+}
+
+#img{
+    height:400px !important;
+    width:400px !important;
 }
 #footer {
     margin-top:2rem;
@@ -79,8 +90,10 @@ input, textarea, select {
 #aboutUsText{
     width: 50%;
     text-align: justify;
+    font-size:18px;
 }
 form i {
     margin-left: -30px;
     cursor: pointer;
   }
+

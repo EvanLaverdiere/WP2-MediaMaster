@@ -12,8 +12,8 @@ var connection;
  * Initializes the database connection and creates if it does not exist the Songs table.
  * It also first initializes the user model connection.
  * Throws if there any errors while trying to execute the queries.
- * @param {Name of database} db  
- * @param {Mandatory boolean indicating if to do a reset of the table} reset 
+ * @param {string} db Name of database
+ * @param {boolean} reset Mandatory boolean indicating if to do a reset of the table
  */
 async function initialize(db, reset) {
     try {
@@ -49,25 +49,24 @@ async function initialize(db, reset) {
  * The song corresponds (is tied with a userId) with a user from the users table.
  * Throws if the title is not alphanumeric, if the song already exists.
  * And, if there are any issues with the database/connection trying to execute the insert query.
- * @param {Mandatory} title 
- * @param {Mandatory} artist 
- * @param {Mandatory} genre 
- * @param {Optional} album 
- * @param {Mandatory} currentUserId 
+ * @param {Mandatory} title The song's title.
+ * @param {Mandatory} artist The artist who performed the song.
+ * @param {Mandatory} genre The song's genre.
+ * @param {Optional} album The song's album.
+ * @param {Mandatory} currentUserId The ID of the user to whom this song belongs.
  * @returns A boolean indicating if the operation was successful
  */
 async function addSong(title, artist, genre, album, currentUserId) {
 
     validator.validateSong(title, artist, genre); //Throws specific error messages if invalid, it needs to get caught it controller
     if (typeof (album) == 'undefined') album = "";
-    if (typeof (currentUserId) == 'undefined') currentUserId =1; //Left so tests pass, but it needs to be changed along the tests
 
     await checkDuplicate(title, artist, genre, album);  //Throws if the song is already added in the db
 
     try {
 
         let query = "insert into Songs(title, artist, genre, album, userId) values(?, ?, ?, ?, ?);";
-        let results = await connection.execute(query, [title, artist, genre, album, currentUserId]);
+        await connection.execute(query, [title, artist, genre, album, currentUserId]);
         logger.info(`Song [${title}] was successfully added `);
         return true;
     } catch (error) {
@@ -81,12 +80,11 @@ async function addSong(title, artist, genre, album, currentUserId) {
 /**
  * Retrieves all songs for certain user.
  * Throws if there are any errors (db/connection) when trying to retrieve the songs.
- * @param {Mandatory} currentUserId 
- * @returns 
+ * @param {Mandatory} currentUserId The ID of the current user.
+ * @returns A list of the user's songs.
+ * @throws DatabaseError if the database is inaccessible.
  */
 async function getAllSongs(currentUserId) {
-    if (typeof (currentUserId) == 'undefined') currentUserId =1; //Left so tests pass, but it needs to be changed along the tests
-
     let query = "select title, artist, genre, album from Songs where userId=" + connection.escape(currentUserId) + ";";
 
     try {
@@ -152,7 +150,6 @@ async function getOneSong(userId, title, artist) {
  * @param {*} newArtist The replacement artist.
  * @param {*} newGenre The replacement genre.
  * @param {*} newAlbum The replacement album.
- * @returns 
  */
 async function updateSong(userId, oldTitle, oldArtist, newTitle, newArtist, newGenre, newAlbum) {
     // Verify that the new values are acceptable. If they aren't, the validator will throw an InvalidInputError.
@@ -167,21 +164,14 @@ async function updateSong(userId, oldTitle, oldArtist, newTitle, newArtist, newG
     // Extract the song's id from the retrieved record to simplify the upcoming SQL Update query.
     let oldId = oldSong.id;
 
-    // let sql = "UPDATE Songs SET title = ?, artist = ?, genre = ?";
     let sql;
 
     if (newAlbum) {
-        // sql += ", album = \'" + connection.escape(newAlbum) + "\' "; // Update the album if the user specified a new value. Otherwise, leave it as-is.
         sql = "UPDATE Songs SET title = ?, artist = ?, genre = ?, album = ? WHERE id = ?";
     }
     else{
         sql = "UPDATE Songs SET title = ?, artist = ?, genre = ? WHERE id = ?";
     }
-
-    // sql += "WHERE id = " + oldId;
-    // "LIMIT 1";
-
-    // let sql = "UPDATE Songs SET title = ?, artist = ?, genre = ?"
 
     const results = await connection.query(sql, [newTitle, newArtist, newGenre, newAlbum, oldId])
         .catch((err) => {
@@ -215,9 +205,7 @@ async function updateSong(userId, oldTitle, oldArtist, newTitle, newArtist, newG
  * @throws DatabaseError if the database is inaccessible when called.
  */
 async function deleteSong(userId, title, artist) {
-    // To-Do: Validate passed userId.
-
-    // To-Do: Verify that the song to be deleted actually exists in the database. Throw an exception if it doesn't.
+    // Verify that the song to be deleted actually exists in the database. Throw an exception if it doesn't.
     const song = await getOneSong(userId, title, artist)
         .catch((err) => { throw err });
 
@@ -233,19 +221,24 @@ async function deleteSong(userId, title, artist) {
             throw new errorTypes.DatabaseError(err);
         });
 
+    // Query will return an object containing the number of affected rows.
     let affectedRows = results[0].affectedRows;
     if (affectedRows <= 0) {
+        // If no rows were affected, nothing was deleted. Throw an error.
         let errorMessage = "No records were deleted.";
         logger.error(errorMessage);
-        // To-Do: Throw appropriate error.
         throw new errorTypes.InvalidInputError(errorMessage);
     }
 
+    // Otherwise, log that the deletion was carried out successfully and return the representation of the deleted song.
     logger.info("Deletion successful.");
     return song;
 }
 //#endregion
 
+/**
+ * Drops the Songs table from the database.
+ */
 async function dropTable() {
     const clearAll = "drop table if exists Songs;";
     await connection.execute(clearAll)
@@ -253,6 +246,11 @@ async function dropTable() {
         .catch((error) => { logger.error(error.message); })
 }
 
+/**
+ * Establishes a connection to the specified database.
+ * @param {*} db The name of the database.
+ * @throws DatabaseError if the connection could not be established.
+ */
 async function setConnection(db) {
 
     connection = await mysql.createConnection({
@@ -269,6 +267,9 @@ async function setConnection(db) {
 
 }
 
+/**
+ * Close the database connection.
+ */
 function closeConnection() {
     if (typeof connection != 'undefined') {
         connection.close();
@@ -280,11 +281,21 @@ function getConnection() {
 }
 
 
+/**
+ * Verifies that a passed song does not already exist in the specified user's collection. Throws an error if the song already exists.
+ * @param {*} title The song's title.
+ * @param {*} artist The artist who performed the song.
+ * @param {*} genre The song's genre.
+ * @param {*} album The song's album.
+ * @param {*} currentUserId The ID of the current user.
+ * @throws DatabaseError if the database could not be accessed.
+ * @throws InvalidInputError if the passed data is an exact match for an existing song.
+ */
 async function checkDuplicate(title, artist, genre, album, currentUserId) {
     let query = "select * from Songs where title = ? and artist = ? and genre = ? and album =? and userId=?;"
     let [rows, fields] = [];
     try {
-        [rows, fields] = await connection.query(query, [title, artist, genre, album,1]);
+        [rows, fields] = await connection.query(query, [title, artist, genre, album,currentUserId]);
 
     } catch (error) {
         logger.error(error.message);
@@ -320,16 +331,8 @@ let allGenres = () => ["Alternative",
     "World"
 ];
 
-async function getAllTitles(userId) {
-    try {
-        let sql = "SELECT title FROM Songs WHERE userId = " + userId;
-        let results = await connection.query(sql);
-        return results[0];
-    } catch (error) {
-        // Fail gracefully.
-    }
-}
 
-module.exports = { initialize, addSong, getAllSongs, getOneSong, updateSong, deleteSong, closeConnection, getConnection, allGenres, getAllTitles }
+
+module.exports = { initialize, addSong, getAllSongs, getOneSong, updateSong, deleteSong, closeConnection, getConnection, allGenres }
 
 

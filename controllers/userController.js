@@ -5,73 +5,100 @@ const model = require('../models/userModelMySql');
 const cookieController = require('./cookieController');
 const sessionModel = require('../models/sessionModelMySql');
 const errorTypes = require('../models/errorModel.js');
-const { use } = require('../app');
 let lightTheme;
-let userName;
+
 //#region SHOW FORMS
 
- function showLoginForm(request, response) {
-
-    const pageData = {
-        message: false,
-        endpoint: "/user",
-        method: "post",
-        light: lightTheme
-    }
-    response.render('login.hbs', pageData);
+/**
+ * Renders the login page.
+ * @param {*} request The request from the client.
+ * @param {*} response The response from the server.
+ * @param {*} notLoggedIn A flag indicating if the user is logged in or not.
+ */
+function showLoginForm(request, response, notLoggedIn) {
+    response.render('login.hbs', pageData('user', notLoggedIn));
 }
 
+/**
+ * Renders the register page.
+ * @param {*} request The request from the client.
+ * @param {*} response The response from the server.
+ */
 function showRegisterForm(request, response) {
-
-   const pageData = {
-       message: false,
-       endpoint: "/users",
-       method: "post",
-       light: lightTheme
-   }
-   response.render('register.hbs', pageData);
+    response.render('register.hbs', pageData('users'));
 }
 
-function showProfile(request, response) {
-    let colors=[];
-    let theme = request.cookies.theme;  if(theme=="light"){
-        lightTheme=true;
-        colors =["Light","Dark"];
+/**
+ * Helper function for sending page data when loading a page.
+ * @param {string} endpoint Where the form page will be submitted.
+ * @param {boolean} notLoggedIn A flag indicating if the user is logged in or not.
+ * @returns Data which will fill the page.
+ */
+function pageData(endpoint, notLoggedIn) {
+    let message;
+
+    if (notLoggedIn)
+        message = "You need to be logged in to access these forms.";
+
+    return {
+        icon: "images/favicon.ico",
+        endpoint: "/" + endpoint,
+        message: message,
+        method: "post",
+        light: lightTheme,
+        failureMessage: notLoggedIn,
     }
-    else{
-        colors =["Dark","Light"];
-        lightTheme=false;
-    } 
+}
+
+/**
+ * Renders the user profile page.
+ * @param {*} request The request from the client.
+ * @param {*} response The response from the server.
+ */
+function showProfile(request, response) {
+    let colors = [];
+    if (isLightTheme(request)) {
+        lightTheme = true;
+        colors = ["Light", "Dark"];
+    }
+    else {
+        lightTheme = false;
+        colors = ["Dark", "Light"];
+    }
 
     response.render('userProfile.hbs', {
-        username: userName,
+        icon: "images/favicon.ico",
+        username: request.cookies.username,
         colors: colors,
-        languages: ["English", "French"],
-        logged:true,
+        logged: true,
         light: lightTheme
     });
- }
+}
 //#endregion
 
 //#region ENDPOINTS
 
+/**
+ * Endpoint function for adding a user to the database.
+ * Called when the register form is submitted.
+ * @param {*} request The request from the client.
+ * @param {*} response The response from the server.
+ */
 async function addUser(request, response) {
     try {
         const usernameInput = request.body.username;
         const passwordInput = request.body.password;
-        let theme = request.cookies.theme;  if(theme=="light")lightTheme=true;else lightTheme=false;
+        lightTheme = isLightTheme(request);
 
-        const {username, password} = await model.addUser(usernameInput, passwordInput);
-        userName=username;
+        await model.addUser(usernameInput, passwordInput);
         response.status(200);
-        response.render('userProfile.hbs', {
+
+        response.render('login.hbs', {
+            icon: "images/favicon.ico",
+            endpoint: "/user",
+            method: "post",
             successMessage: true,
             message: "Successfully registered user!",
-            username: username,
-            colors: ["Dark", "Light"],
-            languages: ["English", "French"],
-            logged:true,
-            username: username,
             light: lightTheme
         });
     }
@@ -79,6 +106,7 @@ async function addUser(request, response) {
         if (err instanceof errorTypes.InvalidInputError) {
             response.status(400);
             response.render('register.hbs', {
+                icon: "images/favicon.ico",
                 failureMessage: true,
                 message: "Failed to register: invalid input. " + err.message,
                 endpoint: "/users",
@@ -89,6 +117,7 @@ async function addUser(request, response) {
         else if (err instanceof errorTypes.UserAlreadyExistsError) {
             response.status(400);
             response.render('register.hbs', {
+                icon: "images/favicon.ico",
                 failureMessage: true,
                 message: "Failed to register: " + err.message,
                 endpoint: "/users",
@@ -99,8 +128,9 @@ async function addUser(request, response) {
         else if (err instanceof errorTypes.DatabaseError) {
             response.status(500);
             response.render('register.hbs', {
+                icon: "images/favicon.ico",
                 failureMessage: true,
-                message: "Failed to register: "+ err.message,
+                message: "Failed to register: " + err.message,
                 endpoint: "/users",
                 method: "post",
                 light: lightTheme
@@ -109,6 +139,7 @@ async function addUser(request, response) {
         else {
             response.status(500);
             response.render('register.hbs', {
+                icon: "images/favicon.ico",
                 failureMessage: true,
                 message: "Failed to register: unknown cause. " + err.message,
                 endpoint: "/users",
@@ -120,17 +151,27 @@ async function addUser(request, response) {
 }
 router.post('/users', addUser);
 
-async function getUser(request, response){
-    let colors;
-    try{
-        let theme = request.cookies.theme;  if(theme=="light"){
-            lightTheme=true;
-            colors =["Light","Dark"];
+/**
+ * Endpoint function for getting a user from the database.
+ * Called when the login form is submitted. 
+ * If user was successfully logged, it sets the appropiate cookies
+ * (userId, tracker, username, sessionId). And renders the user's profile.
+ * @param {*} request The request from the client.
+ * @param {*} response The response from the server.
+ */
+async function getUser(request, response) {
+    try {
+        let colors;
+
+        if (isLightTheme(request)) {
+            lightTheme = true;
+            colors = ["Light", "Dark"];
         }
-        else{
-            colors =["Dark","Light"];
-            lightTheme=false;
-        } 
+        else {
+            lightTheme = false;
+            colors = ["Dark", "Light"];
+        }
+
         const usernameInput = request.body.username;
         const passwordInput = request.body.password;
 
@@ -141,22 +182,25 @@ async function getUser(request, response){
 
         response.status(200);
         response.cookie("userId", userId);
+        response.cookie("username", username);
         response.cookie("tracker", JSON.stringify(tracker));
-        response.cookie("sessionId", session.sessionId, {expires: session.closesAt, httpOnly: true}); 
+        response.cookie("sessionId", session.sessionId, { expires: session.closesAt, httpOnly: true });
+
         response.render('userProfile.hbs', {
+            icon: "images/favicon.ico",
             successMessage: true,
             message: "Successfully logged in!",
             username: username,
             colors: colors,
-            languages: ["English", "French"],
-            light: lightTheme
+            light: lightTheme,
+            logged: true
         });
-        //TODO: response.render
     }
-    catch(err){
+    catch (err) {
         if (err instanceof errorTypes.AuthenticationError) {
             response.status(400);
             response.render('login.hbs', {
+                icon: "images/favicon.ico",
                 failureMessage: true,
                 message: "Failed to login: " + err.message,
                 endpoint: "/user",
@@ -167,6 +211,7 @@ async function getUser(request, response){
         else if (err instanceof errorTypes.DatabaseError) {
             response.status(500);
             response.render('login.hbs', {
+                icon: "images/favicon.ico",
                 failureMessage: true,
                 message: "Failed to login: " + err.message,
                 endpoint: "/user",
@@ -177,6 +222,7 @@ async function getUser(request, response){
         else {
             response.status(500);
             response.render('login.hbs', {
+                icon: "images/favicon.ico",
                 failureMessage: true,
                 message: "Failed to login: unknown cause. " + err.message,
                 endpoint: "/user",
@@ -188,20 +234,61 @@ async function getUser(request, response){
 }
 router.post('/user', getUser);
 
+/**
+ * Checks whether or not the theme cookie is light.
+ * @param {*} req The request from the client.
+ * @returns True if the theme cookie is "light", false otherwise
+ */
+function isLightTheme(req) {
+    if (req.cookies.theme == "light")
+        return true;
+    else
+        return false;
+}
+
 //#endregion
-function showUserForm(request, response) {
-    let theme = request.cookies.theme;  
-    if(theme=="light")lightTheme=true;else lightTheme=false;
+
+// #region Logout
+
+/**
+ * Renders the login form, in case the user wants to login on another account.
+ * The cookies are removed from a external script.
+ * @param {Mandatory} req 
+ * @param {Mandatory} res 
+ */
+function logout(req, res) {
+    lightTheme = isLightTheme(req);
+    res.render('login.hbs', {
+            icon: "images/favicon.ico",
+            endpoint: "/user",
+            method: "post",
+            successMessage: true,
+            message: "Successfully logged out!",
+            light: lightTheme
+    })
+}
+
+/**
+ * Loads register, login or user profile page based on the client request.
+ * @param {*} request The request from the client.
+ * @param {*} response The response from the server.
+ * @param {boolean} notLoggedIn A flag indicating if the user is logged in or not.
+ */
+function showUserForm(request, response, notLoggedIn) {
+    lightTheme = isLightTheme(request);
 
     switch (request.body.choice) {
         case 'login':
-            showLoginForm(request,response);
+            showLoginForm(request, response, notLoggedIn);
             break;
         case 'register':
-            showRegisterForm(request,response);
+            showRegisterForm(request, response);
             break;
         case 'profile':
-            showProfile(request,response);
+            showProfile(request, response);
+            break;
+        case 'logout':
+            logout(request, response);
             break;
         default:
             response.render('home.hbs');

@@ -89,7 +89,7 @@ async function getSession(sessionId) {
  * Retrieves an existing session from the database by the passed user ID.
  * @param {*} userId The session's associated user ID.
  * @returns An object representing the session.
- * @throws AuthenticationError if the passed sessionId is invalid.
+ * @throws AuthenticationError if the passed userId is invalid.
  * @throws DatabaseError if the database is inaccessible when this function is called.
  */
 async function getSessionByUserId(userId) {

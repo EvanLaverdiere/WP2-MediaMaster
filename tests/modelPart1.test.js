@@ -38,7 +38,7 @@ const generateRandomSongSplice = () => {
 test("Model:  Success - Add", async () => {
     let song = generateRandomSongSlice();
 
-    let validAdd = await songsModel.addSong(song.title, song.artist, song.genre, song.album);
+    let validAdd = await songsModel.addSong(song.title, song.artist, song.genre, song.album, 1);
 
     expect(validAdd).toEqual(true);
 
@@ -56,7 +56,7 @@ test("Model: Success - Add - Many Songs", async () => {
     expect((await songsModel.getAllSongs()).length).toBe(0);
     for (let i = 0; i < originalSongDataLength; i++) {
         let song = generateRandomSongSplice()[0];
-        expect(await songsModel.addSong(song.title, song.artist, song.genre, song.album)).toBe(true);
+        expect(await songsModel.addSong(song.title, song.artist, song.genre, song.album, 1)).toBe(true);
     }
 
     expect((await songsModel.getAllSongs(1)).length).toBe(originalSongDataLength);
@@ -65,12 +65,12 @@ test("Model: Success - Add - Many Songs", async () => {
 test("Model: Failure - Add - Duplicate", async () => {
     let song = generateRandomSongSlice();
 
-    let validAdd = await songsModel.addSong(song.title, song.artist, song.genre, song.album);
+    let validAdd = await songsModel.addSong(song.title, song.artist, song.genre, song.album, 1);
 
     expect(validAdd).toEqual(true);
 
     try {
-        await songsModel.addSong(song.title, song.artist, song.genre, song.album);
+        await songsModel.addSong(song.title, song.artist, song.genre, song.album, 1);
     } catch (error) {
         expect(error.name).toBe("InvalidInputError");
         let rows = await songsModel.getAllSongs(1);
@@ -80,7 +80,7 @@ test("Model: Failure - Add - Duplicate", async () => {
 test("Model: Failure - Add - Invalid Input", async () => {
     try {
         let song = generateRandomSongSlice();
-        let validAdd = await songsModel.addSong(song.title + "*", song.artist, song.genre, song.album);
+        let validAdd = await songsModel.addSong(song.title + "*", song.artist, song.genre, song.album, 1);
     } catch (error) {
         expect(error.name).toBe("InvalidInputError");
         let rows = await songsModel.getAllSongs(1);
@@ -106,7 +106,7 @@ test("Model: Failure - Add song - Closed connection ", async () => {
 
     try {
         songsModel.getConnection().close()
-        await songsModel.addSong(song.title, song.artist, song.genre, song.album);
+        await songsModel.addSong(song.title, song.artist, song.genre, song.album, 1);
     } catch (error) {
         expect(error.name).toBe("DatabaseError");
     }
@@ -121,7 +121,7 @@ test("Model: Failure - Get songs - Closed connection ", async () => {
         expect((await songsModel.getAllSongs()).length).toBe(0);
         for (let i = 0; i < originalSongDataLength; i++) {
             let song = generateRandomSongSplice()[0];
-            expect(await songsModel.addSong(song.title, song.artist, song.genre, song.album)).toBe(true);
+            expect(await songsModel.addSong(song.title, song.artist, song.genre, song.album, 1)).toBe(true);
         }
 
         songsModel.getConnection().close()
